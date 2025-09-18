@@ -1,14 +1,17 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { Button } from '@react-navigation/elements'
+import { View, Text, Pressable } from "react-native";
+import { Link } from "expo-router";
 
-const index = () => {
+export default function Index() {
   return (
-    <View>
-      <Text className='text-4xl mt-20 text-center font-poppinsBold color-yellow-400'>index</Text>
-      <Button onPress={() => alert('Button Clicked!')}>Click Me</Button>
-    </View>
-  )
-}
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text style={{ fontSize: 24, marginBottom: 20 }}>Home Page</Text>
 
-export default index
+      {/* Navigate with Link */}
+      <Link href="/screens/profile_screen/index" asChild>
+        <Pressable style={{ padding: 10, backgroundColor: "green", borderRadius: 8 }}>
+          <Text style={{ color: "white" }}>Go to Profile</Text>
+        </Pressable>
+      </Link>
+    </View>
+  );
+}
