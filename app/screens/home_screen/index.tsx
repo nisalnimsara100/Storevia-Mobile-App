@@ -3,13 +3,13 @@ import { Link } from "expo-router";
 
 export default function Index() {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 24, marginBottom: 20 }}>Home Page</Text>
+    <View>
+      <Text className="text-4xl mt-20 text-center font-poppinsBold text-yellow-400">Home Page</Text>
 
       {/* Navigate with Link */}
-      <Link href="/screens/profile_screen/index" asChild>
-        <Pressable style={{ padding: 10, backgroundColor: "green", borderRadius: 8 }}>
-          <Text style={{ color: "white" }}>Go to Profile</Text>
+      <Link href="/screens/profile_screen" asChild>
+        <Pressable className="mt-10 bg-green-500 px-4 py-2 rounded-lg">
+          <Text className="text-white text-center">Go to Profile</Text>
         </Pressable>
       </Link>
     </View>
