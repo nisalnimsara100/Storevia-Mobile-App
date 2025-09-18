@@ -12,6 +12,10 @@ export default function Index() {
           <Text className="text-white text-center">Go to Profile</Text>
         </Pressable>
       </Link>
+
+      <Link href="/" asChild>
+              <Text className='text-blue-500 underline mt-5'>Go to landing page</Text>
+            </Link>
     </View>
   );
 }

@@ -1,12 +1,28 @@
-import { Text, View } from 'react-native'
-import '../global.css'
+import { Link, router } from "expo-router";
+import { Pressable, Text, View } from "react-native";
+import "../global.css";
 
-const index = () => {
+export default function Index() {
   return (
-    <View>
-      <Text className='text-4xl mt-20 text-center font-poppinsBold'>Screen Buttons</Text>
-    </View>
-  )
-}
+    <View className="flex-1 justify-center items-center">
+      <Text className="text-2xl mb-4">Landing Page</Text>
 
-export default index
+      {/* Or programmatic navigation */}
+      <Pressable
+        onPress={() => router.push("/screens/home_screen")}
+        className="mt-4 bg-blue-500 px-4 py-2 rounded-lg mb-8"
+      >
+        <Text className="text-white">Home</Text>
+      </Pressable>
+
+      {/* Navigation with Link */}
+      <Link href="/screens/profile_screen" asChild>
+        <Pressable className="bg-green-500 px-4 py-2 rounded-lg">
+          <Text className="text-white">Go to Profile</Text>
+        </Pressable>
+      </Link>
+
+      
+    </View>
+  );
+}
