@@ -1,6 +1,5 @@
-import { View, Text, Pressable, Image } from 'react-native'
+import { Text, View } from 'react-native'
 import '../global.css'
-import { Link } from 'expo-router'
 
 const index = () => {
   return (
