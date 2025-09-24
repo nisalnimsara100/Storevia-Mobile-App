@@ -30,7 +30,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* <Tabs.Screen
+      <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',
@@ -38,7 +38,7 @@ export default function TabLayout() {
             <Ionicons name={focused ? 'compass' : 'compass-outline'} size={28} color={color} />
           ),
         }}
-      /> */}
+      />
       <Tabs.Screen
         name="Cart"
         options={{
