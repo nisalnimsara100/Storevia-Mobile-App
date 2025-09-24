@@ -1,13 +1,24 @@
-import { View, Text, Pressable, Image } from 'react-native'
+import { View, Text, Pressable, Image, ActivityIndicator } from 'react-native'
 import '../global.css'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
+import { useEffect } from 'react'
 
-const index = () => {
+const Index = () => {
+  const router = useRouter()
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.push('/(tabs)/Home') 
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [router])
+
   return (
-    <View>
-      <Text className='text-4xl mt-20 text-center font-poppinsBold'>Screen Buttons</Text>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" color="#f57c00" />
     </View>
   )
 }
 
-export default index
+export default Index
