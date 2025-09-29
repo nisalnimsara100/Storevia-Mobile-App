@@ -3,6 +3,7 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Image } from "react-native"
 import { useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
+import React from "react"
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([
