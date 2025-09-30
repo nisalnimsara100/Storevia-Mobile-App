@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import * as React from 'react';
 import {
   Dimensions,
   FlatList,
@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 
+import { Link } from 'expo-router';
 import FlashSaleCard from '../components/FlashSaleCard';
 import ProductCard from '../components/ProductCard';
 
@@ -186,9 +187,11 @@ const Home = () => {
             <Text style={styles.searchButtonText}>Search</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.payButton}>
-          <Text style={styles.payText}>Pay</Text>
-        </TouchableOpacity>
+        <Link href={"/screen_navigation" as any} asChild>
+          <TouchableOpacity style={styles.payButton}>
+            <Text style={styles.payText}>Pay</Text>
+          </TouchableOpacity>
+        </Link>
       </View>
       <View style={styles.banner}>
         <Text style={styles.bannerText}>9.9 BIRTHDAY CART</Text>
