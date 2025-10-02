@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import * as React from 'react'
-import ActivityScreen from '../activity_screen'
+import ActivityScreen from '../activity_screen/TabScreen'
 
 const CheckoutScreen = () => {
   return (
