@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     fontFamily: "PoppinsBold",
   },
 
- 
+    
   tabRow: {
     flexDirection: "row",
     flexWrap: "wrap",
