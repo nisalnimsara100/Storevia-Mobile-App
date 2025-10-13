@@ -1,6 +1,6 @@
+import { router } from 'expo-router'
 import React, { useState } from 'react'
 import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
 // Mock chat data
 const mockChats = [
@@ -24,7 +24,10 @@ const ChatScreen = () => {
   }
 
   const handleChatPress = (chatId: string) => {
-    Alert.alert('Chat', `Opening chat with ${chats.find(c => c.id === chatId)?.username}`)
+    router.push({
+      pathname: '/screens/chat_screen/[chatId]',
+      params: { chatId }
+    })
   }
 
   // Toggle for testing - you can remove this in production
@@ -121,7 +124,7 @@ const ChatScreen = () => {
   )
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {hasChats ? (
         <View style={styles.chatListContainer}>
           <FlatList
@@ -139,7 +142,7 @@ const ChatScreen = () => {
       ) : (
         renderEmptyState()
       )}
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -325,6 +328,7 @@ const styles = StyleSheet.create({
   chatListContainer: {
     flex: 1,
     backgroundColor: '#F8F8F8',
+    marginTop: -1, // Pull content up slightly but give more space from header
   },
   chatList: {
     flex: 1,
