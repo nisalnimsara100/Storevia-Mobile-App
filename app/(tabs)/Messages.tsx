@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
   Alert,
   RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 
 // Import JSON data directly
 import messagesData from '../../data/messagesData.json';
@@ -170,7 +171,7 @@ const Messages: React.FC = () => {
   };
 
   const handleChatPress = (): void => {
-    Alert.alert('Chat', 'Opening chat functionality...');
+    router.push('/screens/chat_screen');
   };
 
   const handleOrdersPress = (): void => {
@@ -319,7 +320,7 @@ const Messages: React.FC = () => {
             <Ionicons name="mail-outline" size={60} color="#FF6B35" />
           </View>
           <Text style={styles.emptyStateText}>
-            Once you receive any personalized messages, you'll see them listed here.
+            Once you receive any personalized messages, you&apos;ll see them listed here.
           </Text>
           <TouchableOpacity style={styles.startShoppingButton} onPress={handleStartShopping}>
             <Text style={styles.startShoppingText}>START SHOPPING</Text>
