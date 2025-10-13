@@ -1,73 +1,144 @@
-import React from 'react'
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+// Mock chat data
+const mockChats = [
+  {
+    id: '1',
+    username: 'banana3C',
+    date: '01/02/2025',
+    message: 'Please tell us how you think of agent ...',
+    avatar: '🍌', // Using emoji as avatar for simplicity
+    isNew: true,
+  },
+]
+
 const ChatScreen = () => {
+  // State to control whether to show chats or empty state
+  const [hasChats, setHasChats] = useState(true) // Set to true to show chat list, false for empty state
+  const [chats, setChats] = useState(mockChats)
+
   const handleStartShopping = () => {
     Alert.alert('Shopping', 'Redirecting to shopping...')
   }
 
+  const handleChatPress = (chatId: string) => {
+    Alert.alert('Chat', `Opening chat with ${chats.find(c => c.id === chatId)?.username}`)
+  }
+
+  // Toggle for testing - you can remove this in production
+  const toggleChatState = () => {
+    setHasChats(!hasChats)
+  }
+
+  // Render chat list item
+  const renderChatItem = ({ item }: { item: typeof mockChats[0] }) => (
+    <TouchableOpacity style={styles.chatItem} onPress={() => handleChatPress(item.id)}>
+      <View style={styles.chatTopRow}>
+        <View style={styles.chatAvatar}>
+          <Text style={styles.chatAvatarText}>{item.avatar}</Text>
+        </View>
+        <View style={styles.chatContent}>
+          <Text style={styles.chatUsername}>{item.username}</Text>
+          <Text style={styles.chatDate}>{item.date}</Text>
+        </View>
+      </View>
+      <View style={styles.chatMessageContainer}>
+        <Text style={styles.chatMessageIcon}>💬</Text>
+        <Text style={styles.chatMessage} numberOfLines={1}>
+          {item.message}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  )
+
+  // Empty state component
+  const renderEmptyState = () => (
+    <View style={styles.content}>
+      {/* Empty State Illustration */}
+      <View style={styles.illustrationContainer}>
+        {/* Phone with question marks */}
+        <View style={styles.phoneContainer}>
+          <View style={styles.phone}>
+            <View style={styles.phoneScreen}>
+              <View style={styles.phoneHeader} />
+              <View style={styles.phoneBody} />
+            </View>
+          </View>
+          
+          {/* Question marks around phone */}
+          <View style={[styles.questionMark, styles.questionMark1]}>
+            <Text style={styles.questionMarkText}>?</Text>
+          </View>
+          <View style={[styles.questionMark, styles.questionMark2]}>
+            <Text style={styles.questionMarkText}>?</Text>
+          </View>
+          <View style={[styles.questionMark, styles.questionMark3]}>
+            <Text style={styles.questionMarkText}>?</Text>
+          </View>
+        </View>
+
+        {/* Mascot Character */}
+        <View style={styles.mascotContainer}>
+          <View style={styles.mascotBody}>
+            {/* Mascot head */}
+            <View style={styles.mascotHead}>
+              <View style={styles.mascotHair} />
+              <View style={styles.mascotFace}>
+                <View style={styles.mascotEye} />
+                <View style={styles.mascotEye} />
+                <View style={styles.mascotMouth} />
+              </View>
+            </View>
+            {/* Mascot shirt */}
+            <View style={styles.mascotShirt}>
+              <View style={styles.mascotLogo}>
+                <Text style={styles.mascotLogoText}>$</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Text Content */}
+      <View style={styles.textContainer}>
+        <Text style={styles.mainText}>
+          Once you receive a new message, you&apos;ll see it listed here
+        </Text>
+      </View>
+
+      {/* Start Shopping Button */}
+      <TouchableOpacity style={styles.startShoppingButton} onPress={handleStartShopping}>
+        <Text style={styles.startShoppingText}>START SHOPPING</Text>
+      </TouchableOpacity>
+
+      {/* Toggle button for testing - remove in production */}
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleChatState}>
+        <Text style={styles.toggleButtonText}>Show Chats (Test)</Text>
+      </TouchableOpacity>
+    </View>
+  )
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Main Content */}
-      <View style={styles.content}>
-        {/* Empty State Illustration */}
-        <View style={styles.illustrationContainer}>
-          {/* Phone with question marks */}
-          <View style={styles.phoneContainer}>
-            <View style={styles.phone}>
-              <View style={styles.phoneScreen}>
-                <View style={styles.phoneHeader} />
-                <View style={styles.phoneBody} />
-              </View>
-            </View>
-            
-            {/* Question marks around phone */}
-            <View style={[styles.questionMark, styles.questionMark1]}>
-              <Text style={styles.questionMarkText}>?</Text>
-            </View>
-            <View style={[styles.questionMark, styles.questionMark2]}>
-              <Text style={styles.questionMarkText}>?</Text>
-            </View>
-            <View style={[styles.questionMark, styles.questionMark3]}>
-              <Text style={styles.questionMarkText}>?</Text>
-            </View>
-          </View>
-
-          {/* Mascot Character */}
-          <View style={styles.mascotContainer}>
-            <View style={styles.mascotBody}>
-              {/* Mascot head */}
-              <View style={styles.mascotHead}>
-                <View style={styles.mascotHair} />
-                <View style={styles.mascotFace}>
-                  <View style={styles.mascotEye} />
-                  <View style={styles.mascotEye} />
-                  <View style={styles.mascotMouth} />
-                </View>
-              </View>
-              {/* Mascot shirt */}
-              <View style={styles.mascotShirt}>
-                <View style={styles.mascotLogo}>
-                  <Text style={styles.mascotLogoText}>$</Text>
-                </View>
-              </View>
-            </View>
-          </View>
+      {hasChats ? (
+        <View style={styles.chatListContainer}>
+          <FlatList
+            data={chats}
+            renderItem={renderChatItem}
+            keyExtractor={(item) => item.id}
+            style={styles.chatList}
+            showsVerticalScrollIndicator={false}
+          />
+          {/* Toggle button for testing - remove in production */}
+          <TouchableOpacity style={styles.toggleButtonFixed} onPress={toggleChatState}>
+            <Text style={styles.toggleButtonText}>Show Empty (Test)</Text>
+          </TouchableOpacity>
         </View>
-
-        {/* Text Content */}
-        <View style={styles.textContainer}>
-          <Text style={styles.mainText}>
-            Once you receive a new message, you&apos;ll see it listed here
-          </Text>
-        </View>
-
-        {/* Start Shopping Button */}
-        <TouchableOpacity style={styles.startShoppingButton} onPress={handleStartShopping}>
-          <Text style={styles.startShoppingText}>START SHOPPING</Text>
-        </TouchableOpacity>
-      </View>
+      ) : (
+        renderEmptyState()
+      )}
     </SafeAreaView>
   )
 }
@@ -249,6 +320,105 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  // Chat List Styles
+  chatListContainer: {
+    flex: 1,
+    backgroundColor: '#F8F8F8',
+  },
+  chatList: {
+    flex: 1,
+    paddingTop: 0,
+  },
+  chatItem: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginTop: 2,
+    marginBottom: 4,
+    borderRadius: 8,
+    padding: 12,
+    flexDirection: 'column',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  chatTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  chatAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFE0B2',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FF9800',
+  },
+  chatAvatarText: {
+    fontSize: 16,
+  },
+  chatContent: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  chatUsername: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333333',
+    marginBottom: 2,
+  },
+  chatDate: {
+    fontSize: 12,
+    color: '#999999',
+    marginBottom: 8,
+  },
+  chatMessageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 0,
+  },
+  chatMessageIcon: {
+    fontSize: 12,
+    marginRight: 6,
+  },
+  chatMessage: {
+    fontSize: 14,
+    color: '#666666',
+    flex: 1,
+  },
+  // Toggle buttons for testing - remove in production
+  toggleButton: {
+    marginTop: 20,
+    backgroundColor: '#FF6B35',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  toggleButtonFixed: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#FF6B35',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  toggleButtonText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 })
 
