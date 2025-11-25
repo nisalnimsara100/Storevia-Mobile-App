@@ -67,7 +67,7 @@ const ItemDetailsScreen = () => {
   
   return (
     <ScrollView style={styles.container}>
-      {/* Header with back button */}
+      {/* Header with back button and search bar */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -75,8 +75,28 @@ const ItemDetailsScreen = () => {
         >
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Product Details</Text>
-        <View style={styles.placeholder} />
+
+        <TouchableOpacity style={styles.searchBar} activeOpacity={0.8}>
+          <Ionicons name="search" size={18} color="#999" />
+          <Text style={styles.searchText}>Search in Storevia</Text>
+        </TouchableOpacity>
+
+        <View style={styles.headerIcons}>
+          <TouchableOpacity style={styles.iconButton}>
+            <Ionicons name="share-social-outline" size={20} color="#333" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.iconButton}>
+            <Ionicons name="cart-outline" size={20} color="#333" />
+            <View style={styles.cartBadge}>
+              <Text style={styles.cartBadgeText}>1</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.iconButton}>
+            <Ionicons name="ellipsis-vertical" size={20} color="#333" />
+          </TouchableOpacity>
+        </View>
       </View>
       
       {/* Product Image */}
@@ -150,8 +170,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    justifyContent: 'flex-start',
+    paddingHorizontal: 10,
     paddingTop: 50,
     paddingBottom: 16,
     backgroundColor: '#fff',
@@ -168,6 +188,47 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     width: 40,
+  },
+  searchBar: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1.5,
+    borderColor: '#fc8107',
+    borderRadius: 10,
+    height: 40,
+    paddingHorizontal: 12,
+    marginRight: 5,
+  },
+  searchText: {
+    marginLeft: 8,
+    color: '#000',
+    opacity: 0.8,
+  },
+  headerIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    marginLeft: 0,
+    padding: 8,
+  },
+  cartBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: '#ff5a00',
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cartBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
   imageContainer: {
     backgroundColor: '#f8f8f8',
