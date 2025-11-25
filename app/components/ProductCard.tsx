@@ -27,66 +27,112 @@ export default function ProductCard({ item }: { item: ProductItem }) {
   
   return (
     <TouchableOpacity
-      className="flex-1 bg-white rounded-xl m-1 p-2 shadow"
+      style={{
+        flex: 1,
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        margin: 4,
+        padding: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 2,
+      }}
       onPress={handleCardPress}
       activeOpacity={0.8}
     >
       {/* Image with badges overlay */}
-      <View className="relative">
+      <View style={{ position: 'relative' }}>
         <Image
           source={
             typeof item.image === 'string' ? { uri: item.image } : item.image
           }
-          className="w-full h-28 rounded-md"
+          style={{
+            width: '100%',
+            height: 112,
+            borderRadius: 6,
+          }}
           resizeMode="contain"
         />
 
         {/* Badges above image */}
-        <View className="absolute bottom-1 left-1 flex-row">
-          
-            <Text
-              className="text-[10px] bg-orange-100 text-orange-700 px-1 py-0.5 rounded mr-1"
-            >
-              FREE DELIVARY
-            </Text>
-         
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 4,
+            left: 4,
+            flexDirection: 'row',
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 10,
+              backgroundColor: '#fff3e0',
+              color: '#e65100',
+              paddingHorizontal: 4,
+              paddingVertical: 2,
+              borderRadius: 4,
+              marginRight: 4,
+            }}
+          >
+            FREE DELIVERY
+          </Text>
         </View>
       </View>
       {/* Title */}
       <Text
-        className="text-sm font-medium mt-2 text-gray-800"
+        style={{
+          fontSize: 14,
+          fontWeight: '500',
+          marginTop: 8,
+          color: '#333',
+        }}
         numberOfLines={2}
       >
         {item.name}
       </Text>
       {/* Price + Old Price + Discount */}
-      <View className="flex-row items-center mt-1">
-        <Text className="text-red-600 font-bold text-base">
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+        <Text style={{ color: '#d32f2f', fontWeight: 'bold', fontSize: 16 }}>
           Rs.{item.price}
         </Text>
-        <Text className="text-xs text-gray-400 line-through ml-1">
+        <Text style={{ fontSize: 12, color: '#999', textDecorationLine: 'line-through', marginLeft: 4 }}>
           Rs.{item.oldPrice}
         </Text>
-        <Text className="text-xs text-green-600 ml-1">-{item.discount}%</Text>
+        <Text style={{ fontSize: 12, color: '#388e3c', marginLeft: 4 }}>-{item.discount}%</Text>
       </View>
       {/* Rating + Sold */}
-      <Text className="text-xs text-gray-500 mt-1">
+      <Text
+        style={{
+          fontSize: 12,
+          color: '#666',
+          marginTop: 4,
+        }}
+      >
         ⭐ {item.rating} ({item.reviews}) | {item.sold} Sold
       </Text>
 
 
 
       {/* Badges */}
-      <View className="flex-row flex-wrap mt-1">
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 4 }}>
         {item.badges?.map((badge, i) => (
           <Text
             key={i}
-            className="text-[10px] bg-green-100 text-green-700 p-1 rounded mr-1 mb-3"
+            style={{
+              fontSize: 10,
+              backgroundColor: '#e8f5e9',
+              color: '#2e7d32',
+              padding: 4,
+              borderRadius: 4,
+              marginRight: 4,
+              marginBottom: 12,
+            }}
           >
             {badge}
-            {badge}{' '}
           </Text>
-        ))}{' '}
+        ))}
       </View>
     </TouchableOpacity>
   );
