@@ -1,7 +1,9 @@
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, Text, View, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 
 type FlashSaleItem = {
+  id: number;
   image: any;
   stock: number;
   price: number;
@@ -14,8 +16,21 @@ type FlashSaleCardProps = {
 };
 
 const FlashSaleCard: React.FC<FlashSaleCardProps> = ({ item }) => {
+  const router = useRouter();
+  
+  const handleCardPress = () => {
+    router.push({
+      pathname: '/screens/item_details',
+      params: { itemId: item.id.toString() }
+    });
+  };
+  
   return (
-    <View className="w-36 bg-white rounded-xl p-2 m-2 shadow">
+    <TouchableOpacity
+      className="w-36 bg-white rounded-xl p-2 m-2 shadow"
+      onPress={handleCardPress}
+      activeOpacity={0.8}
+    >
       <Image
         source={
           typeof item.image === 'string' ? { uri: item.image } : item.image
@@ -43,7 +58,7 @@ const FlashSaleCard: React.FC<FlashSaleCardProps> = ({ item }) => {
           -{item.discount}%
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

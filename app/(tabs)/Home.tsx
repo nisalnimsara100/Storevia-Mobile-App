@@ -245,7 +245,7 @@ const Home = () => {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  onPress={() => console.log(`${item.title} clicked`)} // handle click
+                  onPress={() => console.log(`${item.title} clicked`)} 
                   className="items-center mx-3"
                 >
                   <View className="bg-orange-200 p-4 rounded-2xl shadow-md w-20 h-20 flex items-center justify-center">

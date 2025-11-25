@@ -1,7 +1,9 @@
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, Text, View, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 
 interface ProductItem {
+  id: number;
   image: string | { uri: string };
   name: string;
   price: number;
@@ -14,8 +16,21 @@ interface ProductItem {
 }
 
 export default function ProductCard({ item }: { item: ProductItem }) {
+  const router = useRouter();
+  
+  const handleCardPress = () => {
+    router.push({
+      pathname: '/screens/item_details',
+      params: { itemId: item.id.toString() }
+    });
+  };
+  
   return (
-    <View className="flex-1 bg-white rounded-xl m-1 p-2 shadow">
+    <TouchableOpacity
+      className="flex-1 bg-white rounded-xl m-1 p-2 shadow"
+      onPress={handleCardPress}
+      activeOpacity={0.8}
+    >
       {/* Image with badges overlay */}
       <View className="relative">
         <Image
@@ -73,6 +88,6 @@ export default function ProductCard({ item }: { item: ProductItem }) {
           </Text>
         ))}{' '}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
