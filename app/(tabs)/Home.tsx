@@ -4,12 +4,12 @@ import {
   Dimensions,
   FlatList,
   Image,
+  ListRenderItem,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  ListRenderItem,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
@@ -17,6 +17,7 @@ import Swiper from 'react-native-swiper';
 import { Link } from 'expo-router';
 import FlashSaleCard from '../components/FlashSaleCard';
 import ProductCard from '../components/ProductCard';
+import { products } from '../../data/productsData';
 
 const { width } = Dimensions.get('window');
 
@@ -56,115 +57,9 @@ const Home = () => {
     },
   ];
 
-  const flashSaleItems = [
-    {
-      id: 1,
-      name: 'Cow & Gate',
-      image: require('../../assets/products/watch.jpg'),
-      price: 1730,
-      oldPrice: 2000,
-      discount: 14,
-      stock: 2,
-    },
-    {
-      id: 2,
-      name: 'Windows 11 Pro',
-      image: require('../../assets/products/laptop.jpg'),
-      price: 99,
-      oldPrice: 999,
-      discount: 90,
-      stock: 1,
-    },
-    {
-      id: 3,
-      name: 'Trinkle Razors',
-      image: require('../../assets/products/tab.jpg'),
-      price: 145,
-      oldPrice: 520,
-      discount: 72,
-      stock: 5,
-    },
-  ];
-  const products = [
-    {
-      id: 1,
-      name: 'Cow & Gate',
-      image: require('../../assets/products/watch.jpg'),
-      price: 1730,
-      oldPrice: 2000,
-      discount: 14,
-      stock: 2,
-      rating: 4,
-      reviews: 220,
-      sold: 100,
-      badges: ['Bestseller', 'Free Shipping'],
-    },
-    {
-      id: 2,
-      name: 'Windows 11 Pro',
-      image: require('../../assets/products/laptop.jpg'),
-      price: 99,
-      oldPrice: 999,
-      discount: 90,
-      stock: 1,
-      rating: 4,
-      reviews: 220,
-      sold: 100,
-      badges: ['Bestseller', 'Free Shipping'],
-    },
-    {
-      id: 3,
-      name: 'Trinkle Razors',
-      image: require('../../assets/products/tab.jpg'),
-      price: 145,
-      oldPrice: 520,
-      discount: 72,
-      stock: 5,
-      rating: 4.5,
-      reviews: 120,
-      sold: 300,
-      badges: ['Bestseller', 'Free Shipping'],
-    },
-    {
-      id: 4,
-      name: 'Cow & Gate',
-      image: require('../../assets/products/watch.jpg'),
-      price: 1730,
-      oldPrice: 2000,
-      discount: 14,
-      stock: 2,
-      rating: 4.5,
-      reviews: 120,
-      sold: 300,
-      badges: ['Bestseller', 'Free Shipping'],
-    },
-    {
-      id: 5,
-      name: 'Windows 11 Pro',
-      image: require('../../assets/products/laptop.jpg'),
-      price: 99,
-      oldPrice: 999,
-      discount: 90,
-      stock: 1,
-      rating: 4,
-      reviews: 220,
-      sold: 100,
-      badges: ['Bestseller', 'Free Shipping'],
-    },
-    {
-      id: 6,
-      name: 'Trinkle Razors',
-      image: require('../../assets/products/tab.jpg'),
-      price: 185,
-      oldPrice: 520,
-      discount: 72,
-      stock: 5,
-      rating: 4,
-      reviews: 220,
-      sold: 100,
-      badges: ['Bestseller', 'Free Shipping'],
-    },
-  ];
+  // Use the shared products data
+  // Use first 3 products for flash sale items
+  const flashSaleItems = products.slice(0, 3);
 
   // Create data items for the main list
   const listData = [
