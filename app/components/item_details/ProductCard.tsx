@@ -78,43 +78,73 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Product Info */}
       <View style={styles.infoContainer}>
         <View style={styles.productNameRow}>
-          <Text
-            style={styles.productName}
-            numberOfLines={titleExpanded ? undefined : 2}
-            onTextLayout={(e) => {
-              const lines = e.nativeEvent?.lines ?? [];
-              if (lines.length > 2 && !showTitleToggle) setShowTitleToggle(true);
-            }}
-          >
-            {product.name}
-          </Text>
-          {showTitleToggle ? (
-            <TouchableOpacity
-              onPress={() => setTitleExpanded((s) => !s)}
-              style={styles.titleToggle}
-              activeOpacity={0.7}
-            >
-              <Ionicons name={titleExpanded ? 'chevron-up' : 'chevron-down'} size={18} color="#666" />
-            </TouchableOpacity>
-          ) : null}
-        </View>
-        
-        {/* Badges */}
-        <View style={styles.badgesContainer}>
-          {product.badges?.map((badge, index) => (
-            <View key={index} style={styles.badge}>
-              <Text style={styles.badgeText}>{badge}</Text>
+          <View style={styles.titleArea}>
+            <View style={styles.titleRow}>
+              <Text
+                style={styles.productName}
+                numberOfLines={titleExpanded ? undefined : 2}
+                ellipsizeMode="tail"
+                onTextLayout={(e) => {
+                  const lines = e.nativeEvent?.lines ?? [];
+                  console.log('Text layout lines:', lines.length);
+                  if (lines.length > 2) {
+                    setShowTitleToggle(true);
+                  }
+                }}
+              >
+                {product.name}
+              </Text>
+              {(showTitleToggle || product.name.length > 50) && (
+                <TouchableOpacity
+                  onPress={() => setTitleExpanded((s) => !s)}
+                  style={styles.titleToggle}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name={titleExpanded ? 'chevron-up' : 'chevron-down'} size={18} color="#666" />
+                </TouchableOpacity>
+              )}
             </View>
-          ))}
+
+            <View style={styles.titleMetaRow}>
+              <View style={styles.ratingInfo}>
+                <View style={styles.ratingWithIcon}>
+                  <Ionicons name="star" size={13} color="#FFC107" />
+                  <Text style={styles.rating}>{product.rating?.toFixed?.(1) ?? product.rating}</Text>
+                </View>
+                <Text style={styles.reviews}>({product.reviews} reviews)</Text>
+                <Text style={styles.sold}>| {product.sold} sold</Text>
+              </View>
+              <View style={styles.iconButtons}>
+                <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
+                  <Ionicons name="heart-outline" size={25} color="#666" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
+                  <Ionicons name="share-outline" size={25} color="#666" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
         </View>
         
-        {/* Rating and Reviews */}
-        <View style={styles.ratingContainer}>
-          <Text style={styles.rating}>⭐ {product.rating}</Text>
-          <Text style={styles.reviews}>({product.reviews} reviews)</Text>
-          <Text style={styles.sold}>| {product.sold} sold</Text>
-        </View>
         
+
+        {/* Delivery / Return Info Card (matches screenshot) */}
+        <TouchableOpacity style={styles.infoCard} activeOpacity={0.85}>
+          <View style={styles.infoCardLeft}>
+            <View style={styles.infoCardIcon}>
+              <Ionicons name="checkmark-done-outline" size={14} color="#4a5568" />
+            </View>
+            <View style={styles.infoCardText}>
+              <Text style={styles.infoCardTitle}>14 days easy return · Warranty · Installment</Text>
+              <Text style={styles.infoCardSubtitle}>Guaranteed by 29 Nov-5 Dec</Text>
+            </View>
+          </View>
+          <View style={styles.infoCardRight}>
+            <Text style={styles.infoCardRightPrice}>Rs. 308</Text>
+            <Ionicons name="chevron-forward" size={18} color="#999" />
+          </View>
+        </TouchableOpacity>
+
         {/* Price */}
         <View style={styles.priceContainer}>
           <Text style={styles.price}>Rs.{product.price}</Text>
@@ -232,20 +262,110 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
   },
   productName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#222',
+    lineHeight: 18,
+    flex: 1,
+    flexShrink: 1,
+    marginRight: 3,
   },
   productNameRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 4,
+  },
+  titleArea: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+  titleRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  titleMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 6,
+  },
+  ratingInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  ratingWithIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 4,
+  },
+  iconButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    padding: 4,
+    marginLeft: 4,
   },
   titleToggle: {
-    marginLeft: 8,
+    marginLeft: 4,
     padding: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  infoCard: {
+    width: '100%',
+    backgroundColor: '#f6f8fa',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  infoCardLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  infoCardIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  infoCardText: {
+    flex: 1,
+  },
+  infoCardTitle: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  infoCardSubtitle: {
+    fontSize: 12,
+    color: '#666',
+  },
+  infoCardRight: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    marginLeft: 12,
+  },
+  infoCardRightPrice: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 2,
   },
   badgesContainer: {
     flexDirection: 'row',
@@ -271,20 +391,21 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   rating: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '500',
     color: '#333',
-    marginRight: 8,
+    marginLeft: 3,
   },
   reviews: {
     fontSize: 14,
     color: '#666',
-    marginRight: 8,
+    marginRight: 5,
   },
   sold: {
     fontSize: 14,
     color: '#666',
   },
+  
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'center',

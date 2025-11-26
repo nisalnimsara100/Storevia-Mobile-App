@@ -1,10 +1,10 @@
 export const products = [
   {
     id: 1,
-    name: 'Cow & Gate',
-    image: require('../assets/products/watch.jpg'),
+    name: 'Cow & Gate Baby Watch check for long text wrapping in product name display view component',
+    image: require('../assets/products/wallet.png'),
     images: [
-      require('../assets/products/watch.jpg'),
+      require('../assets/products/wallet.png'),
       require('../assets/products/phone.jpg'),
       require('../assets/products/tab.jpg')
     ],
