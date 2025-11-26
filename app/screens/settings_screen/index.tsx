@@ -7,7 +7,8 @@ import CountryPicker from 'react-native-country-picker-modal';
 import MenuItem from '../../components/MenuItem';
 
 const SettingsScreen = () => {
-  const [countryCode, setCountryCode] = useState<import('react-native-country-picker-modal').CountryCode>('LK');
+  const [countryCode, setCountryCode] =
+    useState<import('react-native-country-picker-modal').CountryCode>('LK');
   const [visible, setVisible] = useState(false);
   const router = useRouter();
   return (
@@ -52,7 +53,7 @@ const SettingsScreen = () => {
           />
         )}
         <MenuItem
-          title="සිංහල භාෂාවට වෙනස් කරන්න"
+          title="භාෂාව - Language"
           subtitle="English is your current language"
         />
         <MenuItem title="Account Security" />
