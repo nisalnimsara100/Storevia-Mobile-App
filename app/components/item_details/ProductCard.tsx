@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
   },
   productName: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '700',
     color: '#222',
     lineHeight: 28,
