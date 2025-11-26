@@ -82,16 +82,19 @@ export default function ProductCard({ product }: ProductCardProps) {
             <View style={styles.titleRow}>
               <Text
                 style={styles.productName}
-                numberOfLines={titleExpanded ? undefined : 1}
+                numberOfLines={titleExpanded ? undefined : 2}
                 ellipsizeMode="tail"
                 onTextLayout={(e) => {
                   const lines = e.nativeEvent?.lines ?? [];
-                  if (lines.length > 1 && !showTitleToggle) setShowTitleToggle(true);
+                  console.log('Text layout lines:', lines.length);
+                  if (lines.length > 2) {
+                    setShowTitleToggle(true);
+                  }
                 }}
               >
                 {product.name}
               </Text>
-              {showTitleToggle ? (
+              {(showTitleToggle || product.name.length > 50) && (
                 <TouchableOpacity
                   onPress={() => setTitleExpanded((s) => !s)}
                   style={styles.titleToggle}
@@ -99,13 +102,13 @@ export default function ProductCard({ product }: ProductCardProps) {
                 >
                   <Ionicons name={titleExpanded ? 'chevron-up' : 'chevron-down'} size={18} color="#666" />
                 </TouchableOpacity>
-              ) : null}
+              )}
             </View>
 
             <View style={styles.titleMetaRow}>
               <View style={styles.ratingInfo}>
                 <View style={styles.ratingWithIcon}>
-                  <Ionicons name="star" size={16} color="#FFC107" />
+                  <Ionicons name="star" size={13} color="#FFC107" />
                   <Text style={styles.rating}>{product.rating?.toFixed?.(1) ?? product.rating}</Text>
                 </View>
                 <Text style={styles.reviews}>({product.reviews} reviews)</Text>
@@ -113,10 +116,10 @@ export default function ProductCard({ product }: ProductCardProps) {
               </View>
               <View style={styles.iconButtons}>
                 <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
-                  <Ionicons name="heart-outline" size={20} color="#666" />
+                  <Ionicons name="heart-outline" size={25} color="#666" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
-                  <Ionicons name="share-outline" size={20} color="#666" />
+                  <Ionicons name="share-outline" size={25} color="#666" />
                 </TouchableOpacity>
               </View>
             </View>
@@ -251,19 +254,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
   },
   productName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
     color: '#222',
-    lineHeight: 28,
+    lineHeight: 18,
     flex: 1,
     flexShrink: 1,
-    marginRight: 8,
+    marginRight: 3,
   },
   productNameRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   titleArea: {
     flex: 1,
@@ -291,7 +294,7 @@ const styles = StyleSheet.create({
   ratingWithIcon: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 8,
+    marginRight: 4,
   },
   iconButtons: {
     flexDirection: 'row',
@@ -331,15 +334,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   rating: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '500',
     color: '#333',
-    marginLeft: 4,
+    marginLeft: 3,
   },
   reviews: {
     fontSize: 14,
     color: '#666',
-    marginRight: 8,
+    marginRight: 5,
   },
   sold: {
     fontSize: 14,
