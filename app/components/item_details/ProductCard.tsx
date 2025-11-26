@@ -1,6 +1,6 @@
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Swiper from 'react-native-swiper';
 
 interface ProductCardProps {
@@ -22,6 +22,8 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [titleExpanded, setTitleExpanded] = useState(false);
+  const [showTitleToggle, setShowTitleToggle] = useState(false);
   const totalImages = product.images?.length ?? 1;
   
   const images = product.images && product.images.length > 0
@@ -75,7 +77,27 @@ export default function ProductCard({ product }: ProductCardProps) {
       
       {/* Product Info */}
       <View style={styles.infoContainer}>
-        <Text style={styles.productName}>{product.name}</Text>
+        <View style={styles.productNameRow}>
+          <Text
+            style={styles.productName}
+            numberOfLines={titleExpanded ? undefined : 2}
+            onTextLayout={(e) => {
+              const lines = e.nativeEvent?.lines ?? [];
+              if (lines.length > 2 && !showTitleToggle) setShowTitleToggle(true);
+            }}
+          >
+            {product.name}
+          </Text>
+          {showTitleToggle ? (
+            <TouchableOpacity
+              onPress={() => setTitleExpanded((s) => !s)}
+              style={styles.titleToggle}
+              activeOpacity={0.7}
+            >
+              <Ionicons name={titleExpanded ? 'chevron-up' : 'chevron-down'} size={18} color="#666" />
+            </TouchableOpacity>
+          ) : null}
+        </View>
         
         {/* Badges */}
         <View style={styles.badgesContainer}>
@@ -214,6 +236,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 8,
+  },
+  productNameRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  titleToggle: {
+    marginLeft: 8,
+    padding: 4,
   },
   badgesContainer: {
     flexDirection: 'row',
