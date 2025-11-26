@@ -78,25 +78,49 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Product Info */}
       <View style={styles.infoContainer}>
         <View style={styles.productNameRow}>
-          <Text
-            style={styles.productName}
-            numberOfLines={titleExpanded ? undefined : 2}
-            onTextLayout={(e) => {
-              const lines = e.nativeEvent?.lines ?? [];
-              if (lines.length > 2 && !showTitleToggle) setShowTitleToggle(true);
-            }}
-          >
-            {product.name}
-          </Text>
-          {showTitleToggle ? (
-            <TouchableOpacity
-              onPress={() => setTitleExpanded((s) => !s)}
-              style={styles.titleToggle}
-              activeOpacity={0.7}
-            >
-              <Ionicons name={titleExpanded ? 'chevron-up' : 'chevron-down'} size={18} color="#666" />
-            </TouchableOpacity>
-          ) : null}
+          <View style={styles.titleArea}>
+            <View style={styles.titleRow}>
+              <Text
+                style={styles.productName}
+                numberOfLines={titleExpanded ? undefined : 1}
+                ellipsizeMode="tail"
+                onTextLayout={(e) => {
+                  const lines = e.nativeEvent?.lines ?? [];
+                  if (lines.length > 1 && !showTitleToggle) setShowTitleToggle(true);
+                }}
+              >
+                {product.name}
+              </Text>
+              {showTitleToggle ? (
+                <TouchableOpacity
+                  onPress={() => setTitleExpanded((s) => !s)}
+                  style={styles.titleToggle}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name={titleExpanded ? 'chevron-up' : 'chevron-down'} size={18} color="#666" />
+                </TouchableOpacity>
+              ) : null}
+            </View>
+
+            <View style={styles.titleMetaRow}>
+              <View style={styles.ratingInfo}>
+                <View style={styles.ratingWithIcon}>
+                  <Ionicons name="star" size={16} color="#FFC107" />
+                  <Text style={styles.rating}>{product.rating?.toFixed?.(1) ?? product.rating}</Text>
+                </View>
+                <Text style={styles.reviews}>({product.reviews} reviews)</Text>
+                <Text style={styles.sold}>| {product.sold} sold</Text>
+              </View>
+              <View style={styles.iconButtons}>
+                <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
+                  <Ionicons name="heart-outline" size={20} color="#666" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
+                  <Ionicons name="share-outline" size={20} color="#666" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
         </View>
         
         {/* Badges */}
@@ -107,13 +131,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             </View>
           ))}
         </View>
-        
-        {/* Rating and Reviews */}
-        <View style={styles.ratingContainer}>
-          <Text style={styles.rating}>⭐ {product.rating}</Text>
-          <Text style={styles.reviews}>({product.reviews} reviews)</Text>
-          <Text style={styles.sold}>| {product.sold} sold</Text>
-        </View>
+
+        {/* (rating/sold moved into title area) */}
         
         {/* Price */}
         <View style={styles.priceContainer}>
@@ -232,20 +251,61 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
   },
   productName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#222',
+    lineHeight: 28,
+    flex: 1,
+    flexShrink: 1,
+    marginRight: 8,
   },
   productNameRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 8,
   },
-  titleToggle: {
-    marginLeft: 8,
+  titleArea: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+  titleRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  titleMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 6,
+  },
+  ratingInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  ratingWithIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  iconButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
     padding: 4,
+    marginLeft: 4,
+  },
+  titleToggle: {
+    marginLeft: 4,
+    padding: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   badgesContainer: {
     flexDirection: 'row',
@@ -274,7 +334,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    marginRight: 8,
+    marginLeft: 4,
   },
   reviews: {
     fontSize: 14,
@@ -285,6 +345,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
+  
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
