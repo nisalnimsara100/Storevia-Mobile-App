@@ -126,17 +126,25 @@ export default function ProductCard({ product }: ProductCardProps) {
           </View>
         </View>
         
-        {/* Badges */}
-        <View style={styles.badgesContainer}>
-          {product.badges?.map((badge, index) => (
-            <View key={index} style={styles.badge}>
-              <Text style={styles.badgeText}>{badge}</Text>
-            </View>
-          ))}
-        </View>
-
-        {/* (rating/sold moved into title area) */}
         
+
+        {/* Delivery / Return Info Card (matches screenshot) */}
+        <TouchableOpacity style={styles.infoCard} activeOpacity={0.85}>
+          <View style={styles.infoCardLeft}>
+            <View style={styles.infoCardIcon}>
+              <Ionicons name="checkmark-done-outline" size={14} color="#4a5568" />
+            </View>
+            <View style={styles.infoCardText}>
+              <Text style={styles.infoCardTitle}>14 days easy return · Warranty · Installment</Text>
+              <Text style={styles.infoCardSubtitle}>Guaranteed by 29 Nov-5 Dec</Text>
+            </View>
+          </View>
+          <View style={styles.infoCardRight}>
+            <Text style={styles.infoCardRightPrice}>Rs. 308</Text>
+            <Ionicons name="chevron-forward" size={18} color="#999" />
+          </View>
+        </TouchableOpacity>
+
         {/* Price */}
         <View style={styles.priceContainer}>
           <Text style={styles.price}>Rs.{product.price}</Text>
@@ -309,6 +317,55 @@ const styles = StyleSheet.create({
     padding: 4,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  infoCard: {
+    width: '100%',
+    backgroundColor: '#f6f8fa',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  infoCardLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  infoCardIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  infoCardText: {
+    flex: 1,
+  },
+  infoCardTitle: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  infoCardSubtitle: {
+    fontSize: 12,
+    color: '#666',
+  },
+  infoCardRight: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    marginLeft: 12,
+  },
+  infoCardRightPrice: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 2,
   },
   badgesContainer: {
     flexDirection: 'row',
