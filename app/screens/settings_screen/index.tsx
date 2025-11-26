@@ -23,7 +23,13 @@ const SettingsScreen = () => {
       </View>
 
       <ScrollView className="flex-1 mt-5">
-        <MenuItem title="Account Information" />
+        <MenuItem
+          title="Account Information"
+          onPress={() =>
+            router.push('/screens/settings_screen/AccountInformaton')
+          }
+        />
+
         <MenuItem title="Address Book" />
         <MenuItem
           title="Messages"
