@@ -14,6 +14,11 @@ const ItemDetailsScreen = () => {
       id: 1,
       name: 'Cow & Gate',
       image: require('../../../assets/products/watch.jpg'),
+      images: [
+        require('../../../assets/products/watch.jpg'),
+        require('../../../assets/products/phone.jpg'),
+        require('../../../assets/products/tab.jpg')
+      ],
       price: 1730,
       oldPrice: 2000,
       discount: 14,
@@ -28,6 +33,11 @@ const ItemDetailsScreen = () => {
       id: 2,
       name: 'Windows 11 Pro',
       image: require('../../../assets/products/laptop.jpg'),
+      images: [
+        require('../../../assets/products/laptop.jpg'),
+        require('../../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg'),
+        require('../../../assets/products/phone.jpg')
+      ],
       price: 99,
       oldPrice: 999,
       discount: 90,
@@ -42,6 +52,11 @@ const ItemDetailsScreen = () => {
       id: 3,
       name: 'Trinkle Razors',
       image: require('../../../assets/products/tab.jpg'),
+      images: [
+        require('../../../assets/products/tab.jpg'),
+        require('../../../assets/products/watch.jpg'),
+        require('../../../assets/products/laptop.jpg')
+      ],
       price: 145,
       oldPrice: 520,
       discount: 72,
@@ -65,7 +80,12 @@ const ItemDetailsScreen = () => {
   }
   
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      bounces={false}
+      overScrollMode="never"
+      showsVerticalScrollIndicator={true}
+    >
       <ProductCard product={product} />
 
       <View style={styles.sectionContainer}>
@@ -85,6 +105,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF4EAFF',
+    paddingHorizontal: 0,
   },
   errorText: {
     fontSize: 18,

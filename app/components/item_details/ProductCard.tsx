@@ -1,6 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import Swiper from 'react-native-swiper';
 
 interface ProductCardProps {
   product: {
@@ -20,15 +21,35 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const totalImages = product.images?.length ?? 1;
+  
+  const images = product.images && product.images.length > 0
+    ? product.images
+    : [product.image];
+
   return (
-    <View>
+    <View style={styles.container}>
       {/* Product Image */}
       <View style={styles.imageContainer}>
-        <Image
-          source={product.images && product.images.length ? product.images[0] : product.image}
-          style={styles.productImage}
-          resizeMode="cover"
-        />
+        <Swiper
+          style={styles.wrapper}
+          loop={false}
+          showsButtons={false}
+          showsPagination={false}
+          bounces={false}
+          onIndexChanged={(index) => setCurrentImageIndex(index)}
+        >
+          {images.map((image, index) => (
+            <View key={index} style={styles.slide}>
+              <Image
+                source={image}
+                style={styles.productImage}
+                resizeMode="cover"
+              />
+            </View>
+          ))}
+        </Swiper>
 
         {/* Free Delivery badge (left-bottom) */}
         <View style={styles.freeBadgeWrapper} pointerEvents="none">
@@ -47,7 +68,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Photo count (right-bottom) */}
         <View style={styles.photoCountWrapper} pointerEvents="none">
           <View style={styles.photoCountBubble}>
-            <Text style={styles.photoCountText}>{`1/${product.images?.length ?? 1}`}</Text>
+            <Text style={styles.photoCountText}>{`${currentImageIndex + 1}/${totalImages}`}</Text>
           </View>
         </View>
       </View>
@@ -94,17 +115,36 @@ export default function ProductCard({ product }: ProductCardProps) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginHorizontal: 0,
+    paddingHorizontal: 0,
+  },
   imageContainer: {
     backgroundColor: '#f8f8f8',
-    padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 350,
+    width: '100%',
+    aspectRatio: 1, 
+    position: 'relative',
+  },
+  wrapper: {
+    margin: 0,
+    padding: 0,
+  },
+  slide: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    margin: 0,
+    padding: 0,
   },
   productImage: {
-    width: 250,
-    height: 250,
+    width: '100%',
+    height: '100%',
     borderRadius: 6,
+    resizeMode: 'contain', // Ensures the entire image fits within the container
   },
   freeBadgeWrapper: {
     position: 'absolute',
@@ -167,6 +207,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     padding: 16,
     backgroundColor: '#fff',
+    marginHorizontal: 0,
   },
   productName: {
     fontSize: 20,
