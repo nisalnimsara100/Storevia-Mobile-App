@@ -13,9 +13,9 @@ const ItemDetailsScreen = () => {
     {
       id: 1,
       name: 'Cow & Gate',
-      image: require('../../../assets/products/watch.jpg'),
+      image: require('../../../assets/products/wallet.png'),
       images: [
-        require('../../../assets/products/watch.jpg'),
+        require('../../../assets/products/wallet.png'),
         require('../../../assets/products/phone.jpg'),
         require('../../../assets/products/tab.jpg')
       ],
