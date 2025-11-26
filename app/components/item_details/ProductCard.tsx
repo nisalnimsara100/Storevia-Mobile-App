@@ -1,9 +1,11 @@
+import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 interface ProductCardProps {
   product: {
     image: any;
+    images?: any[];
     name: string;
     badges?: string[];
     rating?: number;
@@ -23,10 +25,31 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Product Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={product.image}
+          source={product.images && product.images.length ? product.images[0] : product.image}
           style={styles.productImage}
-          resizeMode="contain"
+          resizeMode="cover"
         />
+
+        {/* Free Delivery badge (left-bottom) */}
+        <View style={styles.freeBadgeWrapper} pointerEvents="none">
+            <View style={styles.freeBadge}>
+              <View style={styles.freeIcon}>
+                <FontAwesome name="truck" size={12} color="rgba(55, 121, 101, 1)" />
+              </View>
+              <Text style={styles.freeBadgeText}>FAST DELIVERY</Text>
+            </View>
+          {/** Example voucher pill next to it (kept visually similar to screenshot) */}
+          {/* <View style={styles.voucherPill} pointerEvents="none">
+            <Text style={styles.voucherText}>VOUCHER MAX</Text>
+          </View> */}
+        </View>
+
+        {/* Photo count (right-bottom) */}
+        <View style={styles.photoCountWrapper} pointerEvents="none">
+          <View style={styles.photoCountBubble}>
+            <Text style={styles.photoCountText}>{`1/${product.images?.length ?? 1}`}</Text>
+          </View>
+        </View>
       </View>
       
       {/* Product Info */}
@@ -76,12 +99,70 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 300,
+    height: 350,
   },
   productImage: {
-    width: '100%',
-    height: '100%',
-    maxWidth: 250,
+    width: 250,
+    height: 250,
+    borderRadius: 6,
+  },
+  freeBadgeWrapper: {
+    position: 'absolute',
+    bottom: 12,
+    left: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  freeBadge: {
+    backgroundColor: 'rgba(55, 121, 101)',
+    paddingHorizontal: 5,
+    paddingVertical: 6,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  freeIcon: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 3,
+  },
+  freeBadgeText: {
+    color: '#fff',
+    fontWeight: '700',
+    letterSpacing: -0.5,
+    fontSize: 12,
+  },
+  voucherPill: {
+    marginLeft: 8,
+    backgroundColor: '#ff2d78',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  voucherText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 12,
+  },
+  photoCountWrapper: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+  },
+  photoCountBubble: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  photoCountText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
   },
   infoContainer: {
     padding: 16,
