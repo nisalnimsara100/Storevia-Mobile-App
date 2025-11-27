@@ -6,6 +6,8 @@ import React from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { products } from '../../../data/productsData'
 import Ratings from '@/app/components/item_details/Ratings'
+import ProductDetails from '@/app/components/item_details/ProductDetails'
+import MoreFromStore from '@/app/components/item_details/MoreFromStore'
 
 const ItemDetailsScreen = () => {
   const { itemId } = useLocalSearchParams();
@@ -39,6 +41,14 @@ const ItemDetailsScreen = () => {
 
       <View style={styles.sectionContainer}>
         <Ratings />
+      </View>
+
+      <View style={styles.sectionContainer}>
+        <MoreFromStore />
+      </View>
+
+      <View style={styles.sectionContainer}>
+        <ProductDetails />
       </View>
     </ScrollView>
   );
