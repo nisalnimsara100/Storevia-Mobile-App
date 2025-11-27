@@ -16,7 +16,7 @@ import Swiper from 'react-native-swiper';
 
 import { Link } from 'expo-router';
 import FlashSaleCard from '../components/FlashSaleCard';
-import ProductCard from '../components/ProductCard';
+import LargeProductTile from '../components/LargeProductTile';
 import { products } from '../../data/productsData';
 
 const { width } = Dimensions.get('window');
@@ -221,7 +221,7 @@ const Home = () => {
               data={products}
               keyExtractor={(item) => item.id.toString()}
               numColumns={2}
-              renderItem={({ item }) => <ProductCard item={item} />}
+              renderItem={({ item }) => <LargeProductTile item={item} />}
               showsVerticalScrollIndicator={false}
               scrollEnabled={false} // Disable scrolling for nested FlatList
             />
@@ -336,18 +336,18 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#FFF4EAFF',
+    backgroundColor: '#fff',
   },
   saleContent: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#FFF4EAFF',
+    backgroundColor: '#fff',
     marginBottom: 30,
   },
   productContent: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#FFF4EAFF',
+    backgroundColor: '#fff',
     marginBottom: 80,
   },
   banner: {
