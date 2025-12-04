@@ -2,7 +2,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
 import { useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import CountryPicker from 'react-native-country-picker-modal';
 import MenuItem from '../../components/MenuItem';
 
@@ -11,6 +17,15 @@ const SettingsScreen = () => {
     useState<import('react-native-country-picker-modal').CountryCode>('LK');
   const [visible, setVisible] = useState(false);
   const router = useRouter();
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
   return (
     <View className="flex-1 bg-gray-100 mt-[50px]">
       <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-200 bg-white">
@@ -22,7 +37,12 @@ const SettingsScreen = () => {
         remove--
       </View>
 
-      <ScrollView className="flex-1 mt-5">
+      <ScrollView
+        className="flex-1 mt-5"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <MenuItem
           title="Account Information"
           onPress={() =>
