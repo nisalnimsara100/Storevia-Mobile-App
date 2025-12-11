@@ -27,7 +27,7 @@ const SettingsScreen = () => {
     }, 2000);
   }, []);
   return (
-    <View className="flex-1 bg-gray-100 mt-[50px]">
+    <View className="flex-1 bg-gray-100 mt-[10%]">
       <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-200 bg-white">
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="black" />
@@ -50,7 +50,10 @@ const SettingsScreen = () => {
           }
         />
 
-        <MenuItem title="Address Book" />
+        <MenuItem
+          title="Address Book"
+          onPress={() => router.push('/screens/settings_screen/AddressBook')}
+        />
         <MenuItem
           title="Messages"
           subtitle="Receive exclusive offers and personal updates"
@@ -83,9 +86,18 @@ const SettingsScreen = () => {
           subtitle="English is your current language"
         />
         <MenuItem title="Account Security" />
-        <MenuItem title="Policies" />
-        <MenuItem title="Help" />
-        <MenuItem title="Feedback" />
+        <MenuItem
+          title="Policies"
+          onPress={() => router.push('/screens/settings_screen/Policies')}
+        />
+        <MenuItem
+          title="Help"
+          onPress={() => router.push('/screens/settings_screen/Help')}
+        />
+        <MenuItem
+          title="Feedback"
+          onPress={() => router.push('/screens/settings_screen/Feedback')}
+        />
 
         {/* Logout */}
         <TouchableOpacity
