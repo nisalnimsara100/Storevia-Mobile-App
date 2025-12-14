@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
 import { useLocalSearchParams } from 'expo-router'
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   Alert,
   Animated,
@@ -234,7 +234,7 @@ const ChatConversation = () => {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={'padding'}
       keyboardVerticalOffset={keyboardOffset}
       enabled
     >
