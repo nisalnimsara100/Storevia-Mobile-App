@@ -15,7 +15,7 @@ interface ProductItem {
   sold?: number;
 }
 
-export default function ProductCard({ item }: { item: ProductItem }) {
+export default function LargeProductTile({ item }: { item: ProductItem }) {
   const router = useRouter();
   
   const handleCardPress = () => {
@@ -33,11 +33,6 @@ export default function ProductCard({ item }: { item: ProductItem }) {
         borderRadius: 12,
         margin: 4,
         padding: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        elevation: 2,
       }}
       onPress={handleCardPress}
       activeOpacity={0.8}

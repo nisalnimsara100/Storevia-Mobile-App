@@ -2,16 +2,32 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
 import { useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import CountryPicker from 'react-native-country-picker-modal';
 import MenuItem from '../../components/MenuItem';
 
 const SettingsScreen = () => {
-  const [countryCode, setCountryCode] = useState<import('react-native-country-picker-modal').CountryCode>('LK');
+  const [countryCode, setCountryCode] =
+    useState<import('react-native-country-picker-modal').CountryCode>('LK');
   const [visible, setVisible] = useState(false);
   const router = useRouter();
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
   return (
-    <View className="flex-1 bg-gray-100 mt-[50px]">
+    <View className="flex-1 bg-gray-100 mt-[10%]">
       <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-200 bg-white">
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="black" />
@@ -21,9 +37,23 @@ const SettingsScreen = () => {
         remove--
       </View>
 
-      <ScrollView className="flex-1 mt-5">
-        <MenuItem title="Account Information" />
-        <MenuItem title="Address Book" />
+      <ScrollView
+        className="flex-1 mt-5"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <MenuItem
+          title="Account Information"
+          onPress={() =>
+            router.push('/screens/settings_screen/AccountInformaton')
+          }
+        />
+
+        <MenuItem
+          title="Address Book"
+          onPress={() => router.push('/screens/settings_screen/AddressBook')}
+        />
         <MenuItem
           title="Messages"
           subtitle="Receive exclusive offers and personal updates"
@@ -52,13 +82,22 @@ const SettingsScreen = () => {
           />
         )}
         <MenuItem
-          title="සිංහල භාෂාවට වෙනස් කරන්න"
+          title="භාෂාව - Language"
           subtitle="English is your current language"
         />
         <MenuItem title="Account Security" />
-        <MenuItem title="Policies" />
-        <MenuItem title="Help" />
-        <MenuItem title="Feedback" />
+        <MenuItem
+          title="Policies"
+          onPress={() => router.push('/screens/settings_screen/Policies')}
+        />
+        <MenuItem
+          title="Help"
+          onPress={() => router.push('/screens/settings_screen/Help')}
+        />
+        <MenuItem
+          title="Feedback"
+          onPress={() => router.push('/screens/settings_screen/Feedback')}
+        />
 
         {/* Logout */}
         <TouchableOpacity
