@@ -1,21 +1,21 @@
 import { Ionicons } from '@expo/vector-icons'
 import { useLocalSearchParams } from 'expo-router'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import {
-    Alert,
-    Animated,
-    FlatList,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View
+  Alert,
+  Animated,
+  FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 // Demo messages
 const demoMessages = [
@@ -56,6 +56,10 @@ const ChatConversation = () => {
   const [showAttachments, setShowAttachments] = useState(false)
   const [showEmojis, setShowEmojis] = useState(false)
   const slideAnim = useRef(new Animated.Value(0)).current
+  const insets = useSafeAreaInsets()
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
+  const flatListRef = useRef<FlatList<any> | null>(null)
 
   const handleSendMessage = () => {
     if (inputText.trim()) {
@@ -71,28 +75,60 @@ const ChatConversation = () => {
   }
 
   const toggleAttachments = () => {
+    Keyboard.dismiss()
     setShowEmojis(false)
-    setShowAttachments(!showAttachments)
-    Animated.timing(slideAnim, {
-      toValue: showAttachments ? 0 : 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start()
+    setShowAttachments((prev) => {
+      const next = !prev
+      Animated.timing(slideAnim, {
+        toValue: next ? 1 : 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start()
+      return next
+    })
   }
 
   const toggleEmojis = () => {
+    Keyboard.dismiss()
     setShowAttachments(false)
-    setShowEmojis(!showEmojis)
-    Animated.timing(slideAnim, {
-      toValue: showEmojis ? 0 : 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start()
+    setShowEmojis((prev) => {
+      const next = !prev
+      Animated.timing(slideAnim, {
+        toValue: next ? 1 : 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start()
+      return next
+    })
   }
 
   const handleEmojiPress = (emoji: string) => {
     setInputText(inputText + emoji)
   }
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', (e) => {
+      setIsKeyboardVisible(true)
+      setKeyboardHeight(e.endCoordinates ? e.endCoordinates.height : 0)
+      // scroll to bottom when keyboard opens
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true })
+      }, 100)
+    })
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => {
+      setIsKeyboardVisible(false)
+      setKeyboardHeight(0)
+      // ensure input bar remains visible after keyboard hides
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true })
+      }, 100)
+    })
+
+    return () => {
+      showSub.remove()
+      hideSub.remove()
+    }
+  }, [])
 
   const handleAttachmentPress = (option: typeof attachmentOptions[0]) => {
     setShowAttachments(false)
@@ -187,26 +223,40 @@ const ChatConversation = () => {
     setShowEmojis(false)
   }
 
+  const bottomPadding = Math.max(insets.bottom, 8)
+  // space for input + optional menus; keep conservative values so input won't be pushed offscreen
+  const baseInputSpace = 80
+  const emojiMenuSpace = 260
+  const attachmentMenuSpace = 260
+  const messagePaddingBottom = (showAttachments ? attachmentMenuSpace : showEmojis ? emojiMenuSpace : baseInputSpace) + bottomPadding
+  const keyboardOffset = Platform.OS === 'ios' ? insets.top + 48 : 0
+
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 20}
-        enabled={true}
-      >
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={keyboardOffset}
+      enabled
+    >
+      <SafeAreaView style={styles.container}>
         {/* Messages List */}
         <TouchableWithoutFeedback onPress={dismissKeyboardAndMenus}>
           <View style={styles.chatArea}>
             <FlatList
+              ref={(r) => { flatListRef.current = r }}
               data={messages}
               renderItem={renderMessage}
               keyExtractor={(item) => item.id}
               style={styles.messagesList}
-              contentContainerStyle={styles.messagesContent}
+              contentContainerStyle={[styles.messagesContent, { paddingBottom: messagePaddingBottom }]}
+              keyboardShouldPersistTaps="handled"
               onScrollBeginDrag={() => {
                 setShowAttachments(false)
                 setShowEmojis(false)
+              }}
+              onContentSizeChange={() => {
+                // always keep scrolled to end when content changes
+                setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 50)
               }}
             />
           </View>
@@ -221,41 +271,58 @@ const ChatConversation = () => {
           </View>
 
           {/* Input Area - This stays on top of menus */}
-          <View style={styles.inputContainer}>
-          <TouchableOpacity 
-            style={[styles.inputButton, showAttachments && styles.inputButtonActive]}
-            onPress={toggleAttachments}
-          >
-            {showAttachments ? (
-              <Ionicons name="close" size={20} color="#FFFFFF" />
+          <View style={[styles.inputContainer, { paddingBottom: bottomPadding }]}>
+            <TouchableOpacity
+              style={[styles.inputButton, showAttachments && styles.inputButtonActive]}
+              onPress={toggleAttachments}
+            >
+              {showAttachments ? (
+                <Ionicons name="close" size={20} color="#FFFFFF" />
+              ) : (
+                <Ionicons name="add" size={20} color="#FFFFFF" />
+              )}
+            </TouchableOpacity>
+
+            <TextInput
+              style={styles.textInput}
+              placeholder="Type your message..."
+              value={inputText}
+              onChangeText={setInputText}
+              multiline
+              maxLength={500}
+              onFocus={() => {
+                setShowAttachments(false)
+                setShowEmojis(false)
+              }}
+            />
+
+            {inputText.trim().length > 0 ? (
+              <TouchableOpacity
+                style={[styles.inputButton, styles.sendButton]}
+                onPress={() => {
+                  handleSendMessage()
+                  setShowAttachments(false)
+                  setShowEmojis(false)
+                }}
+              >
+                <Ionicons name="send" size={18} color="#FFFFFF" />
+              </TouchableOpacity>
             ) : (
-              <Ionicons name="add" size={20} color="#FFFFFF" />
+              <TouchableOpacity
+                style={[styles.inputButton, showEmojis && styles.inputButtonActive]}
+                onPress={toggleEmojis}
+              >
+                <Text style={styles.emojiButtonText}>😊</Text>
+              </TouchableOpacity>
             )}
-          </TouchableOpacity>
-
-          <TextInput
-            style={styles.textInput}
-            placeholder="Type your message..."
-            value={inputText}
-            onChangeText={setInputText}
-            multiline
-            maxLength={500}
-          />
-
-          <TouchableOpacity 
-            style={[styles.inputButton, showEmojis && styles.inputButtonActive]}
-            onPress={toggleEmojis}
-          >
-            <Text style={styles.emojiButtonText}>😊</Text>
-          </TouchableOpacity>
-        </View>
+          </View>
 
           {/* Menus render AFTER input so input stays on top */}
           {showAttachments && renderAttachmentMenu()}
           {showEmojis && renderEmojiPicker()}
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -361,6 +428,9 @@ const styles = StyleSheet.create({
   },
   emojiButtonText: {
     fontSize: 20,
+  },
+  sendButton: {
+    backgroundColor: '#FF6B35',
   },
   textInput: {
     flex: 1,
