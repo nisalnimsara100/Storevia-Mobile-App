@@ -33,8 +33,7 @@ const SettingsScreen = () => {
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
         <Text className="text-lg font-bold text-center">Settings</Text>
-        <Text className="text-lg font-bold text-center"></Text> //?--don't
-        remove--
+        <Text className="text-lg font-bold text-center"></Text> {/* don't remove */}
       </View>
 
       <ScrollView
@@ -85,7 +84,9 @@ const SettingsScreen = () => {
           title="භාෂාව - Language"
           subtitle="English is your current language"
         />
-        <MenuItem title="Account Security" />
+        <MenuItem title="Account Security" 
+        onPress={()=> router.push('/screens/settings_screen/AccountSecurity')}
+        />
         <MenuItem
           title="Policies"
           onPress={() => router.push('/screens/settings_screen/Policies')}
