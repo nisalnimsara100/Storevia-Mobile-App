@@ -62,12 +62,13 @@ const Policies = () => {
   return (
     <View className="flex-1 bg-gray-100 mt-[10%]">
       {/* Header */}
-      <View className="flex-row items-center gap-4 px-4 py-4 border-b border-gray-200 bg-white">
+      <View className="flex-row items-center px-4 py-4 border-b border-gray-200 bg-white relative">
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
-        <Text className="text-lg font-bold">Policies</Text>
-        <Text /> {/* spacer */}
+        <Text className="absolute left-0 right-0 text-lg font-bold text-center">
+          Policies
+        </Text>
       </View>
 
       {/* Tabs */}

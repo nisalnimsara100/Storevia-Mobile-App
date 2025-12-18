@@ -56,6 +56,7 @@ const SettingsScreen = () => {
         <MenuItem
           title="Messages"
           subtitle="Receive exclusive offers and personal updates"
+          onPress={()=> router.push('/screens/settings_screen/MessageSettings')}
         />
         <MenuItem
           title="Country"
