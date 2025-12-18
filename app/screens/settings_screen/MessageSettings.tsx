@@ -40,7 +40,7 @@ export const MessageSettings = () => {
     }, 2000);
   }, []);
 
-  const switchStyle = {
+  const switchStyle: any = {
     position: 'absolute' as const,
     right: 16,
     top: '50%',
@@ -126,7 +126,7 @@ export const MessageSettings = () => {
             style={switchStyle}
           />
         </View>
-        
+
         <SectionHeader title="Other Channels" />
 
         <View className="relative">

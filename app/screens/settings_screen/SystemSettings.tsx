@@ -25,7 +25,12 @@ export const SystemSettings = () => {
       setRefreshing(false);
     }, 2000);
   }, []);
-
+  const switchStyle: any = {
+    position: 'absolute' as const,
+    right: 16,
+    top: '50%',
+    marginTop: -16,
+  };
   return (
     <View className="flex-1 bg-gray-100 mt-[10%]">
       <View className="flex-row items-center gap-4 px-4 py-4 border-b border-gray-200 bg-white">
@@ -47,12 +52,7 @@ export const SystemSettings = () => {
           <Switch
             value={locationEnabled}
             onValueChange={setLocationEnabled}
-            style={{
-              position: 'absolute',
-              right: 16,
-              top: '50%',
-              marginTop: -16,
-            }}
+            style={switchStyle}
           />
         </View>
 
@@ -61,12 +61,7 @@ export const SystemSettings = () => {
           <Switch
             value={micEnabled}
             onValueChange={setMicEnabled}
-            style={{
-              position: 'absolute',
-              right: 16,
-              top: '50%',
-              marginTop: -16,
-            }}
+            style={switchStyle}
           />
         </View>
 
@@ -75,12 +70,7 @@ export const SystemSettings = () => {
           <Switch
             value={cameraEnabled}
             onValueChange={setCameraEnabled}
-            style={{
-              position: 'absolute',
-              right: 16,
-              top: '50%',
-              marginTop: -16,
-            }}
+            style={switchStyle}
           />
         </View>
 
@@ -89,12 +79,7 @@ export const SystemSettings = () => {
           <Switch
             value={adTrackingEnabled}
             onValueChange={setAdTrackingEnabled}
-            style={{
-              position: 'absolute',
-              right: 16,
-              top: '50%',
-              marginTop: -16,
-            }}
+            style={switchStyle}
           />
         </View>
       </ScrollView>
