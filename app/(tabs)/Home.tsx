@@ -15,9 +15,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 
 import { Link } from 'expo-router';
+import { products } from '../../data/productsData';
 import FlashSaleCard from '../components/FlashSaleCard';
 import LargeProductTile from '../components/LargeProductTile';
-import { products } from '../../data/productsData';
 
 const { width } = Dimensions.get('window');
 
