@@ -257,6 +257,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FC8107FF',
     padding: 10,
+
   },
   iconButton: {
     padding: 10,
