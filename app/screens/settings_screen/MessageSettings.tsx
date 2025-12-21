@@ -49,14 +49,12 @@ export const MessageSettings = () => {
 
   return (
     <View className="flex-1 bg-gray-100 mt-[10%]">
-      <View className="flex-row items-center px-4 py-4 border-b border-gray-200 bg-white relative">
+      <View className="flex-row items-center gap-4 px-4 py-4 border-b border-gray-200 bg-white">
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
-
-        <Text className="absolute left-0 right-0 text-lg font-bold text-center">
-          Message Settings
-        </Text>
+        <Text className="text-lg font-bold text-center">Message Settings</Text>
+        <Text className="text-lg font-bold text-center"></Text>
       </View>
 
       <ScrollView
