@@ -177,6 +177,14 @@ const Home = () => {
                 />
               </View>
             </View>
+            <TouchableOpacity className="bg-orange-100 p-4 rounded-lg items-center justify-center mb-4"
+            onPress={()=>{
+              console.log("Test clicked");
+            }}
+            >
+              <Text className="text-orange-700 font-semibold">Test</Text>
+            </TouchableOpacity>
+           
           </View>
         );
       
