@@ -257,7 +257,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FC8107FF',
     padding: 10,
-
+    paddingTop: 5,
+    paddingBottom: 5,
   },
   iconButton: {
     padding: 10,
@@ -270,19 +271,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
     height: 40,
-    marginHorizontal: 10,
+    marginHorizontal: 8,
   },
   searchBar: {
     flex: 1,
     fontSize: 16,
     color: '#333',
+    height: '100%',
   },
   searchButton: {
     backgroundColor: '#f57c00',
-    borderRadius: 10,
-    paddingVertical: 5,
+    borderRadius: 8,
+    paddingVertical: 6,
     paddingHorizontal: 10,
-    marginLeft: 10,
+    marginLeft: 8,
   },
   searchButtonText: {
     color: '#fff',
