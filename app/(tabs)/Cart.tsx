@@ -1,9 +1,8 @@
 "use client"
 
+import React, { useState } from "react"
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Image } from "react-native"
-import { useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
-import * as React from "react"
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([
@@ -20,7 +19,8 @@ const Cart = () => {
       image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=200&h=200&fit=crop",
     },
   ])
-   
+
+  const [showAllUnavailable, setShowAllUnavailable] = useState(false)
 
   const [unavailableItems] = useState([
     {
@@ -41,7 +41,36 @@ const Cart = () => {
       originalPrice: 1439,
       image: "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=200&h=200&fit=crop",
     },
+    {
+      id: 3,
+      title: "Wireless Bluetooth Headphones with Noise Cancellation...",
+      brand: "AudioTech",
+      family: "Color:Black, Size:Standard",
+      price: 2499,
+      originalPrice: 4999,
+      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop",
+    },
+    {
+      id: 4,
+      title: "Premium Cotton T-Shirt Pack of 3 Assorted Colors...",
+      brand: "Fashion Hub",
+      family: "Size:L, Color:Mixed",
+      price: 899,
+      originalPrice: 1799,
+      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&h=200&fit=crop",
+    },
+    {
+      id: 5,
+      title: "Stainless Steel Water Bottle 1L Insulated Thermos...",
+      brand: "HydroLife",
+      family: "Capacity:1L, Color:Silver",
+      price: 649,
+      originalPrice: 1299,
+      image: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=200&h=200&fit=crop",
+    },
   ])
+
+  const visibleUnavailableItems = showAllUnavailable ? unavailableItems : unavailableItems.slice(0, 2)
 
   const [recommendedProducts] = useState([
     {
@@ -188,10 +217,9 @@ const Cart = () => {
         </View>
 
         {/* Unavailable Items Section */}
-
         <View style={styles.unavailableSection}>
           <View style={styles.unavailableHeader}>
-            <Text style={styles.unavailableTitle}>Unavailable items (2)</Text>
+            <Text style={styles.unavailableTitle}>Unavailable items ({unavailableItems.length})</Text>
             <View style={styles.unavailableActions}>
               <TouchableOpacity style={styles.actionButton}>
                 <Ionicons name="trash-outline" size={20} color="#666" />
@@ -202,7 +230,7 @@ const Cart = () => {
             </View>
           </View>
 
-          {unavailableItems.map((item) => (
+          {visibleUnavailableItems.map((item) => (
             <View key={item.id} style={styles.unavailableItem}>
               <CheckBox />
               <View style={styles.unavailableImageContainer}>
@@ -230,9 +258,9 @@ const Cart = () => {
             </View>
           ))}
 
-          <TouchableOpacity style={styles.viewAllButton}>
-            <Text style={styles.viewAllText}>View All</Text>
-            <Text style={styles.arrow}>▼</Text>
+          <TouchableOpacity style={styles.viewAllButton} onPress={() => setShowAllUnavailable(!showAllUnavailable)}>
+            <Text style={styles.viewAllText}>{showAllUnavailable ? "View Less" : "View All"}</Text>
+            <Text style={styles.arrow}>{showAllUnavailable ? "▲" : "▼"}</Text>
           </TouchableOpacity>
         </View>
 
@@ -748,8 +776,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   recommendedInfo: {
-    padding: 12,
-    position: "relative",
+    padding: 8,
   },
   recommendedTitle: {
     fontSize: 12,
@@ -771,7 +798,6 @@ const styles = StyleSheet.create({
   recommendedDiscount: {
     fontSize: 12,
     color: "#4caf50",
-    fontWeight: "500",
   },
   ratingRow: {
     flexDirection: "row",
@@ -794,10 +820,10 @@ const styles = StyleSheet.create({
   },
   addToCartButton: {
     position: "absolute",
-    bottom: 12,
-    right: 12,
+    bottom: 8,
+    right: 8,
     backgroundColor: "#f57c00",
-    borderRadius: 16,
+    borderRadius: 20,
     width: 32,
     height: 32,
     alignItems: "center",
