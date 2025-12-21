@@ -1,88 +1,90 @@
-import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Clipboard } from 'react-native'
-import * as React from 'react'
-import { Ionicons } from '@expo/vector-icons'
+"use client"
+
+import { Ionicons } from "@expo/vector-icons"
+import * as React from "react"
+import { Clipboard, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 
 const ordersData = [
   {
     id: 1,
-    status: 'Delivered',
-    date: '19/09/2025',
-    message: 'Your feedback will help others make the right choice. Tap here to share your review',
-    orderNumber: '22137961564012',
-    tracking: 'LK-DM-DEX-026360943',
-    image: 'https://via.placeholder.com/80',
+    status: "Delivered",
+    date: "19/09/2025",
+    message: "Your feedback will help others make the right choice. Tap here to share your review",
+    orderNumber: "22137961564012",
+    tracking: "LK-DM-DEX-026360943",
+    image: "https://via.placeholder.com/80",
     showReview: true,
-    customerName: 'Devinda Thisera',
-    customerRef: '767286976',
-    address: 'Kurunegala Town, 54/1/D Kandawalpola Road Maraluwa...',
-    storeName: 'ssmobile',
-    productName: 'Bajaj Pulsar 150 180 Pulsar N160 N125 NS200 Fabric Waterproof Outdoor Moto...',
+    customerName: "Devinda Thisera",
+    customerRef: "767286976",
+    address: "Kurunegala Town, 54/1/D Kandawalpola Road Maraluwa...",
+    storeName: "ssmobile",
+    productName: "Bajaj Pulsar 150 180 Pulsar N160 N125 NS200 Fabric Waterproof Outdoor Moto...",
     price: 1399,
     quantity: 1,
-    total: 1553
+    total: 1553,
   },
   {
     id: 2,
-    status: 'Delivered',
-    date: '19/09/2025',
-    message: 'Your feedback will help others make the right choice. Tap here to share your review',
-    orderNumber: '22137961484012',
-    tracking: 'LK-DM-DEX-026364441',
-    image: 'https://via.placeholder.com/80',
+    status: "Delivered",
+    date: "19/09/2025",
+    message: "Your feedback will help others make the right choice. Tap here to share your review",
+    orderNumber: "22137961484012",
+    tracking: "LK-DM-DEX-026364441",
+    image: "https://via.placeholder.com/80",
     showReview: true,
-    customerName: 'Devinda Thisera',
-    customerRef: '767286976',
-    address: 'Kurunegala Town, 54/1/D Kandawalpola Road Maraluwa...',
-    storeName: 'ssmobile',
-    productName: 'Smart Watch with Multiple Features and Long Battery Life',
+    customerName: "Devinda Thisera",
+    customerRef: "767286976",
+    address: "Kurunegala Town, 54/1/D Kandawalpola Road Maraluwa...",
+    storeName: "ssmobile",
+    productName: "Smart Watch with Multiple Features and Long Battery Life",
     price: 2499,
     quantity: 1,
-    total: 2650
+    total: 2650,
   },
   {
     id: 3,
-    status: 'Your order is just a click away!',
-    date: '17/09/2025',
-    message: 'Complete your payment within the next 30 minutes to avoid cancellation of your order',
-    orderNumber: '22137961384012',
-    tracking: '',
-    image: 'https://via.placeholder.com/80',
+    status: "Your order is just a click away!",
+    date: "17/09/2025",
+    message: "Complete your payment within the next 30 minutes to avoid cancellation of your order",
+    orderNumber: "22137961384012",
+    tracking: "",
+    image: "https://via.placeholder.com/80",
     showReview: true,
-    customerName: 'Devinda Thisera',
-    customerRef: '767286976',
-    address: 'Kurunegala Town, 54/1/D Kandawalpola Road Maraluwa...',
-    storeName: 'ssmobile',
-    productName: 'Smart Watch with Multiple Features and Long Battery Life',
+    customerName: "Devinda Thisera",
+    customerRef: "767286976",
+    address: "Kurunegala Town, 54/1/D Kandawalpola Road Maraluwa...",
+    storeName: "ssmobile",
+    productName: "Smart Watch with Multiple Features and Long Battery Life",
     price: 2499,
     quantity: 1,
-    total: 2650
+    total: 2650,
   },
   {
     id: 4,
-    status: 'Your order is just a click away!',
-    date: '17/09/2025',
-    message: 'Complete your payment within the next 30 minutes to avoid cancellation of your order',
-    orderNumber: '22137961284012',
-    tracking: '',
-    image: 'https://via.placeholder.com/80',
+    status: "Your order is just a click away!",
+    date: "17/09/2025",
+    message: "Complete your payment within the next 30 minutes to avoid cancellation of your order",
+    orderNumber: "22137961284012",
+    tracking: "",
+    image: "https://via.placeholder.com/80",
     showReview: true,
-    customerName: 'Devinda Thisera',
-    customerRef: '767286976',
-    address: 'Kurunegala Town, 54/1/D Kandawalpola Road Maraluwa...',
-    storeName: 'ssmobile',
-    productName: 'Bajaj Pulsar 150 180 Pulsar N160 N125 NS200 Fabric Waterproof Outdoor Moto...',
+    customerName: "Devinda Thisera",
+    customerRef: "767286976",
+    address: "Kurunegala Town, 54/1/D Kandawalpola Road Maraluwa...",
+    storeName: "ssmobile",
+    productName: "Bajaj Pulsar 150 180 Pulsar N160 N125 NS200 Fabric Waterproof Outdoor Moto...",
     price: 1399,
     quantity: 1,
-    total: 1553
-  }
+    total: 1553,
+  },
 ]
 
-type Order = typeof ordersData[number]
+type Order = (typeof ordersData)[number]
 
 const MyOrdersScreen = () => {
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null)
   const [showSummary, setShowSummary] = React.useState(false)
-  
+
   const handleOrderPress = (order: Order) => {
     setSelectedOrder(order)
   }
@@ -131,10 +133,7 @@ const MyOrdersScreen = () => {
                 You have confirmed that your order has been delivered and received. Thank you for shopping with us.
               </Text>
             </View>
-            <Image 
-              source={{ uri: 'https://via.placeholder.com/80' }} 
-              style={styles.statusIllustration}
-            />
+            <Image source={{ uri: "https://via.placeholder.com/80" }} style={styles.statusIllustration} />
           </View>
 
           {/* Package Delivered Info */}
@@ -210,24 +209,17 @@ const MyOrdersScreen = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            <TouchableOpacity 
-              style={styles.viewSummaryButton}
-              onPress={() => setShowSummary(!showSummary)}
-            >
+            <TouchableOpacity style={styles.viewSummaryButton} onPress={() => setShowSummary(!showSummary)}>
               <Text style={styles.viewSummaryText}>View Order Summary</Text>
-              <Ionicons 
-                name={showSummary ? "chevron-up" : "chevron-down"} 
-                size={20} 
-                color="#2563eb" 
-              />
+              <Ionicons name={showSummary ? "chevron-up" : "chevron-down"} size={20} color="#2563eb" />
             </TouchableOpacity>
           </View>
 
           {/* Related Products */}
           <View style={styles.relatedSection}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.relatedImage} />
-              <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.relatedImage} />
+              <Image source={{ uri: "https://via.placeholder.com/150" }} style={styles.relatedImage} />
+              <Image source={{ uri: "https://via.placeholder.com/150" }} style={styles.relatedImage} />
             </ScrollView>
           </View>
 
@@ -257,8 +249,8 @@ const MyOrdersScreen = () => {
       {/* Orders List */}
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {ordersData.map((order) => (
-          <TouchableOpacity 
-            key={order.id} 
+          <TouchableOpacity
+            key={order.id}
             style={styles.orderCard}
             onPress={() => handleOrderPress(order)}
             activeOpacity={0.7}
@@ -310,25 +302,25 @@ const MyOrdersScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: "#e0e0e0",
   },
   backButton: {
     padding: 4,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
     flex: 1,
     marginLeft: 12,
   },
@@ -336,61 +328,63 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   cartButton: {
-    position: 'relative',
+    position: "relative",
   },
   badge: {
-    position: 'absolute',
+    position: "absolute",
     top: -4,
     right: -4,
-    backgroundColor: '#ef4444',
+    backgroundColor: "#ef4444",
     borderRadius: 10,
     width: 18,
     height: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   badgeText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   menuButton: {
     padding: 4,
   },
   scrollView: {
     flex: 1,
-    paddingTop: 8,
+    marginTop: -1,
+    paddingTop: 0,
   },
   // Orders List Styles
   orderCard: {
-    backgroundColor: '#fff',
-    marginHorizontal: 12,
-    marginBottom: 12,
-    borderRadius: 12,
+    backgroundColor: "#fff",
+    marginHorizontal: 16,
+    marginTop: 2,
+    marginBottom: 4,
+    borderRadius: 8,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
   },
   orderHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 12,
   },
   iconContainer: {
     width: 40,
     height: 40,
     borderRadius: 8,
-    backgroundColor: '#2563eb',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#2563eb",
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: 12,
   },
   orderHeaderText: {
@@ -398,94 +392,94 @@ const styles = StyleSheet.create({
   },
   orderStatus: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
     marginBottom: 2,
   },
   orderDate: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: "#9ca3af",
   },
   orderContent: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 12,
   },
   productImageSmall: {
     width: 80,
     height: 80,
     borderRadius: 8,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: "#f3f4f6",
     marginRight: 12,
   },
   orderDetails: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   orderMessage: {
     fontSize: 13,
-    color: '#6b7280',
+    color: "#6b7280",
     lineHeight: 18,
     marginBottom: 8,
   },
   orderInfo: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: "#9ca3af",
     marginBottom: 2,
   },
   orderFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
+    borderTopColor: "#f3f4f6",
   },
   rewardContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   rewardText: {
     fontSize: 13,
-    color: '#6b7280',
+    color: "#6b7280",
   },
   rewardAmount: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
   },
   reviewButton: {
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#ec4899',
+    borderColor: "#ec4899",
   },
   reviewButtonText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#ec4899',
+    fontWeight: "600",
+    color: "#ec4899",
   },
   // Order Details Styles
   statusBanner: {
-    backgroundColor: '#fce7f3',
-    flexDirection: 'row',
+    backgroundColor: "#fce7f3",
+    flexDirection: "row",
     padding: 20,
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   statusContent: {
     flex: 1,
   },
   statusTitle: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#000',
+    fontWeight: "700",
+    color: "#000",
     marginBottom: 8,
   },
   statusMessage: {
     fontSize: 13,
-    color: '#6b7280',
+    color: "#6b7280",
     lineHeight: 18,
   },
   statusIllustration: {
@@ -494,30 +488,30 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: "#f3f4f6",
   },
   infoText: {
     fontSize: 14,
-    color: '#000',
+    color: "#000",
     marginLeft: 12,
     flex: 1,
   },
   chevron: {
-    marginLeft: 'auto',
+    marginLeft: "auto",
   },
   section: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: "#f3f4f6",
   },
   addressHeader: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   addressContent: {
     flex: 1,
@@ -525,77 +519,77 @@ const styles = StyleSheet.create({
   },
   customerName: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
     marginBottom: 4,
   },
   orderRef: {
     fontSize: 13,
-    fontWeight: '400',
-    color: '#9ca3af',
+    fontWeight: "400",
+    color: "#9ca3af",
   },
   address: {
     fontSize: 13,
-    color: '#6b7280',
+    color: "#6b7280",
     lineHeight: 18,
   },
   storeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: "#f3f4f6",
   },
   storeName: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
     marginLeft: 12,
     flex: 1,
   },
   productSection: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderBottomWidth: 8,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: "#f3f4f6",
   },
   productRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 16,
   },
   productImage: {
     width: 80,
     height: 80,
     borderRadius: 8,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: "#f3f4f6",
     marginRight: 12,
   },
   productInfo: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   productName: {
     fontSize: 14,
-    color: '#000',
+    color: "#000",
     lineHeight: 18,
   },
   priceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   price: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
   },
   quantity: {
     fontSize: 14,
-    color: '#6b7280',
+    color: "#6b7280",
   },
   actionButtons: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginBottom: 12,
   },
@@ -604,116 +598,116 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    alignItems: 'center',
+    borderColor: "#d1d5db",
+    alignItems: "center",
   },
   returnButtonText: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#000',
+    fontWeight: "500",
+    color: "#000",
   },
   reviewButtonOrange: {
     flex: 1,
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#fb923c',
-    alignItems: 'center',
+    borderColor: "#fb923c",
+    alignItems: "center",
   },
   reviewButtonTextOrange: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#fb923c',
+    fontWeight: "500",
+    color: "#fb923c",
   },
   chatButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 12,
     gap: 6,
   },
   chatText: {
     fontSize: 14,
-    color: '#ef4444',
-    fontWeight: '500',
+    color: "#ef4444",
+    fontWeight: "500",
   },
   summarySection: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderBottomWidth: 8,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: "#f3f4f6",
   },
   totalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 12,
   },
   totalLabel: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
   },
   totalAmount: {
     fontSize: 15,
-    fontWeight: '700',
-    color: '#000',
+    fontWeight: "700",
+    color: "#000",
   },
   orderNumberRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
   orderNumberLabel: {
     fontSize: 14,
-    color: '#000',
+    color: "#000",
   },
   orderNumberValue: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   orderNumber: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
   },
   copyText: {
     fontSize: 14,
-    color: '#2563eb',
+    color: "#2563eb",
   },
   viewSummaryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 6,
   },
   viewSummaryText: {
     fontSize: 14,
-    color: '#2563eb',
-    fontWeight: '500',
+    color: "#2563eb",
+    fontWeight: "500",
   },
   relatedSection: {
     padding: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: "#f9fafb",
   },
   relatedImage: {
     width: 150,
     height: 150,
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginRight: 12,
   },
   buyAgainButton: {
     margin: 16,
-    backgroundColor: '#fb923c',
+    backgroundColor: "#fb923c",
     paddingVertical: 14,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buyAgainText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
+    fontWeight: "600",
+    color: "#fff",
   },
 })
 
