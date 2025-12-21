@@ -283,14 +283,15 @@ const MyOrdersScreen = () => {
             {/* Order Footer */}
             {order.showReview && (
               <View style={styles.orderFooter}>
-                <View style={styles.rewardContainer}>
-                  <Text style={styles.rewardText}>Review products and earn up to </Text>
-                  <Text style={styles.rewardAmount}>❤️ 600</Text>
-                </View>
-                <TouchableOpacity style={styles.reviewButton}>
-                  <Text style={styles.reviewButtonText}>Review</Text>
-                </TouchableOpacity>
-              </View>
+                <View style={styles.reviewRow}>
+                 <Text style={styles.reviewText}>
+                 Review products and earn up to ❤️ 600
+                  </Text>
+                   <TouchableOpacity style={styles.reviewBtn}>
+                    <Text style={styles.reviewBtnText}>Review</Text>
+                          </TouchableOpacity>
+                      </View>
+                     </View>
             )}
           </TouchableOpacity>
         ))}
@@ -436,6 +437,12 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#f3f4f6",
   },
+  reviewRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flex: 1,
+  },
   rewardContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -450,12 +457,29 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#000",
   },
+  reviewBtn: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#ec4899",
+  },
   reviewButton: {
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#ec4899",
+  },
+  reviewText: {
+    fontSize: 13,
+    color: "#000",
+    flex: 1,
+  },
+  reviewBtnText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#ec4899",
   },
   reviewButtonText: {
     fontSize: 14,
