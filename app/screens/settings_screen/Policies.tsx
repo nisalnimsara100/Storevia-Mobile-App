@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const MOCK_POLICIES = {
   privacyPolicy: {
@@ -62,13 +62,15 @@ const Policies = () => {
   return (
     <View className="flex-1 bg-gray-100 mt-[10%]">
       {/* Header */}
-      <View className="flex-row items-center px-4 py-4 border-b border-gray-200 bg-white relative">
+      <View className="flex-row items-center gap-4 px-4 py-4 border-b border-gray-200 bg-white">
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
-        <Text className="absolute left-0 right-0 text-lg font-bold text-center">
+        <Text className="text-lg font-bold text-center">
           Policies
         </Text>
+        <Text className="text-lg font-bold text-center"></Text> //?--don't
+        remove--
       </View>
 
       {/* Tabs */}
