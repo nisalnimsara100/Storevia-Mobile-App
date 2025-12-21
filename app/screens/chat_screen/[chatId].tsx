@@ -211,113 +211,51 @@ const ChatConversation = () => {
     setShowEmojis(false);
   };
 
+
   return (
-    // <SafeAreaView style={styles.container}>
-    //   <KeyboardAvoidingView
-    //     style={styles.container}
-    //     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    //     keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 20}
-    //     enabled={true}
-    //   >
-    //     {/* Messages List */}
-    //     <TouchableWithoutFeedback onPress={dismissKeyboardAndMenus}>
-    //       <View style={styles.chatArea}>
-    //         <FlatList
-    //           data={messages}
-    //           renderItem={renderMessage}
-    //           keyExtractor={(item) => item.id}
-    //           style={styles.messagesList}
-    //           contentContainerStyle={styles.messagesContent}
-    //           onScrollBeginDrag={() => {
-    //             setShowAttachments(false)
-    //             setShowEmojis(false)
-    //           }}
-    //         />
-    //       </View>
-    //     </TouchableWithoutFeedback>
-
-    //     {/* Bottom Section - Contains Rate Service and Input */}
-    //     <View style={styles.bottomFixedSection}>
-    //       {/* Rate Service Banner */}
-    //       <View style={styles.rateServiceBanner}>
-    //         <Text style={styles.rateServiceIcon}>⭐</Text>
-    //         <Text style={styles.rateServiceText}>Rate Service</Text>
-    //       </View>
-
-    //       {/* Input Area - This stays on top of menus */}
-    //       <View style={styles.inputContainer}>
-    //       <TouchableOpacity
-    //         style={[styles.inputButton, showAttachments && styles.inputButtonActive]}
-    //         onPress={toggleAttachments}
-    //       >
-    //         {showAttachments ? (
-    //           <Ionicons name="close" size={20} color="#FFFFFF" />
-    //         ) : (
-    //           <Ionicons name="add" size={20} color="#FFFFFF" />
-    //         )}
-    //       </TouchableOpacity>
-
-    //       <TextInput
-    //         style={styles.textInput}
-    //         placeholder="Type your message..."
-    //         value={inputText}
-    //         onChangeText={setInputText}
-    //         multiline
-    //         maxLength={500}
-    //       />
-
-    //       <TouchableOpacity
-    //         style={[styles.inputButton, showEmojis && styles.inputButtonActive]}
-    //         onPress={toggleEmojis}
-    //       >
-    //         <Text style={styles.emojiButtonText}>😊</Text>
-    //       </TouchableOpacity>
-    //     </View>
-
-    //       {/* Menus render AFTER input so input stays on top */}
-    //       {showAttachments && renderAttachmentMenu()}
-    //       {showEmojis && renderEmojiPicker()}
-    //     </View>
-    //   </KeyboardAvoidingView>
-    // </SafeAreaView>
-
     <SafeAreaView style={styles.container}>
-      {/* Messages */}
-      <TouchableWithoutFeedback onPress={dismissKeyboardAndMenus}>
-        <FlatList
-          data={messages}
-          renderItem={renderMessage}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingBottom: 120 }}
-          keyboardShouldPersistTaps="handled"
-        />
-      </TouchableWithoutFeedback>
-
-      {/* Keyboard Avoiding ONLY for bottom */}
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 30 : 80}
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 90}
+        enabled={true}
       >
-        {/* Rate Service */}
-        <View style={styles.rateServiceBanner}>
-          <Text style={styles.rateServiceIcon}>⭐</Text>
-          <Text style={styles.rateServiceText}>Rate Service</Text>
-        </View>
+        {/* Messages List */}
+        <TouchableWithoutFeedback onPress={dismissKeyboardAndMenus}>
+          <View style={styles.chatArea}>
+            <FlatList
+              data={messages}
+              renderItem={renderMessage}
+              keyExtractor={(item) => item.id}
+              style={styles.messagesList}
+              contentContainerStyle={styles.messagesContent}
+              onScrollBeginDrag={() => {
+                setShowAttachments(false)
+                setShowEmojis(false)
+              }}
+            />
+          </View>
+        </TouchableWithoutFeedback>
 
-        {/* Input */}
-        <View style={styles.inputContainer}>
+        {/* Bottom Section - Contains Rate Service and Input */}
+        <View style={styles.bottomFixedSection}>
+          {/* Rate Service Banner */}
+          <View style={styles.rateServiceBanner}>
+            <Text style={styles.rateServiceIcon}>⭐</Text>
+            <Text style={styles.rateServiceText}>Rate Service</Text>
+          </View>
+
+          {/* Input Area - This stays on top of menus */}
+          <View style={styles.inputContainer}>
           <TouchableOpacity
-            style={[
-              styles.inputButton,
-              showAttachments && styles.inputButtonActive,
-            ]}
+            style={[styles.inputButton, showAttachments && styles.inputButtonActive]}
             onPress={toggleAttachments}
           >
-            <Ionicons
-              name={showAttachments ? 'close' : 'add'}
-              size={20}
-              color="#FFFFFF"
-            />
+            {showAttachments ? (
+              <Ionicons name="close" size={20} color="#FFFFFF" />
+            ) : (
+              <Ionicons name="add" size={20} color="#FFFFFF" />
+            )}
           </TouchableOpacity>
 
           <TextInput
@@ -326,6 +264,7 @@ const ChatConversation = () => {
             value={inputText}
             onChangeText={setInputText}
             multiline
+            maxLength={500}
           />
 
           <TouchableOpacity
@@ -336,8 +275,10 @@ const ChatConversation = () => {
           </TouchableOpacity>
         </View>
 
-        {showAttachments && renderAttachmentMenu()}
-        {showEmojis && renderEmojiPicker()}
+          {/* Menus render AFTER input so input stays on top */}
+          {showAttachments && renderAttachmentMenu()}
+          {showEmojis && renderEmojiPicker()}
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
