@@ -183,7 +183,8 @@ const Messages: React.FC = () => {
   };
 
   const handlePromosPress = (): void => {
-    Alert.alert('Promos', 'Opening promotions screen...');
+    // Navigate to the promos screen using expo-router
+    router.push('/screens/promos_screen');
   };
 
   const handleStartShopping = (): void => {
