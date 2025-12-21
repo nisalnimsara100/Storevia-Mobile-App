@@ -118,7 +118,7 @@ const Account = () => {
       <View style={styles.sectionCard}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>My Orders</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/screens/my_orders_screen')}>
             <Text style={styles.viewAll}>View All Orders {'>'}</Text>
           </TouchableOpacity>
         </View>
