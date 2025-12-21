@@ -13,7 +13,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ title, subtitle, onPress, flag }) =
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="border-b border-gray-200 px-4 py-5 bg-white flex-row items-center"
+      className="border-b border-gray-200 px-4 py-4 bg-white flex-row items-center"
     >
       {/* Show Flag if provided */}
       {flag && (

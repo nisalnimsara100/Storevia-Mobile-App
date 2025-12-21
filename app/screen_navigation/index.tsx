@@ -24,7 +24,8 @@ const ScreenNavigation = () => {
       </Link>
       <Link href={"/screens/my_orders_screen" as any} asChild>
         <TouchableOpacity className="bg-blue-500 px-4 py-2 rounded-md mt-4 w-[200px] items-center">
-          <Text className="text-white">My Orders Screen</Text>
+          <Text className="text-white">My Orders Screen</Text>.
+          
         </TouchableOpacity>
       </Link>
       <Link href={"/screens/promos_screen" as any} asChild>

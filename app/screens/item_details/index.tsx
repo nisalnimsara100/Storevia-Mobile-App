@@ -5,6 +5,9 @@ import { useLocalSearchParams } from 'expo-router'
 import React from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { products } from '../../../data/productsData'
+import Ratings from '@/app/components/item_details/Ratings'
+import ProductDetails from '@/app/components/item_details/ProductDetails'
+import MoreFromStore from '@/app/components/item_details/MoreFromStore'
 
 const ItemDetailsScreen = () => {
   const { itemId } = useLocalSearchParams();
@@ -35,6 +38,18 @@ const ItemDetailsScreen = () => {
       <View style={styles.sectionContainer}>
         <ShopDetails />
       </View>
+
+      <View style={styles.sectionContainer}>
+        <Ratings />
+      </View>
+
+      <View style={styles.sectionContainer}>
+        <MoreFromStore />
+      </View>
+
+      <View style={styles.sectionContainer}>
+        <ProductDetails />
+      </View>
     </ScrollView>
   );
 }
@@ -44,8 +59,9 @@ export default ItemDetailsScreen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF4EAFF',
+    backgroundColor: 'rgba(248, 249, 249, 1)',
     paddingHorizontal: 0,
+    marginBottom: 40,
   },
   errorText: {
     fontSize: 18,
@@ -54,7 +70,7 @@ const styles = StyleSheet.create({
     marginTop: 100,
   },
   sectionContainer: {
-    marginTop: 24,
+    marginTop: 10,
     backgroundColor: '#fff',
     marginHorizontal: -20,
   },
