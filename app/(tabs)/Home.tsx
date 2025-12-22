@@ -13,9 +13,10 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
+import { useState, useEffect } from 'react';
 
 import { Link } from 'expo-router';
-import { products } from '../../data/productsData';
+// import { products } from '../../data/productsData';
 import FlashSaleCard from '../components/FlashSaleCard';
 import LargeProductTile from '../components/LargeProductTile';
 
@@ -23,6 +24,20 @@ const { width } = Dimensions.get('window');
 
 const Home = () => {
   const insets = useSafeAreaInsets();
+  const [products, setProducts] = useState<any[]>([]);
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const apiProducts = await fetchProducts();
+        const mappedProducts = apiProducts.map(mapProductFromApi);
+        setProducts(mappedProducts);
+      } catch (e) {
+        console.log('Failed to load products', e);
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   const banners = [
     { id: 1, image: require('../../assets/banners/banner1.jpg') },
@@ -61,18 +76,58 @@ const Home = () => {
   // Use first 3 products for flash sale items
   const flashSaleItems = products.slice(0, 3);
 
-const API_URL = "http://192.168.0.100:8000/api/order/all";
+  const API_URL = 'http://192.168.0.100:8000/api/product';
 
-const getOrders = async () => {
-  console.log("Fetching orders...");
-  try {
+  const getOrders = async () => {
+    console.log('Fetching orders...');
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      console.log('Orders from API:', data);
+    } catch (e) {
+      console.log('API error:', e);
+    }
+  };
+
+  const fetchProducts = async () => {
     const res = await fetch(API_URL);
-    const data = await res.json();
-    console.log("Orders from API:", data.orders);
-  } catch (e) {
-    console.log("API error:", e);
-  }
-};
+    return await res.json();
+  };
+
+  const mapProductFromApi = (item: any) => {
+    const mainImage = item.product_image ? { uri: item.product_image } : null;
+
+    const extraImages = Array.isArray(item.product_images)
+      ? item.product_images
+          .map((img: any) => img.image_path)
+          .filter(
+            (url: string) =>
+              typeof url === 'string' &&
+              url.startsWith('https://') &&
+              !url.includes('http', 10),
+          )
+          .map((url: string) => ({ uri: url }))
+      : [];
+    const images = mainImage ? [mainImage, ...extraImages] : extraImages;
+
+    return {
+      id: item.product_id,
+      name: item.product_name,
+      image: mainImage,
+      images,
+      price: item.product_discount
+        ? item.product_price - (item.product_discount*item.product_price)/100
+        : undefined,
+      oldPrice: item.product_price,
+      discount: item.product_discount ?? 0,
+      stock: item.product_stock ?? 0,
+      rating: item.product_rating ?? 0,
+      reviews: 0,
+      sold: 0,
+      badges: item.is_on_sale ? ['On Sale'] : [],
+      description: item.product_description ?? '',
+    };
+  };
 
   // Create data items for the main list
   const listData = [
@@ -103,14 +158,14 @@ const getOrders = async () => {
                 <Text style={styles.searchButtonText}>Search</Text>
               </TouchableOpacity>
             </View>
-            <Link href={"/screen_navigation" as any} asChild>
+            <Link href={'/screen_navigation' as any} asChild>
               <TouchableOpacity style={styles.payButton}>
                 <Text style={styles.payText}>Pay</Text>
               </TouchableOpacity>
             </Link>
           </View>
         );
-      
+
       case 'banner':
         return (
           <View style={styles.banner}>
@@ -118,7 +173,7 @@ const getOrders = async () => {
             <Text style={styles.bannerSubText}>Buy More, Save More</Text>
           </View>
         );
-      
+
       case 'bannerSwiper':
         return (
           <View style={styles.bannerSection}>
@@ -137,7 +192,7 @@ const getOrders = async () => {
             </View>
           </View>
         );
-      
+
       case 'content':
         return (
           <View style={styles.content}>
@@ -158,7 +213,9 @@ const getOrders = async () => {
 
                 {/* Bottom Row */}
                 <View className="flex-row justify-between items-center bg-yellow-100">
-                  <Text className="text-purple-600 font-semibold">shop now</Text>
+                  <Text className="text-purple-600 font-semibold">
+                    shop now
+                  </Text>
                   <Text className="text-purple-600 text-lg">›</Text>
                 </View>
               </TouchableOpacity>
@@ -190,15 +247,15 @@ const getOrders = async () => {
                 />
               </View>
             </View>
-            <TouchableOpacity className="bg-orange-100 p-4 rounded-lg items-center justify-center mb-4"
-            onPress={getOrders}
+            <TouchableOpacity
+              className="bg-orange-100 p-4 rounded-lg items-center justify-center mb-4"
+              onPress={getOrders}
             >
               <Text className="text-orange-700 font-semibold">Test</Text>
             </TouchableOpacity>
-           
           </View>
         );
-      
+
       case 'middleBanner':
         return (
           <View style={styles.swiperWrapper} className="mb-4">
@@ -215,12 +272,14 @@ const getOrders = async () => {
             </Swiper>
           </View>
         );
-      
+
       case 'flashSale':
         return (
           <View style={styles.saleContent}>
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-lg font-bold text-gray-700">Best Selling</Text>
+              <Text className="text-lg font-bold text-gray-700">
+                Best Selling
+              </Text>
               <Text className="text-sm text-orange-500">Shop More ›</Text>
             </View>
             <FlatList
@@ -232,7 +291,7 @@ const getOrders = async () => {
             />
           </View>
         );
-      
+
       case 'products':
         return (
           <View className="bg-white py-2" style={styles.productContent}>
@@ -246,7 +305,7 @@ const getOrders = async () => {
             />
           </View>
         );
-      
+
       default:
         return null;
     }

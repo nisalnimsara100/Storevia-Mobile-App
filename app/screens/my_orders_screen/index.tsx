@@ -64,8 +64,7 @@ export default function MyOrdersScreen() {
             <Ionicons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
           <Text className="text-lg font-bold text-center">My Oders</Text>
-          <Text className="text-lg font-bold text-center"></Text> //?--don't
-          remove--
+          <Text className="text-lg font-bold text-center"></Text>
         </View>
 
         {/* Tabs */}

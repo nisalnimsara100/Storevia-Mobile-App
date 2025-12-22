@@ -25,10 +25,13 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [titleExpanded, setTitleExpanded] = useState(false);
   const [showTitleToggle, setShowTitleToggle] = useState(false);
   const totalImages = product.images?.length ?? 1;
-  
-  const images = product.images && product.images.length > 0
-    ? product.images
-    : [product.image];
+
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : product.image
+        ? [product.image]
+        : [];
 
   return (
     <View style={styles.container}>
@@ -55,12 +58,16 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Free Delivery badge (left-bottom) */}
         <View style={styles.freeBadgeWrapper} pointerEvents="none">
-            <View style={styles.freeBadge}>
-              <View style={styles.freeIcon}>
-                <FontAwesome name="truck" size={12} color="rgba(55, 121, 101, 1)" />
-              </View>
-              <Text style={styles.freeBadgeText}>FAST DELIVERY</Text>
+          <View style={styles.freeBadge}>
+            <View style={styles.freeIcon}>
+              <FontAwesome
+                name="truck"
+                size={12}
+                color="rgba(55, 121, 101, 1)"
+              />
             </View>
+            <Text style={styles.freeBadgeText}>FAST DELIVERY</Text>
+          </View>
           {/** Example voucher pill next to it (kept visually similar to screenshot) */}
           {/* <View style={styles.voucherPill} pointerEvents="none">
             <Text style={styles.voucherText}>VOUCHER MAX</Text>
@@ -70,11 +77,13 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Photo count (right-bottom) */}
         <View style={styles.photoCountWrapper} pointerEvents="none">
           <View style={styles.photoCountBubble}>
-            <Text style={styles.photoCountText}>{`${currentImageIndex + 1}/${totalImages}`}</Text>
+            <Text
+              style={styles.photoCountText}
+            >{`${currentImageIndex + 1}/${totalImages}`}</Text>
           </View>
         </View>
       </View>
-      
+
       {/* Product Info */}
       <View style={styles.infoContainer}>
         <View style={styles.productNameRow}>
@@ -100,7 +109,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                   style={styles.titleToggle}
                   activeOpacity={0.7}
                 >
-                  <Ionicons name={titleExpanded ? 'chevron-up' : 'chevron-down'} size={18} color="#666" />
+                  <Ionicons
+                    name={titleExpanded ? 'chevron-up' : 'chevron-down'}
+                    size={18}
+                    color="#666"
+                  />
                 </TouchableOpacity>
               )}
             </View>
@@ -109,7 +122,9 @@ export default function ProductCard({ product }: ProductCardProps) {
               <View style={styles.ratingInfo}>
                 <View style={styles.ratingWithIcon}>
                   <Ionicons name="star" size={13} color="#FFC107" />
-                  <Text style={styles.rating}>{product.rating?.toFixed?.(1) ?? product.rating}</Text>
+                  <Text style={styles.rating}>
+                    {product.rating?.toFixed?.(1) ?? product.rating}
+                  </Text>
                 </View>
                 <Text style={styles.reviews}>({product.reviews} reviews)</Text>
                 <Text style={styles.sold}>| {product.sold} sold</Text>
@@ -125,18 +140,24 @@ export default function ProductCard({ product }: ProductCardProps) {
             </View>
           </View>
         </View>
-        
-        
 
         {/* Delivery / Return Info Card (matches screenshot) */}
         <TouchableOpacity style={styles.infoCard} activeOpacity={0.85}>
           <View style={styles.infoCardLeft}>
             <View style={styles.infoCardIcon}>
-              <Ionicons name="checkmark-done-outline" size={14} color="#4a5568" />
+              <Ionicons
+                name="checkmark-done-outline"
+                size={14}
+                color="#4a5568"
+              />
             </View>
             <View style={styles.infoCardText}>
-              <Text style={styles.infoCardTitle}>14 days easy return · Warranty · Installment</Text>
-              <Text style={styles.infoCardSubtitle}>Guaranteed by 29 Nov-5 Dec</Text>
+              <Text style={styles.infoCardTitle}>
+                14 days easy return · Warranty · Installment
+              </Text>
+              <Text style={styles.infoCardSubtitle}>
+                Guaranteed by 29 Nov-5 Dec
+              </Text>
             </View>
           </View>
           <View style={styles.infoCardRight}>
@@ -151,14 +172,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           <Text style={styles.oldPrice}>Rs.{product.oldPrice}</Text>
           <Text style={styles.discount}>-{product.discount}%</Text>
         </View>
-        
+
         {/* Stock */}
         <Text style={styles.stock}>Only {product.stock} left in stock</Text>
-        
+
         {/* Description */}
         <Text style={styles.descriptionTitle}>Description</Text>
         <Text style={styles.description}>{product.description}</Text>
-        
+
         {/* Add to Cart Button */}
         <Text style={styles.addToCartButton}>Add to Cart</Text>
       </View>
@@ -176,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    aspectRatio: 1, 
+    aspectRatio: 1,
     position: 'relative',
   },
   wrapper: {
@@ -405,7 +426,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
-  
+
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'center',

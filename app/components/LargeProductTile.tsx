@@ -23,7 +23,9 @@ export default function LargeProductTile({ item }: { item: ProductItem }) {
   const handleCardPress = () => {
     router.push({
       pathname: '/screens/item_details',
-      params: { itemId: item.id.toString() }
+      params: {
+        product: JSON.stringify(item),
+      },
     });
   };
   

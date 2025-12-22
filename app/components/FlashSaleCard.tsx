@@ -21,7 +21,9 @@ const FlashSaleCard: React.FC<FlashSaleCardProps> = ({ item }) => {
   const handleCardPress = () => {
     router.push({
       pathname: '/screens/item_details',
-      params: { itemId: item.id.toString() }
+      params: {
+        product: JSON.stringify(item),
+      },
     });
   };
   

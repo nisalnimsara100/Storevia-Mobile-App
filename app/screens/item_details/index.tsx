@@ -4,17 +4,22 @@ import Vouchers from '@/app/components/item_details/Vouchers'
 import { useLocalSearchParams } from 'expo-router'
 import React from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { products } from '../../../data/productsData'
+// import { products } from '../../../data/productsData'
 import Ratings from '@/app/components/item_details/Ratings'
 import ProductDetails from '@/app/components/item_details/ProductDetails'
 import MoreFromStore from '@/app/components/item_details/MoreFromStore'
 
+
 const ItemDetailsScreen = () => {
-  const { itemId } = useLocalSearchParams();
+  // const { itemId } = useLocalSearchParams();
+  const { product } = useLocalSearchParams();
   
-  const product = products.find(p => p.id.toString() === itemId);
   
-  if (!product) {
+  const parsedProduct = product
+    ? JSON.parse(product as string)
+    : null;
+
+  if (!parsedProduct) {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>Product not found</Text>
@@ -29,7 +34,7 @@ const ItemDetailsScreen = () => {
       overScrollMode="never"
       showsVerticalScrollIndicator={true}
     >
-      <ProductCard product={product} />
+      <ProductCard product={parsedProduct} />
 
       <View style={styles.sectionContainer}>
         <Vouchers />
