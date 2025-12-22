@@ -61,6 +61,19 @@ const Home = () => {
   // Use first 3 products for flash sale items
   const flashSaleItems = products.slice(0, 3);
 
+const API_URL = "http://192.168.0.100:8000/api/order/all";
+
+const getOrders = async () => {
+  console.log("Fetching orders...");
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    console.log("Orders from API:", data.orders);
+  } catch (e) {
+    console.log("API error:", e);
+  }
+};
+
   // Create data items for the main list
   const listData = [
     { type: 'header' },
@@ -178,9 +191,7 @@ const Home = () => {
               </View>
             </View>
             <TouchableOpacity className="bg-orange-100 p-4 rounded-lg items-center justify-center mb-4"
-            onPress={()=>{
-              console.log("Test clicked");
-            }}
+            onPress={getOrders}
             >
               <Text className="text-orange-700 font-semibold">Test</Text>
             </TouchableOpacity>
