@@ -76,7 +76,7 @@ const Home = () => {
   // Use first 3 products for flash sale items
   const flashSaleItems = products.slice(0, 3);
 
-  const API_URL = 'http://192.168.0.100:8000/api/product';
+  const API_URL = 'http://192.168.1.237:8000/api/product';
 
   const getOrders = async () => {
     console.log('Fetching orders...');

@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import RadioGroup from 'react-native-radio-buttons-group';
 
 const AccountInformaton = () => {
   const [quickLogin, setQuickLogin] = useState(true);
@@ -177,7 +176,7 @@ const AccountInformaton = () => {
         )}
 
         {nameModelOpen && (
-          <View className="h-[30%] bg-white border-t border-gray-200 mt-4">
+          <View className="h-[60%] bg-white border-t border-gray-200 mt-4">
             <View className="flex flex-row justify-between items-center py-5 px-5 ">
               <Text></Text>
               <Text className="font-semibold text-lg">Full Name</Text>
@@ -211,8 +210,6 @@ const AccountInformaton = () => {
             </View>
           </View>
         )}
-
-        
       </View>
     </KeyboardAvoidingView>
   );

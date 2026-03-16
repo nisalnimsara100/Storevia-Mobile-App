@@ -81,7 +81,7 @@ export default function LargeProductTile({ item }: { item: ProductItem }) {
 
         {/* Price row */}
         <View style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: 4 }}>
-          <Text style={{ color: '#ff5722', fontWeight: '700', fontSize: 18 }}>Rs.{item.price}</Text>
+          <Text style={{ color: '#ff5722', fontWeight: '700', fontSize: 18 }}>Rs.{item.price.toFixed(2)}</Text>
           {item.discount !== undefined && (
             <Text style={{ color: '#ff5722', fontSize: 13, fontWeight: '600', marginLeft: 6 }}>-{item.discount}%</Text>
           )}
