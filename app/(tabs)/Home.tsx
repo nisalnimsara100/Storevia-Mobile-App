@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -11,10 +12,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import Swiper from 'react-native-swiper';
-import { useState, useEffect } from 'react';
-import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import { Link } from 'expo-router';
 // import { products } from '../../data/productsData';
@@ -100,14 +100,14 @@ const Home = () => {
 
     const extraImages = Array.isArray(item.product_images)
       ? item.product_images
-          .map((img: any) => img.image_path)
-          .filter(
-            (url: string) =>
-              typeof url === 'string' &&
-              url.startsWith('https://') &&
-              !url.includes('http', 10),
-          )
-          .map((url: string) => ({ uri: url }))
+        .map((img: any) => img.image_path)
+        .filter(
+          (url: string) =>
+            typeof url === 'string' &&
+            url.startsWith('https://') &&
+            !url.includes('http', 10),
+        )
+        .map((url: string) => ({ uri: url }))
       : [];
     const images = mainImage ? [mainImage, ...extraImages] : extraImages;
 
@@ -117,7 +117,7 @@ const Home = () => {
       image: mainImage,
       images,
       price: item.product_discount
-        ? item.product_price - (item.product_discount*item.product_price)/100
+        ? item.product_price - (item.product_discount * item.product_price) / 100
         : undefined,
       oldPrice: item.product_price,
       discount: item.product_discount ?? 0,
@@ -145,7 +145,7 @@ const Home = () => {
     switch (item.type) {
       case 'header':
         return (
-          <View style={styles.header}>
+          <View style={[styles.header, { paddingTop: insets.top + moderateScale(5) }]}>
             <TouchableOpacity style={styles.iconButton}>
               <Ionicons name="scan" size={24} color="#333" />
             </TouchableOpacity>
@@ -314,7 +314,7 @@ const Home = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <FlatList
         data={listData}
         renderItem={renderItem}
@@ -322,7 +322,7 @@ const Home = () => {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -337,9 +337,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FC8107FF',
-    padding: moderateScale(10),
-    paddingTop: moderateScale(5),
-    paddingBottom: moderateScale(5),
+    paddingHorizontal: moderateScale(10),
+    paddingBottom: moderateScale(8),
   },
   iconButton: {
     padding: moderateScale(10),

@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -24,9 +25,10 @@ const Account = () => {
   const [username] = useState('Ashen Widanagamage');
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.headerContainer}>
-        <View style={styles.topIcons}>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.headerContainer}>
+          <View style={styles.topIcons}>
           <TouchableOpacity
             onPress={() => router.push('/screens/settings_screen')}
           >
@@ -227,6 +229,7 @@ const Account = () => {
 
       <View style={{ height: 40 }} />
     </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -264,6 +267,10 @@ const GridTool = ({ img, label }: any) => (
 );
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F1F2F4',
@@ -272,7 +279,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: '#fff',
     padding: scale(15),
-    paddingTop: scale(40),
+    paddingTop: scale(15),
   },
 
   topIcons: {
