@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import { useState, useEffect } from 'react';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import { Link } from 'expo-router';
 // import { products } from '../../data/productsData';
@@ -197,12 +198,13 @@ const Home = () => {
         return (
           <View style={styles.content}>
             <View className="flex-row justify-between items-center mb-4">
-              <TouchableOpacity className="w-36 h-24 rounded-xl bg-yellow-100 p-3 justify-between">
+              <TouchableOpacity style={{ width: scale(140), height: verticalScale(90) }} className="rounded-xl bg-yellow-100 p-3 justify-between">
                 {/* Top Row */}
                 <View className="flex-row items-center rounded-lg">
                   <Image
                     source={require('../../assets/icons/icon1.png')}
-                    className="w-10 h-10 mr-3 rounded-md"
+                    style={{ width: scale(40), height: scale(40) }}
+                    className="mr-3 rounded-md"
                     resizeMode="contain"
                   />
                   <View className="flex-col ml-2">
@@ -229,14 +231,14 @@ const Home = () => {
                       onPress={() => console.log(`${item.title} clicked`)}
                       className="items-center mx-3"
                     >
-                      <View className="bg-orange-200 p-4 rounded-2xl shadow-md w-20 h-20 flex items-center justify-center">
+                      <View style={{ width: scale(70), height: scale(70) }} className="bg-orange-200 p-4 rounded-2xl shadow-md flex items-center justify-center">
                         <Image
                           source={item.icon}
-                          className="w-10 h-10"
+                          style={{ width: scale(35), height: scale(35) }}
                           resizeMode="contain"
                         />
                       </View>
-                      <Text className="text-sm font-semibold text-gray-700 mt-2 text-center">
+                      <Text style={{ fontSize: moderateScale(11) }} className="font-semibold text-gray-700 mt-2 text-center">
                         {item.title}
                       </Text>
                     </TouchableOpacity>
@@ -312,14 +314,15 @@ const Home = () => {
   };
 
   return (
-    <FlatList
-      style={[styles.container, { paddingTop: insets.top }]}
-      data={listData}
-      renderItem={renderItem}
-      keyExtractor={(item, index) => `${item.type}-${index}`}
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-    />
+    <View style={styles.container}>
+      <FlatList
+        data={listData}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => `${item.type}-${index}`}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
 };
 
@@ -334,111 +337,113 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FC8107FF',
-    padding: 10,
-    paddingTop: 5,
-    paddingBottom: 5,
+    padding: moderateScale(10),
+    paddingTop: moderateScale(5),
+    paddingBottom: moderateScale(5),
   },
   iconButton: {
-    padding: 10,
+    padding: moderateScale(10),
   },
   searchContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    height: 40,
-    marginHorizontal: 8,
+    borderRadius: moderateScale(10),
+    paddingHorizontal: moderateScale(10),
+    height: verticalScale(35),
+    marginHorizontal: scale(8),
   },
   searchBar: {
     flex: 1,
-    fontSize: 16,
+    fontSize: moderateScale(14),
     color: '#333',
     height: '100%',
   },
   searchButton: {
     backgroundColor: '#f57c00',
-    borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    marginLeft: 8,
+    borderRadius: moderateScale(8),
+    paddingVertical: verticalScale(4),
+    paddingHorizontal: scale(8),
+    marginLeft: scale(8),
   },
   searchButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: moderateScale(12),
   },
   payButton: {
     backgroundColor: '#4caf50',
-    borderRadius: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    borderRadius: moderateScale(5),
+    paddingVertical: verticalScale(4),
+    paddingHorizontal: scale(8),
   },
   payText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: moderateScale(12),
   },
   swiperWrapper: {
-    height: 180,
-    borderRadius: 12,
-    marginHorizontal: 8,
+    height: verticalScale(180),
+    borderRadius: moderateScale(12),
+    marginHorizontal: scale(8),
     overflow: 'hidden',
   },
   bannerSection: {
     alignItems: 'center',
     backgroundColor: '#FC8107FF',
-    paddingVertical: 10,
+    paddingVertical: verticalScale(10),
   },
   slide: {
     width,
-    height: 180,
+    height: verticalScale(180),
     justifyContent: 'center',
     alignItems: 'center',
   },
   slideImage: {
     width,
-    height: 180,
+    height: verticalScale(180),
   },
   overlay: {
     position: 'absolute',
-    top: 20,
-    left: 20,
+    top: verticalScale(20),
+    left: scale(20),
   },
   bannerText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: moderateScale(16),
     fontWeight: 'bold',
   },
   bannerSubText: {
     color: '#fff',
-    fontSize: 14,
-    marginTop: 5,
+    fontSize: moderateScale(12),
+    marginTop: verticalScale(5),
   },
   content: {
     flex: 1,
-    padding: 10,
+    padding: moderateScale(10),
     backgroundColor: '#fff',
   },
   saleContent: {
     flex: 1,
-    padding: 10,
+    padding: moderateScale(10),
     backgroundColor: '#fff',
-    marginBottom: 30,
+    marginBottom: verticalScale(30),
   },
   productContent: {
     flex: 1,
-    padding: 10,
+    padding: moderateScale(10),
     backgroundColor: '#fff',
-    marginBottom: 80,
+    marginBottom: verticalScale(80),
   },
   banner: {
     backgroundColor: '#FC8107FF',
-    padding: 5,
+    padding: moderateScale(5),
     alignItems: 'center',
   },
   categoryItem: {
-    width: 80,
+    width: scale(80),
     alignItems: 'center',
-    marginHorizontal: 6,
+    marginHorizontal: scale(6),
   },
 });
