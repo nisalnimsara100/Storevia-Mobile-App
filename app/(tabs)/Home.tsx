@@ -24,7 +24,7 @@ import { Link } from 'expo-router';
 import FlashSaleCard from '../components/FlashSaleCard';
 import LargeProductTile from '../components/LargeProductTile';
 
-const BASE_URL = process.env.APP_BASE_URL; 
+const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL; 
 
 const { width } = Dimensions.get('window');
 
@@ -82,7 +82,7 @@ const Home = () => {
   // Use first 3 products for flash sale items
   const flashSaleItems = products.slice(0, 3);
 
-  const API_URL = `http://192.168.1.244:8000/api/products`;
+  const API_URL = `${BASE_URL}/api/products`;
 
   const getOrders = async () => {
     console.log('Fetching products...');
@@ -96,9 +96,10 @@ const Home = () => {
   };
 
   const fetchProducts = async () => {
+    console.log("Base URL:", BASE_URL);
     const res = await fetch(API_URL);
     const data = await res.json();
-    return data.products; // Extract products array from response
+    return data.products;
   };
 
   const mapProductFromApi = (item: any) => {
