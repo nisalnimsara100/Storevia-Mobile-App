@@ -58,5 +58,10 @@
     "prettier": "^3.6.2",
     "typescript": "~5.9.2"
   },
+  "overrides": {
+    "react-native-country-picker-modal": {
+      "react-async-hook": "3.6.2"
+    }
+  },
   "private": true
 }
