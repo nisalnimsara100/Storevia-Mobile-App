@@ -12,7 +12,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import Swiper from 'react-native-swiper';
 
@@ -20,6 +23,8 @@ import { Link } from 'expo-router';
 // import { products } from '../../data/productsData';
 import FlashSaleCard from '../components/FlashSaleCard';
 import LargeProductTile from '../components/LargeProductTile';
+
+const BASE_URL = process.env.APP_BASE_URL; 
 
 const { width } = Dimensions.get('window');
 
@@ -77,14 +82,14 @@ const Home = () => {
   // Use first 3 products for flash sale items
   const flashSaleItems = products.slice(0, 3);
 
-  const API_URL = 'http://192.168.1.237:8000/api/product';
+  const API_URL = `http://192.168.1.244:8000/api/products`;
 
   const getOrders = async () => {
-    console.log('Fetching orders...');
+    console.log('Fetching products...');
     try {
       const res = await fetch(API_URL);
       const data = await res.json();
-      console.log('Orders from API:', data);
+      console.log('Product from API:', data);
     } catch (e) {
       console.log('API error:', e);
     }
@@ -92,7 +97,8 @@ const Home = () => {
 
   const fetchProducts = async () => {
     const res = await fetch(API_URL);
-    return await res.json();
+    const data = await res.json();
+    return data.products; // Extract products array from response
   };
 
   const mapProductFromApi = (item: any) => {
@@ -100,14 +106,14 @@ const Home = () => {
 
     const extraImages = Array.isArray(item.product_images)
       ? item.product_images
-        .map((img: any) => img.image_path)
-        .filter(
-          (url: string) =>
-            typeof url === 'string' &&
-            url.startsWith('https://') &&
-            !url.includes('http', 10),
-        )
-        .map((url: string) => ({ uri: url }))
+          .map((img: any) => img.image_path)
+          .filter(
+            (url: string) =>
+              typeof url === 'string' &&
+              url.startsWith('https://') &&
+              !url.includes('http', 10),
+          )
+          .map((url: string) => ({ uri: url }))
       : [];
     const images = mainImage ? [mainImage, ...extraImages] : extraImages;
 
@@ -117,7 +123,8 @@ const Home = () => {
       image: mainImage,
       images,
       price: item.product_discount
-        ? item.product_price - (item.product_discount * item.product_price) / 100
+        ? item.product_price -
+          (item.product_discount * item.product_price) / 100
         : undefined,
       oldPrice: item.product_price,
       discount: item.product_discount ?? 0,
@@ -145,7 +152,12 @@ const Home = () => {
     switch (item.type) {
       case 'header':
         return (
-          <View style={[styles.header, { paddingTop: insets.top + moderateScale(5) }]}>
+          <View
+            style={[
+              styles.header,
+              { paddingTop: insets.top + moderateScale(5) },
+            ]}
+          >
             <TouchableOpacity style={styles.iconButton}>
               <Ionicons name="scan" size={24} color="#333" />
             </TouchableOpacity>
@@ -198,7 +210,10 @@ const Home = () => {
         return (
           <View style={styles.content}>
             <View className="flex-row justify-between items-center mb-4">
-              <TouchableOpacity style={{ width: scale(140), height: verticalScale(90) }} className="rounded-xl bg-yellow-100 p-3 justify-between">
+              <TouchableOpacity
+                style={{ width: scale(140), height: verticalScale(90) }}
+                className="rounded-xl bg-yellow-100 p-3 justify-between"
+              >
                 {/* Top Row */}
                 <View className="flex-row items-center rounded-lg">
                   <Image
@@ -231,14 +246,20 @@ const Home = () => {
                       onPress={() => console.log(`${item.title} clicked`)}
                       className="items-center mx-3"
                     >
-                      <View style={{ width: scale(70), height: scale(70) }} className="bg-orange-200 p-4 rounded-2xl shadow-md flex items-center justify-center">
+                      <View
+                        style={{ width: scale(70), height: scale(70) }}
+                        className="bg-orange-200 p-4 rounded-2xl shadow-md flex items-center justify-center"
+                      >
                         <Image
                           source={item.icon}
                           style={{ width: scale(35), height: scale(35) }}
                           resizeMode="contain"
                         />
                       </View>
-                      <Text style={{ fontSize: moderateScale(11) }} className="font-semibold text-gray-700 mt-2 text-center">
+                      <Text
+                        style={{ fontSize: moderateScale(11) }}
+                        className="font-semibold text-gray-700 mt-2 text-center"
+                      >
                         {item.title}
                       </Text>
                     </TouchableOpacity>
