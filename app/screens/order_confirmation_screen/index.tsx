@@ -1,11 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OrderConfirmationScreen = () => {
   const router = useRouter();
+
+  const { orderNumber, deliveryDate, shippingTo } = useLocalSearchParams<{
+    orderNumber?: string;
+    deliveryDate?: string;
+    shippingTo?: string;
+  }>();
 
   const handleContinueShopping = () => {
     router.replace('/(tabs)/Home');
@@ -57,7 +63,9 @@ const OrderConfirmationScreen = () => {
             <View className="flex-1">
               <Text className="text-gray-600 text-sm mb-1">Order Number</Text>
               <Text className="text-gray-900 font-semibold text-base">
-                #ORD-1935
+                {typeof orderNumber === 'string' && orderNumber.length > 0
+                  ? orderNumber
+                  : '#ORD-0000'}
               </Text>
             </View>
           </View>
@@ -72,7 +80,9 @@ const OrderConfirmationScreen = () => {
                 Estimated Delivery
               </Text>
               <Text className="text-gray-900 font-semibold text-base">
-                Mar 22 - Mar 24
+                {typeof deliveryDate === 'string' && deliveryDate.length > 0
+                  ? deliveryDate
+                  : 'N/A'}
               </Text>
             </View>
           </View>
@@ -85,7 +95,9 @@ const OrderConfirmationScreen = () => {
             <View className="flex-1">
               <Text className="text-gray-600 text-sm mb-1">Shipping To</Text>
               <Text className="text-gray-900 font-semibold text-base">
-                Doloribus sed possim, Reprehenderit omnis
+                {typeof shippingTo === 'string' && shippingTo.length > 0
+                  ? shippingTo
+                  : 'Not available'}
               </Text>
             </View>
           </View>

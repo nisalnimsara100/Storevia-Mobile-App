@@ -45,7 +45,7 @@ const Cart = () => {
 
   // Fetch cart from API
   const fetchCart = async () => {
-    const email = 'janaka@gmail.com';
+    const email = process.env.EXPO_PUBLIC_APP_EMAIL;
     if (!email) {
       return;
     }

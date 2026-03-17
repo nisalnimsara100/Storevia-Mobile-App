@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as React from 'react';
 import { useState } from 'react';
 import {
+  Alert,
   Image,
   Modal,
   ScrollView,
@@ -23,6 +24,7 @@ interface CartItem {
   product_quantity: number;
   product_image: string;
   product_discount: string;
+  product_store_id?: number;
 }
 
 interface Address {
@@ -87,7 +89,7 @@ const mapApiAddressToAddress = (addr: ApiAddress): Address => {
 
 const BASE_URL =
   process.env.EXPO_PUBLIC_APP_BASE_URL ?? 'http://192.168.0.100:8000';
-const DEFAULT_EMAIL = 'namal@gmail.com';
+const DEFAULT_EMAIL = process.env.EXPO_PUBLIC_APP_EMAIL ?? '';
 
 const SRI_LANKA_PROVINCES = [
   'Western Province',
@@ -100,6 +102,11 @@ const SRI_LANKA_PROVINCES = [
   'Uva Province',
   'Sabaragamuwa Province',
 ];
+
+const generateOrderNumber = () =>
+  `#ORD-${Math.floor(Math.random() * 10000)
+    .toString()
+    .padStart(4, '0')}`;
 
 const CheckoutScreen = () => {
   const { cartItems } = useLocalSearchParams();
@@ -140,6 +147,8 @@ const CheckoutScreen = () => {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [showProvinceDropdown, setShowProvinceDropdown] = React.useState(false);
   const [userVouchers, setUserVouchers] = useState<UserVoucher[]>([]);
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  const [orderNumber, setOrderNumber] = useState('');
 
   const loadAddresses = React.useCallback(async () => {
     try {
@@ -223,6 +232,10 @@ const CheckoutScreen = () => {
     fetchUserCollectedVouchers();
   }, [loadAddresses]);
 
+  React.useEffect(() => {
+    setOrderNumber(generateOrderNumber());
+  }, []);
+
   const calculateSubtotal = () => {
     return items
       .reduce((total, item) => {
@@ -271,6 +284,18 @@ const CheckoutScreen = () => {
     return totalVoucherDiscount;
   };
 
+  const deliveryDate = React.useMemo(() => {
+    const today = new Date();
+    const min = new Date(today);
+    min.setDate(today.getDate() + 5);
+
+    const year = min.getFullYear();
+    const month = String(min.getMonth() + 1).padStart(2, '0');
+    const day = String(min.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }, []);
+
   const shippingCost = 0;
   const subtotal = parseFloat(calculateSubtotal());
   const discount = parseFloat(calculateDiscount());
@@ -280,6 +305,122 @@ const CheckoutScreen = () => {
   );
 
   const router = useRouter();
+
+  const submitOrder = async () => {
+    if (!selectedAddress) {
+      Alert.alert('Select address', 'Please select a delivery address.');
+      return;
+    }
+
+    if (items.length === 0) {
+      Alert.alert('Empty cart', 'Your cart is empty.');
+      return;
+    }
+
+    if (!BASE_URL) {
+      Alert.alert('Configuration error', 'Base URL is not configured.');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const formData = new FormData();
+
+      formData.append('address_id', selectedAddress.id.toString());
+
+      const finalOrderNumber = orderNumber || generateOrderNumber();
+      formData.append('order_number', finalOrderNumber.replace('#', ''));
+
+      formData.append('delivery_date', deliveryDate);
+
+      formData.append('note', '');
+
+      const hasShippingVoucher = appliedVouchers.some(
+        (v) => v.voucherType === 'shipping',
+      );
+      const deliveryFee = shippingCost;
+
+      if (hasShippingVoucher) {
+        formData.append('order_cod', '0');
+      } else {
+        formData.append('order_cod', deliveryFee.toString());
+      }
+
+      formData.append('order_fee', total.toString());
+      formData.append('user_email', DEFAULT_EMAIL);
+      formData.append('order_status', 'Placed');
+
+      const orderItemsPayload = items.map((item) => {
+        const price = parseFloat(item.product_price);
+        const discount = parseFloat(item.product_discount || '0');
+        const discountedPrice = price * (1 - discount / 100);
+
+        return {
+          product_id: item.id,
+          product_name: item.product_name,
+          product_image: item.product_image,
+          product_quantity: item.product_quantity,
+          // Send discounted unit price to backend instead of original price
+          product_price: discountedPrice.toFixed(2),
+          product_discount: item.product_discount,
+          product_store_id: item.product_store_id,
+        };
+      });
+
+      formData.append('order_items', JSON.stringify(orderItemsPayload));
+
+      const voucherDiscountAmount = calculateVoucherDiscount().toString();
+      formData.append('voucher_discount_amount', voucherDiscountAmount);
+
+      // const productDiscountAmount = calculateDiscount().toString();
+      // formData.append('discount_amount', productDiscountAmount);
+
+      const firstItem = items[0];
+      if (firstItem && firstItem.product_store_id != null) {
+        formData.append('store_id', String(firstItem.product_store_id));
+      }
+
+      const response = await fetch(`${BASE_URL}/api/orders`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        console.error('Failed to submit order:', response.status);
+        Alert.alert(
+          'Order failed',
+          'Could not place your order. Please try again.',
+        );
+        return;
+      }
+
+      const data = await response.json();
+      console.log('Order API response:', data);
+
+      // Navigate to order confirmation screen with real order details
+      const shippingTo = selectedAddress
+        ? `${selectedAddress.name}, ${selectedAddress.address}, ${selectedAddress.city}`
+        : '';
+
+      router.replace({
+        pathname: '/screens/order_confirmation_screen',
+        params: {
+          orderNumber: finalOrderNumber,
+          deliveryDate,
+          shippingTo,
+        },
+      });
+    } catch (error) {
+      console.error('Error submitting order:', error);
+      Alert.alert(
+        'Order failed',
+        'An unexpected error occurred. Please try again.',
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={['top', 'bottom']}>
@@ -501,9 +642,13 @@ const CheckoutScreen = () => {
 
               {/* CTA Section */}
               <View style={styles.ctaContainer}>
-                <TouchableOpacity style={styles.proceedButton}>
+                <TouchableOpacity
+                  style={styles.proceedButton}
+                  onPress={submitOrder}
+                  disabled={isProcessing}
+                >
                   <Text style={styles.proceedButtonText}>
-                    Proceed to Payment
+                    {isProcessing ? 'Placing Order...' : 'Proceed to Payment'}
                   </Text>
                   <Ionicons
                     name="arrow-forward"
@@ -904,7 +1049,6 @@ const CheckoutScreen = () => {
                             style={[
                               styles.voucherMinAmount,
                               { marginTop: 4, color: '#27AE60' },
-                              
                             ]}
                           >
                             (Shipping Voucher)
