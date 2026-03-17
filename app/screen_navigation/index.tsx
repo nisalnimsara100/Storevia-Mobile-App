@@ -38,6 +38,11 @@ const ScreenNavigation = () => {
           <Text className="text-white">Settings Screen</Text>
         </TouchableOpacity>
       </Link>
+      <Link href={'/screens/order_confirmation_screen' as any} asChild>
+        <TouchableOpacity className="bg-blue-500 px-4 py-2 rounded-md mt-4 w-[200px] items-center">
+          <Text className="text-white">Order Confirmation Screen</Text>
+        </TouchableOpacity>
+      </Link>
     </View>
   );
 };
