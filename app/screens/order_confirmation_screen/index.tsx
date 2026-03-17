@@ -8,11 +8,11 @@ const OrderConfirmationScreen = () => {
   const router = useRouter();
 
   const handleContinueShopping = () => {
-    router.push('/(tabs)/Home');
+    router.replace('/(tabs)/Home');
   };
 
   const handleViewOrders = () => {
-    router.push('./my_orders_screen');
+    router.replace('./my_orders_screen');
   };
 
   return (
