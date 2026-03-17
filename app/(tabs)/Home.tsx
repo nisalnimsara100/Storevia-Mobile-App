@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Icons from 'lucide-react-native';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
@@ -20,18 +21,50 @@ import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import Swiper from 'react-native-swiper';
 
 import { Link } from 'expo-router';
-// import { products } from '../../data/productsData';
+
 import FlashSaleCard from '../components/FlashSaleCard';
 import LargeProductTile from '../components/LargeProductTile';
 
-const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL; 
+const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 
 const { width } = Dimensions.get('window');
+
+const DEFAULT_CATEGORIES = [
+  {
+    id: 1,
+    name: 'Electronics',
+    icon: Icons.Smartphone,
+    gradient: 'from-blue-500 to-indigo-500',
+    bg: 'bg-blue-50',
+  },
+  {
+    id: 2,
+    name: 'Fashion',
+    icon: Icons.Shirt,
+    gradient: 'from-pink-500 to-rose-500',
+    bg: 'bg-pink-50',
+  },
+  {
+    id: 3,
+    name: 'Home & Living',
+    icon: Icons.Home,
+    gradient: 'from-amber-500 to-orange-500',
+    bg: 'bg-amber-50',
+  },
+];
 
 const Home = () => {
   const insets = useSafeAreaInsets();
   const [products, setProducts] = useState<any[]>([]);
   useEffect(() => {
+    const fetchProducts = async () => {
+      console.log('Base URL:', BASE_URL);
+      const API_URL = `${BASE_URL}/api/products`;
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      return data.products;
+    };
+
     const loadProducts = async () => {
       try {
         const apiProducts = await fetchProducts();
@@ -45,96 +78,97 @@ const Home = () => {
     loadProducts();
   }, []);
 
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/categories`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (result?.data?.length) {
+        const mappedCategories = result.data.map(
+          (category: any, index: number) => ({
+            id: category.category_id,
+            name: category.category_name,
+            icon:
+              // eslint-disable-next-line import/namespace
+              Icons[category.category_icon as keyof typeof Icons] ||
+              Icons.Smartphone, // safe fallback
+            gradient:
+              DEFAULT_CATEGORIES[index % DEFAULT_CATEGORIES.length]?.gradient ||
+              'from-blue-500 to-indigo-500',
+            bg:
+              DEFAULT_CATEGORIES[index % DEFAULT_CATEGORIES.length]?.bg ||
+              'bg-blue-50',
+          }),
+        );
+
+        setCategories(mappedCategories);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
   const banners = [
     { id: 1, image: require('../../assets/banners/banner1.jpg') },
     { id: 2, image: require('../../assets/banners/banner2.jpg') },
   ];
 
-  const categories = [
-    {
-      id: 1,
-      title: 'Fashion',
-      icon: require('../../assets/icons/icon (1).png'),
-    },
-    {
-      id: 2,
-      title: 'Grab the Deals!',
-      icon: require('../../assets/icons/icon (2).png'),
-    },
-    {
-      id: 3,
-      title: 'Beauty',
-      icon: require('../../assets/icons/icon (3).png'),
-    },
-    {
-      id: 4,
-      title: 'Buy More & Save',
-      icon: require('../../assets/icons/icon (4).png'),
-    },
-    {
-      id: 5,
-      title: 'Shop Anywhere',
-      icon: require('../../assets/icons/icon (5).png'),
-    },
-  ];
-
   // Use the shared products data
-  // Use first 3 products for flash sale items
   const flashSaleItems = products.slice(0, 3);
-
-  const API_URL = `${BASE_URL}/api/products`;
-
-  const getOrders = async () => {
-    console.log('Fetching products...');
-    try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      console.log('Product from API:', data);
-    } catch (e) {
-      console.log('API error:', e);
-    }
-  };
-
-  const fetchProducts = async () => {
-    console.log("Base URL:", BASE_URL);
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    return data.products;
-  };
 
   const mapProductFromApi = (item: any) => {
     const mainImage = item.product_image ? { uri: item.product_image } : null;
 
-    const extraImages = Array.isArray(item.product_images)
-      ? item.product_images
+    const extraImages = Array.isArray(item.images)
+      ? item.images
           .map((img: any) => img.image_path)
           .filter(
             (url: string) =>
-              typeof url === 'string' &&
-              url.startsWith('https://') &&
-              !url.includes('http', 10),
+              typeof url === 'string' && url.startsWith('https://'),
           )
           .map((url: string) => ({ uri: url }))
       : [];
+
     const images = mainImage ? [mainImage, ...extraImages] : extraImages;
+
+    const originalPrice = parseFloat(item.product_price) || 0;
+    const discountPercent = parseFloat(item.product_discount) || 0;
+    const discountedPrice =
+      originalPrice - (discountPercent * originalPrice) / 100;
 
     return {
       id: item.product_id,
       name: item.product_name,
       image: mainImage,
       images,
-      price: item.product_discount
-        ? item.product_price -
-          (item.product_discount * item.product_price) / 100
-        : undefined,
-      oldPrice: item.product_price,
-      discount: item.product_discount ?? 0,
+      price:
+        discountPercent > 0
+          ? Math.round(discountedPrice * 100) / 100
+          : originalPrice,
+      oldPrice: originalPrice,
+      discount: discountPercent,
       stock: item.product_stock ?? 0,
-      rating: item.product_rating ?? 0,
+      rating: parseFloat(item.product_rating) ?? 0,
       reviews: 0,
       sold: 0,
-      badges: item.is_on_sale ? ['On Sale'] : [],
+      // badges: item.is_on_sale ? ['On Sale'] : [],
       description: item.product_description ?? '',
+      product_cod: item.product_cod ?? 0,
+      store_name: item.store?.store_name ?? 'Unknown Store',
+      store_id: item.store?.store_id ?? 0,
+      category: item.product_category ?? '',
     };
   };
 
@@ -210,7 +244,9 @@ const Home = () => {
       case 'content':
         return (
           <View style={styles.content}>
+            <Text className="text-lg font-bold text-gray-700">Shop by Categories</Text>
             <View className="flex-row justify-between items-center mb-4">
+              
               <TouchableOpacity
                 style={{ width: scale(140), height: verticalScale(90) }}
                 className="rounded-xl bg-yellow-100 p-3 justify-between"
@@ -241,42 +277,40 @@ const Home = () => {
               <View className="mt-4">
                 <FlatList
                   data={categories}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      activeOpacity={0.8}
-                      onPress={() => console.log(`${item.title} clicked`)}
-                      className="items-center mx-3"
-                    >
-                      <View
-                        style={{ width: scale(70), height: scale(70) }}
-                        className="bg-orange-200 p-4 rounded-2xl shadow-md flex items-center justify-center"
+                  renderItem={({ item }) => {
+                    const IconComponent = item.icon;
+                    return (
+                      <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => console.log(`${item.name} clicked`)}
+                        className="items-center mx-3"
                       >
-                        <Image
-                          source={item.icon}
-                          style={{ width: scale(35), height: scale(35) }}
-                          resizeMode="contain"
-                        />
-                      </View>
-                      <Text
-                        style={{ fontSize: moderateScale(11) }}
-                        className="font-semibold text-gray-700 mt-2 text-center"
-                      >
-                        {item.title}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
+                        <View
+                          style={{ width: scale(70), height: scale(70) }}
+                          className="bg-white p-4 rounded-2xl shadow-md flex items-center justify-center"
+                        >
+                          <IconComponent
+                            width={scale(35)}
+                            height={scale(35)}
+                            color="#666"
+                            strokeWidth={1.5}
+                          />
+                        </View>
+                        <Text
+                          style={{ fontSize: moderateScale(11) }}
+                          className="font-semibold text-gray-700 mt-2 text-center"
+                        >
+                          {item.name}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  }}
                   keyExtractor={(item) => item.id.toString()}
                   horizontal
                   showsHorizontalScrollIndicator={false}
                 />
               </View>
             </View>
-            <TouchableOpacity
-              className="bg-orange-100 p-4 rounded-lg items-center justify-center mb-4"
-              onPress={getOrders}
-            >
-              <Text className="text-orange-700 font-semibold">Test</Text>
-            </TouchableOpacity>
           </View>
         );
 

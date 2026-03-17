@@ -1,10 +1,13 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Swiper from 'react-native-swiper';
 
+import { CartContext } from '../../context/cartContext';
+
 interface ProductCardProps {
   product: {
+    id: string | number;
     image: any;
     images?: any[];
     name: string;
@@ -32,6 +35,13 @@ export default function ProductCard({ product }: ProductCardProps) {
       : product.image
         ? [product.image]
         : [];
+
+  const { addToCart } = useContext(CartContext)!;
+
+  const handleAddToCart = () => {
+    // console.log(JSON.stringify(product, null, 2));
+    addToCart(product);
+  };
 
   return (
     <View style={styles.container}>
@@ -181,7 +191,13 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Text style={styles.description}>{product.description}</Text>
 
         {/* Add to Cart Button */}
-        <Text style={styles.addToCartButton}>Add to Cart</Text>
+        <TouchableOpacity
+          style={styles.addToCartButton}
+          onPress={handleAddToCart}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -471,9 +487,11 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addToCartButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
 });

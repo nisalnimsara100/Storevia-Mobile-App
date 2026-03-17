@@ -1,9 +1,10 @@
-import { useFonts } from 'expo-font'
-import { SplashScreen, Stack } from 'expo-router'
-import { useEffect } from 'react'
-
+import { useFonts } from 'expo-font';
+import { SplashScreen, Stack } from 'expo-router';
+import React, { useEffect } from 'react';
+import { CartProviderWrapper } from './context/cartProviderWrapper';
 if (typeof setImmediate === 'undefined') {
-  global.setImmediate = ((fn: any, ...args: any[]) => setTimeout(fn, 0, ...args)) as any;
+  global.setImmediate = ((fn: any, ...args: any[]) =>
+    setTimeout(fn, 0, ...args)) as any;
 }
 
 export default function RootLayout() {
@@ -13,26 +14,28 @@ export default function RootLayout() {
     PoppinsMedium: require('../assets/fonts/Poppins-Medium.ttf'),
     PoppinsSemiBold: require('../assets/fonts/Poppins-SemiBold.ttf'),
     PoppinsLight: require('../assets/fonts/Poppins-Light.ttf'),
-  })
+  });
 
   useEffect(() => {
     if (!fontsLoaded) {
-      SplashScreen.preventAutoHideAsync()
+      SplashScreen.preventAutoHideAsync();
     } else {
-      SplashScreen.hideAsync()
+      SplashScreen.hideAsync();
     }
-  }, [fontsLoaded])
+  }, [fontsLoaded]);
 
-  if (!fontsLoaded) return null
+  if (!fontsLoaded) return null;
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,                
-        contentStyle: { backgroundColor: '#ffffff' }, 
-      }}
-    >
-      <Stack.Screen name="(tabs)" />
-    </Stack>
-  )
+    <CartProviderWrapper>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: '#ffffff' },
+        }}
+      >
+        <Stack.Screen name="(tabs)" />
+      </Stack>
+    </CartProviderWrapper>
+  );
 }

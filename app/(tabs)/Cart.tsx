@@ -1,211 +1,434 @@
-"use client"
+'use client';
 
-import React, { useState, useMemo } from "react"
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  View,
+  Image,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  Image,
-} from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
-import { Ionicons } from "@expo/vector-icons"
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { s, vs } from 'react-native-size-matters';
 
-type CartItem = {
-  id: number
-  store: string
-  title: string
-  brand: string
-  family: string
-  price: number
-  originalPrice: number
-  discount: string
-  quantity: number
-  image: string
+const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
+
+interface CartItem {
+  id: number;
+  email: string;
+  product_id: string;
+  product_name: string;
+  product_image: string;
+  product_price: string;
+  product_cod: string;
+  product_OriginalPrice: string;
+  product_quantity: number;
+  stock_available: number;
+  product_category: string;
+  product_discount: string;
+  product_store_name: string;
+  product_store_id: number;
+  product_selected_color: string;
+  product_selected_size: string;
+  created_at?: string;
+  selected?: boolean;
 }
 
 const Cart = () => {
-  const [selectAll, setSelectAll] = useState(false)
+  const [selectAll, setSelectAll] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const router = useRouter();
 
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      store: "FashionApple",
-      title: "2 Layers Wooden Jewelry Box with Lock...",
-      brand: "No Brand",
-      family: "Color Family:1.8CM",
-      price: 505,
-      originalPrice: 1010,
-      discount: "Buy 2 get 2% off",
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=200",
-    },
-    {
-      id: 2,
-      store: "FashionApple",
-      title: "Wooden Ring Holder Box...",
-      brand: "No Brand",
-      family: "Color Family:Brown",
-      price: 320,
-      originalPrice: 500,
-      discount: "10% off",
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=200",
-    },
-    {
-      id: 3,
-      store: "TechWorld",
-      title: "Wireless Bluetooth Headset...",
-      brand: "Sony",
-      family: "Color: Black",
-      price: 4500,
-      originalPrice: 6500,
-      discount: "30% off",
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1518443895471-1c98f7f6a0c2?w=200",
-    },
-  ])
+  // Fetch cart from API
+  const fetchCart = async () => {
+    const email = 'janaka@gmail.com';
+    if (!email) {
+      return;
+    }
+    console.log('Fetching cart for email:', email);
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/get_cart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_email: email }),
+      });
+
+      const data = await res.json();
+      console.log('Cart data:', data);
+
+      if (data.cart_items && Array.isArray(data.cart_items)) {
+        const items = data.cart_items.map((item: CartItem) => ({
+          ...item,
+          selected: true,
+        }));
+        setCartItems(items);
+      } else {
+        setCartItems([]);
+      }
+    } catch (err) {
+      console.error('Error fetching cart:', err);
+      setCartItems([]);
+    }
+  };
+
+  // Fetch cart on component mount
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  // Refetch cart when screen is focused (real-time update)
+  useFocusEffect(
+    useCallback(() => {
+      fetchCart();
+    }, []),
+  );
 
   /* ---------- GROUP BY STORE ---------- */
-const groupedByStore = useMemo(() => {
-  return cartItems.reduce<Record<string, CartItem[]>>((acc, item) => {
-    const storeName = item.store?.trim() || "Unknown Store"
+  const groupedByStore = useMemo(() => {
+    return cartItems.reduce<Record<string, CartItem[]>>((acc, item) => {
+      const storeName = item.product_store_name?.trim() || 'Unknown Store';
 
-    if (!acc[storeName]) acc[storeName] = []
-    acc[storeName].push(item)
+      if (!acc[storeName]) acc[storeName] = [];
+      acc[storeName].push(item);
 
-    return acc
-  }, {})
-}, [cartItems])
+      return acc;
+    }, {});
+  }, [cartItems]);
 
+  // Calculate totals
+  const { subtotal, selectedCount } = useMemo(() => {
+    const selected = cartItems.filter((item) => item.selected);
+    const total = selected.reduce((sum, item) => {
+      return sum + parseFloat(item.product_price) * item.product_quantity;
+    }, 0);
+    return { subtotal: total.toFixed(2), selectedCount: selected.length };
+  }, [cartItems]);
+
+  // Update selectAll state when cart items change
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      setSelectAll(cartItems.every((item) => item.selected));
+    } else {
+      setSelectAll(false);
+    }
+  }, [cartItems]);
 
   const updateQty = (id: number, change: number) => {
-    setCartItems(items =>
-      items.map(item =>
+    setCartItems((items) =>
+      items.map((item) =>
         item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
-          : item
-      )
-    )
-  }
+          ? {
+              ...item,
+              product_quantity: Math.max(1, item.product_quantity + change),
+            }
+          : item,
+      ),
+    );
+  };
 
   const CheckBox = ({ checked = false }) => (
     <View
-      className={`w-5 h-5 rounded border-2 ${
-        checked ? "bg-orange-500 border-orange-500" : "border-gray-300"
-      }`}
+      style={{
+        width: s(15),
+        height: vs(15),
+        borderRadius: s(4),
+        borderWidth: 2,
+        backgroundColor: checked ? '#f97316' : 'transparent',
+        borderColor: checked ? '#f97316' : '#d1d5db',
+      }}
     />
-  )
+  );
+
+  // Toggle select all items
+  const handleSelectAll = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    setCartItems((items) =>
+      items.map((item) => ({ ...item, selected: newSelectAll })),
+    );
+  };
+
+  // Toggle select single item
+  const handleSelectItem = (id: number) => {
+    setCartItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, selected: !item.selected } : item,
+      ),
+    );
+  };
+
+  // Handle checkout navigation
+  const handleCheckout = () => {
+    const selectedItems = cartItems.filter((item) => item.selected);
+    if (selectedItems.length === 0) {
+      alert('Please select at least one item');
+      return;
+    }
+    router.push({
+      pathname: '/screens/checkout_screen',
+      params: { cartItems: JSON.stringify(selectedItems) },
+    });
+  };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={["top", "bottom"]}>
+    <SafeAreaView className="flex-1 bg-gray-100" edges={['top', 'bottom']}>
       {/* ---------- HEADER ---------- */}
-      <View className="flex-row items-center bg-orange-500 px-3 py-2">
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: '#f97316',
+          paddingHorizontal: s(12),
+          paddingVertical: vs(8),
+        }}
+      >
         <TouchableOpacity>
-          <Ionicons name="scan" size={22} color="#333" />
+          <Ionicons name="scan" size={s(22)} color="#333" />
         </TouchableOpacity>
 
-        <View className="flex-1 flex-row bg-white rounded-lg mx-3 px-3 items-center">
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            backgroundColor: '#fff',
+            borderRadius: s(8),
+            marginHorizontal: s(12),
+            paddingHorizontal: s(12),
+            alignItems: 'center',
+          }}
+        >
           <TextInput
             placeholder="Storevia"
             placeholderTextColor="#aaa"
-            className="flex-1 text-sm py-2"
+            style={{ flex: 1, fontSize: s(14), paddingVertical: vs(8) }}
           />
-          <TouchableOpacity className="bg-orange-500 px-3 py-1.5 rounded-md">
-            <Text className="text-white text-xs font-semibold">Search</Text>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#f97316',
+              paddingHorizontal: s(12),
+              paddingVertical: vs(6),
+              borderRadius: s(6),
+            }}
+          >
+            <Text style={{ color: '#fff', fontSize: s(12), fontWeight: '600' }}>
+              Search
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity className="bg-green-500 px-3 py-1.5 rounded-md">
-          <Text className="text-white text-xs font-semibold">Pay</Text>
+        <TouchableOpacity
+          style={{
+            backgroundColor: '#22c55e',
+            paddingHorizontal: s(12),
+            paddingVertical: vs(6),
+            borderRadius: s(6),
+          }}
+        >
+          <Text style={{ color: '#fff', fontSize: s(12), fontWeight: '600' }}>
+            Pay
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* ---------- CONTENT ---------- */}
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 120 }}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: vs(120) }}
         showsVerticalScrollIndicator={false}
       >
         {/* TITLE */}
-        <View className="bg-white px-4 py-3">
-          <Text className="text-xl font-bold text-gray-800">My Cart</Text>
+        <View
+          style={{
+            backgroundColor: '#fff',
+            paddingHorizontal: s(16),
+            paddingVertical: vs(12),
+          }}
+        >
+          <Text
+            style={{ fontSize: s(20), fontWeight: 'bold', color: '#1f2937' }}
+          >
+            My Cart
+          </Text>
         </View>
 
         {/* STORES */}
         {Object.entries(groupedByStore).map(([storeName, items]) => (
-          <View key={storeName} className="mt-2 bg-white">
+          <View
+            key={storeName}
+            style={{ marginTop: vs(8), backgroundColor: '#fff' }}
+          >
             {/* STORE HEADER */}
-            <View className="flex-row items-center px-4 py-3 border-b border-gray-200">
-              <CheckBox checked={selectAll} />
-              <Text className="ml-2 text-sm font-semibold text-gray-800">
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: s(16),
+                paddingVertical: vs(12),
+                borderBottomWidth: 1,
+                borderBottomColor: '#e5e7eb',
+              }}
+              onPress={() => {
+                const allSelected = items.every((item) => item.selected);
+                setCartItems((cartItems) =>
+                  cartItems.map((cartItem) =>
+                    items.some((i) => i.id === cartItem.id)
+                      ? { ...cartItem, selected: !allSelected }
+                      : cartItem,
+                  ),
+                );
+              }}
+            >
+              <CheckBox checked={items.every((item) => item.selected)} />
+              <Text
+                style={{
+                  marginLeft: s(8),
+                  fontSize: s(14),
+                  fontWeight: '600',
+                  color: '#1f2937',
+                }}
+              >
                 🏪 {storeName}
               </Text>
-            </View>
+            </TouchableOpacity>
 
             {/* STORE ITEMS */}
-            {items.map(item => (
+            {items.map((item) => (
               <View
                 key={item.id}
-                className="flex-row px-3 py-3 items-center"
+                style={{
+                  flexDirection: 'row',
+                  paddingHorizontal: s(12),
+                  paddingVertical: vs(12),
+                  alignItems: 'center',
+                }}
               >
-                <CheckBox checked={selectAll} />
+                <TouchableOpacity onPress={() => handleSelectItem(item.id)}>
+                  <CheckBox checked={item.selected ?? false} />
+                </TouchableOpacity>
 
                 <Image
-                  source={{ uri: item.image }}
-                  className="w-20 h-20 rounded-lg mx-3"
+                  source={{ uri: item.product_image }}
+                  style={{
+                    width: s(80),
+                    height: vs(80),
+                    borderRadius: s(8),
+                    marginHorizontal: s(12),
+                  }}
                 />
 
-                <View className="flex-1">
+                <View style={{ flex: 1 }}>
                   <Text
-                    className="text-sm font-medium text-gray-800"
+                    style={{
+                      fontSize: s(12),
+                      fontWeight: '500',
+                      color: '#1f2937',
+                    }}
                     numberOfLines={2}
                   >
-                    {item.title}
+                    {item.product_name}
                   </Text>
 
-                  <Text className="text-xs text-gray-500 mt-1">
-                    {item.brand} • {item.family}
+                  <Text
+                    style={{
+                      fontSize: s(10),
+                      color: '#6b7280',
+                      marginTop: vs(4),
+                    }}
+                  >
+                    {item.product_category}
                   </Text>
 
-                  <View className="flex-row items-center mt-1">
-                    <Text className="text-orange-500 font-bold text-base mr-2">
-                      Rs. {item.price}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginTop: vs(4),
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: '#f97316',
+                        fontWeight: 'bold',
+                        fontSize: s(12),
+                        marginRight: s(8),
+                      }}
+                    >
+                      Rs. {item.product_price}
                     </Text>
-                    <Text className="text-gray-400 line-through text-xs">
-                      Rs. {item.originalPrice}
+                    <Text
+                      style={{
+                        color: '#9ca3af',
+                        textDecorationLine: 'line-through',
+                        fontSize: s(10),
+                      }}
+                    >
+                      Rs. {item.product_OriginalPrice}
                     </Text>
                   </View>
 
-                  <View className="bg-orange-100 px-2 py-0.5 rounded mt-1 self-start">
-                    <Text className="text-[10px] text-orange-700">
-                      {item.discount}
+                  <View
+                    style={{
+                      backgroundColor: '#fed7aa',
+                      paddingHorizontal: s(8),
+                      paddingVertical: vs(2),
+                      borderRadius: s(4),
+                      marginTop: vs(4),
+                      alignSelf: 'flex-start',
+                    }}
+                  >
+                    <Text style={{ fontSize: s(10), color: '#b45309' }}>
+                      {item.product_discount}%
                     </Text>
                   </View>
                 </View>
 
                 {/* QTY */}
-                <View className="flex-row border border-gray-300 rounded-md ml-2">
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    borderWidth: 1,
+                    borderColor: '#d1d5db',
+                    borderRadius: s(6),
+                    marginLeft: s(8),
+                  }}
+                >
                   <TouchableOpacity
-                    className="w-8 h-8 items-center justify-center"
+                    style={{
+                      width: s(24),
+                      height: vs(24),
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                     onPress={() => updateQty(item.id, -1)}
                   >
-                    <Text className="text-lg">−</Text>
+                    <Text style={{ fontSize: s(18) }}>−</Text>
                   </TouchableOpacity>
 
-                  <Text className="px-3 self-center">
-                    {item.quantity}
+                  <Text
+                    style={{
+                      paddingHorizontal: s(12),
+                      alignSelf: 'center',
+                      fontSize: s(14),
+                    }}
+                  >
+                    {item.product_quantity}
                   </Text>
 
                   <TouchableOpacity
-                    className="w-8 h-8 items-center justify-center"
+                    style={{
+                      width: s(24),
+                      height: vs(24),
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                     onPress={() => updateQty(item.id, 1)}
                   >
-                    <Text className="text-lg">+</Text>
+                    <Text style={{ fontSize: s(18) }}>+</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -215,32 +438,53 @@ const groupedByStore = useMemo(() => {
       </ScrollView>
 
       {/* ---------- CHECKOUT BAR ---------- */}
-      <View className="bg-white px-4 py-3 flex-row items-center justify-between border-t border-gray-200">
+      <View
+        style={{
+          backgroundColor: '#fff',
+          paddingHorizontal: s(16),
+          paddingVertical: vs(12),
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderTopWidth: 1,
+          borderTopColor: '#e5e7eb',
+        }}
+      >
         <TouchableOpacity
-          className="flex-row items-center"
-          onPress={() => setSelectAll(!selectAll)}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+          onPress={handleSelectAll}
         >
           <CheckBox checked={selectAll} />
-          <Text className="ml-2 text-sm">All</Text>
+          <Text style={{ marginLeft: s(8), fontSize: s(14) }}>All</Text>
         </TouchableOpacity>
 
         <View>
-          <Text className="text-orange-500 font-bold">
-            Subtotal: Rs. 847
+          <Text
+            style={{ color: '#f97316', fontWeight: 'bold', fontSize: s(14) }}
+          >
+            Subtotal: Rs. {subtotal}
           </Text>
-          <Text className="text-xs text-gray-500">
-            Shipping: Rs. 590
+          <Text style={{ fontSize: s(12), color: '#6b7280' }}>
+            Shipping: Rs. 0
           </Text>
         </View>
 
-        <TouchableOpacity className="bg-orange-500 px-4 py-2 rounded-md">
-          <Text className="text-white font-semibold text-sm">
-            Checkout (2)
+        <TouchableOpacity
+          style={{
+            backgroundColor: '#f97316',
+            paddingHorizontal: s(16),
+            paddingVertical: vs(8),
+            borderRadius: s(6),
+          }}
+          onPress={handleCheckout}
+        >
+          <Text style={{ color: '#fff', fontWeight: '600', fontSize: s(14) }}>
+            Checkout ({selectedCount})
           </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default Cart
+export default Cart;
