@@ -6,6 +6,7 @@ import {
   Modal,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -13,7 +14,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-
 
 interface CartItem {
   id: number;
@@ -41,6 +41,62 @@ interface Voucher {
   description: string;
 }
 
+interface ApiAddress {
+  id: number;
+  firstName?: string;
+  lastName?: string;
+  address?: string;
+  addressLine2?: string | null;
+  city?: string;
+  province?: string;
+  phone?: string;
+  useAsBilling?: boolean;
+}
+
+interface AddressApiResponse {
+  billingAddress?: ApiAddress | null;
+  allAddresses?: ApiAddress[];
+}
+
+const mapApiAddressToAddress = (addr: ApiAddress): Address => {
+  const fullName = `${addr.firstName ?? ''} ${addr.lastName ?? ''}`
+    .trim()
+    .replace(/\s+/g, ' ');
+
+  const addressLine = [addr.address, addr.addressLine2]
+    .filter((part) => part && part.toString().trim().length > 0)
+    .join(', ');
+
+  const cityLine = [addr.city, addr.province]
+    .filter((part) => part && part.toString().trim().length > 0)
+    .join(', ');
+
+  return {
+    id: addr.id,
+    type: addr.useAsBilling ? 'Billing' : 'Address',
+    name: fullName || 'Unnamed',
+    phone: addr.phone ?? '',
+    address: addressLine,
+    city: cityLine,
+  };
+};
+
+const BASE_URL =
+  process.env.EXPO_PUBLIC_APP_BASE_URL ?? 'http://192.168.0.100:8000';
+const DEFAULT_EMAIL = 'devindathisera@gmail.com';
+
+const SRI_LANKA_PROVINCES = [
+  'Western Province',
+  'Central Province',
+  'Southern Province',
+  'Northern Province',
+  'Eastern Province',
+  'North Western Province',
+  'North Central Province',
+  'Uva Province',
+  'Sabaragamuwa Province',
+];
+
 const CheckoutScreen = () => {
   const { cartItems } = useLocalSearchParams();
   const [items, setItems] = React.useState<CartItem[]>([]);
@@ -54,31 +110,47 @@ const CheckoutScreen = () => {
   );
   const [showAddNewAddress, setShowAddNewAddress] = React.useState(false);
   const [newAddressForm, setNewAddressForm] = React.useState({
-    name: '',
-    phone: '',
+    firstName: '',
+    lastName: '',
     address: '',
     city: '',
+    province: '',
+    postalCode: '',
+    phone: '',
+    useAsBilling: true,
   });
+  const [addresses, setAddresses] = React.useState<Address[]>([]);
+  const [showProvinceDropdown, setShowProvinceDropdown] = React.useState(false);
 
-  // Sample addresses
-  const addresses: Address[] = [
-    {
-      id: 1,
-      type: 'Home',
-      name: 'John Doe',
-      phone: '+971 50 123 4567',
-      address: '123 Main Street, Apartment 4B',
-      city: 'Dubai',
-    },
-    {
-      id: 2,
-      type: 'Office',
-      name: 'John Doe',
-      phone: '+971 50 123 4567',
-      address: '456 Business Park, Floor 3',
-      city: 'Abu Dhabi',
-    },
-  ];
+  const loadAddresses = React.useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/user/address?email=${encodeURIComponent(
+          DEFAULT_EMAIL,
+        )}`,
+      );
+
+      if (!response.ok) {
+        console.error('Failed to fetch addresses:', response.status);
+        return;
+      }
+
+      const data: AddressApiResponse = await response.json();
+      const apiAddresses = data.allAddresses ?? [];
+
+      const mappedAddresses = apiAddresses.map(mapApiAddressToAddress);
+      setAddresses(mappedAddresses);
+
+      const billingFromAll = apiAddresses.find((addr) => addr.useAsBilling);
+      const billingSource = billingFromAll || data.billingAddress || null;
+
+      if (billingSource) {
+        setSelectedAddress(mapApiAddressToAddress(billingSource));
+      }
+    } catch (error) {
+      console.error('Error fetching addresses:', error);
+    }
+  }, []);
 
   // Sample vouchers
   const vouchers: Voucher[] = [
@@ -117,6 +189,10 @@ const CheckoutScreen = () => {
     }
   }, [cartItems]);
 
+  React.useEffect(() => {
+    loadAddresses();
+  }, [loadAddresses]);
+
   const calculateSubtotal = () => {
     return items
       .reduce((total, item) => {
@@ -145,453 +221,613 @@ const CheckoutScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={['top', 'bottom']}>
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="chevron-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Order Review</Text>
-        <View style={{ width: 40 }} />
-      </View>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="chevron-back" size={24} color="#fff" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Order Review</Text>
+          <View style={{ width: 40 }} />
+        </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        {items.length > 0 ? (
-          <>
-            {/* Order Items Section */}
-            <View style={styles.sectionContainer}>
-              <View style={styles.sectionHeader}>
-                <Ionicons name="bag-check" size={20} color="#FF6B35" />
-                <Text style={styles.sectionTitle}>
-                  Order Items ({items.length})
-                </Text>
-              </View>
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
+          {items.length > 0 ? (
+            <>
+              {/* Order Items Section */}
+              <View style={styles.sectionContainer}>
+                <View style={styles.sectionHeader}>
+                  <Ionicons name="bag-check" size={20} color="#FF6B35" />
+                  <Text style={styles.sectionTitle}>
+                    Order Items ({items.length})
+                  </Text>
+                </View>
 
-              {items.map((item, index) => (
-                <View key={item.id}>
-                  <View style={styles.productCard}>
-                    <View style={styles.productImageContainer}>
-                      {item.product_image ? (
-                        <Image
-                          source={{ uri: item.product_image }}
-                          style={styles.productImage}
-                          resizeMode="cover"
-                        />
-                      ) : (
-                        <View style={styles.placeholderImage}>
-                          <Ionicons name="image" size={32} color="#ccc" />
-                        </View>
-                      )}
-                      {item.product_discount && (
-                        <View style={styles.discountBadge}>
-                          <Text style={styles.discountText}>
-                            {item.product_discount}%
+                {items.map((item, index) => (
+                  <View key={item.id}>
+                    <View style={styles.productCard}>
+                      <View style={styles.productImageContainer}>
+                        {item.product_image ? (
+                          <Image
+                            source={{ uri: item.product_image }}
+                            style={styles.productImage}
+                            resizeMode="cover"
+                          />
+                        ) : (
+                          <View style={styles.placeholderImage}>
+                            <Ionicons name="image" size={32} color="#ccc" />
+                          </View>
+                        )}
+                        {item.product_discount && (
+                          <View style={styles.discountBadge}>
+                            <Text style={styles.discountText}>
+                              {item.product_discount}%
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+
+                      <View style={styles.productDetails}>
+                        <Text style={styles.productName} numberOfLines={2}>
+                          {item.product_name}
+                        </Text>
+
+                        <View style={styles.priceContainer}>
+                          <Text style={styles.currentPrice}>
+                            Rs.{' '}
+                            {(
+                              parseFloat(item.product_price) *
+                              (1 -
+                                parseFloat(item.product_discount || '0') / 100)
+                            ).toFixed(2)}
                           </Text>
+                          {item.product_discount && (
+                            <Text style={styles.originalPrice}>
+                              Rs. {item.product_price}
+                            </Text>
+                          )}
                         </View>
-                      )}
-                    </View>
 
-                    <View style={styles.productDetails}>
-                      <Text style={styles.productName} numberOfLines={2}>
-                        {item.product_name}
-                      </Text>
+                        <View style={styles.quantityContainer}>
+                          <Text style={styles.quantityLabel}>Quantity:</Text>
+                          <View style={styles.quantityBadge}>
+                            <Text style={styles.quantityValue}>
+                              {item.product_quantity}
+                            </Text>
+                          </View>
+                        </View>
 
-                      <View style={styles.priceContainer}>
-                        <Text style={styles.currentPrice}>
-                          Rs.{' '}
+                        <Text style={styles.itemTotal}>
+                          Total: Rs.{' '}
                           {(
                             parseFloat(item.product_price) *
+                            item.product_quantity *
                             (1 - parseFloat(item.product_discount || '0') / 100)
                           ).toFixed(2)}
                         </Text>
-                        {item.product_discount && (
-                          <Text style={styles.originalPrice}>
-                            Rs. {item.product_price}
-                          </Text>
-                        )}
                       </View>
-
-                      <View style={styles.quantityContainer}>
-                        <Text style={styles.quantityLabel}>Quantity:</Text>
-                        <View style={styles.quantityBadge}>
-                          <Text style={styles.quantityValue}>
-                            {item.product_quantity}
-                          </Text>
-                        </View>
-                      </View>
-
-                      <Text style={styles.itemTotal}>
-                        Total: Rs.{' '}
-                        {(
-                          parseFloat(item.product_price) *
-                          item.product_quantity *
-                          (1 - parseFloat(item.product_discount || '0') / 100)
-                        ).toFixed(2)}
-                      </Text>
                     </View>
+
+                    {index < items.length - 1 && (
+                      <View style={styles.divider} />
+                    )}
                   </View>
-
-                  {index < items.length - 1 && <View style={styles.divider} />}
-                </View>
-              ))}
-            </View>
-
-            {/* Delivery & Promo Section */}
-            <View style={styles.sectionContainer}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => setShowAddressModal(true)}
-                style={styles.infoCard}
-              >
-                <View style={styles.infoBadge}>
-                  <Ionicons name="location" size={20} color="#FF6B35" />
-                </View>
-                <View style={styles.infoContent}>
-                  <Text style={styles.infoLabel}>Delivery Address</Text>
-                  <Text style={styles.infoValue}>
-                    {selectedAddress
-                      ? selectedAddress.address
-                      : 'Select Delivery Address'}
-                  </Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color="#ccc" />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => setShowVoucherModal(true)}
-                style={styles.infoCard}
-              >
-                <View style={styles.infoBadge}>
-                  <Ionicons name="ticket" size={20} color="#FF6B35" />
-                </View>
-                <View style={styles.infoContent}>
-                  <Text style={styles.infoLabel}>Promo Code</Text>
-                  <Text style={styles.infoValue}>
-                    {appliedVoucher ? appliedVoucher.code : 'Apply Coupon Code'}
-                  </Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color="#ccc" />
-              </TouchableOpacity>
-            </View>
-
-            {/* Price Breakdown Section */}
-            <View style={styles.sectionContainer}>
-              <View style={styles.sectionHeader}>
-                <Ionicons name="calculator" size={20} color="#FF6B35" />
-                <Text style={styles.sectionTitle}>Price Details</Text>
+                ))}
               </View>
 
-              <View style={styles.priceBreakdown}>
-                <View style={styles.priceRow}>
-                  <Text style={styles.priceLabel}>Subtotal</Text>
-                  <Text style={styles.priceValue}>
-                    Rs. {subtotal.toFixed(2)}
-                  </Text>
+              {/* Delivery & Promo Section */}
+              <View style={styles.sectionContainer}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => setShowAddressModal(true)}
+                  style={styles.infoCard}
+                >
+                  <View style={styles.infoBadge}>
+                    <Ionicons name="location" size={20} color="#FF6B35" />
+                  </View>
+                  <View style={styles.infoContent}>
+                    <Text style={styles.infoLabel}>Delivery Address</Text>
+                    <Text style={styles.infoValue}>
+                      {selectedAddress
+                        ? selectedAddress.address
+                        : 'Select Delivery Address'}
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color="#ccc" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => setShowVoucherModal(true)}
+                  style={styles.infoCard}
+                >
+                  <View style={styles.infoBadge}>
+                    <Ionicons name="ticket" size={20} color="#FF6B35" />
+                  </View>
+                  <View style={styles.infoContent}>
+                    <Text style={styles.infoLabel}>Promo Code</Text>
+                    <Text style={styles.infoValue}>
+                      {appliedVoucher
+                        ? appliedVoucher.code
+                        : 'Apply Coupon Code'}
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color="#ccc" />
+                </TouchableOpacity>
+              </View>
+
+              {/* Price Breakdown Section */}
+              <View style={styles.sectionContainer}>
+                <View style={styles.sectionHeader}>
+                  <Ionicons name="calculator" size={20} color="#FF6B35" />
+                  <Text style={styles.sectionTitle}>Price Details</Text>
                 </View>
 
-                {discount > 0 && (
+                <View style={styles.priceBreakdown}>
                   <View style={styles.priceRow}>
-                    <Text style={styles.discountLabel}>Discount</Text>
-                    <Text style={styles.discountValue}>- Rs. {discount}</Text>
+                    <Text style={styles.priceLabel}>Subtotal</Text>
+                    <Text style={styles.priceValue}>
+                      Rs. {subtotal.toFixed(2)}
+                    </Text>
                   </View>
-                )}
 
-                <View style={styles.priceRow}>
-                  <Text style={styles.priceLabel}>Shipping</Text>
-                  <Text style={[styles.priceValue, { color: '#27AE60' }]}>
-                    Free
-                  </Text>
-                </View>
+                  {discount > 0 && (
+                    <View style={styles.priceRow}>
+                      <Text style={styles.discountLabel}>Discount</Text>
+                      <Text style={styles.discountValue}>- Rs. {discount}</Text>
+                    </View>
+                  )}
 
-                <View style={styles.totalDivider} />
+                  <View style={styles.priceRow}>
+                    <Text style={styles.priceLabel}>Shipping</Text>
+                    <Text style={[styles.priceValue, { color: '#27AE60' }]}>
+                      Free
+                    </Text>
+                  </View>
 
-                <View style={styles.totalRow}>
-                  <Text style={styles.totalLabel}>Total Amount</Text>
-                  <Text style={styles.totalValue}>Rs. {total}</Text>
-                </View>
+                  <View style={styles.totalDivider} />
 
-                <View style={styles.savingsContainer}>
-                  <Ionicons name="checkmark-circle" size={16} color="#27AE60" />
-                  <Text style={styles.savingsText}>
-                    You saved Rs. {discount}
-                  </Text>
+                  <View style={styles.totalRow}>
+                    <Text style={styles.totalLabel}>Total Amount</Text>
+                    <Text style={styles.totalValue}>Rs. {total}</Text>
+                  </View>
+
+                  <View style={styles.savingsContainer}>
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={16}
+                      color="#27AE60"
+                    />
+                    <Text style={styles.savingsText}>
+                      You saved Rs. {discount}
+                    </Text>
+                  </View>
                 </View>
               </View>
+
+              {/* CTA Section */}
+              <View style={styles.ctaContainer}>
+                <TouchableOpacity style={styles.proceedButton}>
+                  <Text style={styles.proceedButtonText}>
+                    Proceed to Payment
+                  </Text>
+                  <Ionicons
+                    name="arrow-forward"
+                    size={20}
+                    color="#fff"
+                    style={{ marginLeft: 8 }}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.continueShoppingButton}>
+                  <Text style={styles.continueShoppingText}>
+                    Continue Shopping
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.safeBottom} />
+            </>
+          ) : (
+            <View style={styles.emptyContainer}>
+              <Ionicons name="bag-outline" size={80} color="#ddd" />
+              <Text style={styles.emptyText}>Your cart is empty</Text>
+              <Text style={styles.emptySubtext}>
+                Add items to your cart to proceed
+              </Text>
             </View>
+          )}
+        </ScrollView>
 
-            {/* CTA Section */}
-            <View style={styles.ctaContainer}>
-              <TouchableOpacity style={styles.proceedButton}>
-                <Text style={styles.proceedButtonText}>Proceed to Payment</Text>
-                <Ionicons
-                  name="arrow-forward"
-                  size={20}
-                  color="#fff"
-                  style={{ marginLeft: 8 }}
-                />
-              </TouchableOpacity>
+        {/* Address Modal */}
+        <Modal visible={showAddressModal} transparent animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              {/* Modal Header */}
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Select Delivery Address</Text>
+                <TouchableOpacity onPress={() => setShowAddressModal(false)}>
+                  <Ionicons name="close" size={24} color="#1a1a1a" />
+                </TouchableOpacity>
+              </View>
 
-              <TouchableOpacity style={styles.continueShoppingButton}>
-                <Text style={styles.continueShoppingText}>
-                  Continue Shopping
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.safeBottom} />
-          </>
-        ) : (
-          <View style={styles.emptyContainer}>
-            <Ionicons name="bag-outline" size={80} color="#ddd" />
-            <Text style={styles.emptyText}>Your cart is empty</Text>
-            <Text style={styles.emptySubtext}>
-              Add items to your cart to proceed
-            </Text>
-          </View>
-        )}
-      </ScrollView>
-
-      {/* Address Modal */}
-      <Modal visible={showAddressModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            {/* Modal Header */}
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Delivery Address</Text>
-              <TouchableOpacity onPress={() => setShowAddressModal(false)}>
-                <Ionicons name="close" size={24} color="#1a1a1a" />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView
-              style={styles.modalBody}
-              showsVerticalScrollIndicator={false}
-            >
-              {!showAddNewAddress ? (
-                <>
-                  {/* Existing Addresses */}
-                  {addresses.map((address) => (
-                    <TouchableOpacity
-                      key={address.id}
-                      onPress={() => {
-                        setSelectedAddress(address);
-                        setShowAddressModal(false);
-                      }}
-                      style={[
-                        styles.addressCard,
-                        selectedAddress?.id === address.id &&
-                          styles.addressCardSelected,
-                      ]}
-                    >
-                      <View style={styles.addressCardHeader}>
-                        <View style={styles.addressType}>
-                          <Text style={styles.addressTypeText}>
-                            {address.type}
-                          </Text>
+              <ScrollView
+                style={styles.modalBody}
+                showsVerticalScrollIndicator={false}
+              >
+                {!showAddNewAddress ? (
+                  <>
+                    {/* Existing Addresses */}
+                    {addresses.map((address) => (
+                      <TouchableOpacity
+                        key={address.id}
+                        onPress={() => {
+                          setSelectedAddress(address);
+                          setShowAddressModal(false);
+                        }}
+                        style={[
+                          styles.addressCard,
+                          selectedAddress?.id === address.id &&
+                            styles.addressCardSelected,
+                        ]}
+                      >
+                        <View style={styles.addressCardHeader}>
+                          <View style={styles.addressType}>
+                            <Text style={styles.addressTypeText}>
+                              {address.type}
+                            </Text>
+                          </View>
+                          {selectedAddress?.id === address.id && (
+                            <Ionicons
+                              name="checkmark-circle"
+                              size={24}
+                              color="#FF6B35"
+                            />
+                          )}
                         </View>
-                        {selectedAddress?.id === address.id && (
+                        <Text style={styles.addressName}>{address.name}</Text>
+                        <Text style={styles.addressPhone}>{address.phone}</Text>
+                        <Text style={styles.addressText}>
+                          {address.address}
+                        </Text>
+                        <Text style={styles.addressCity}>{address.city}</Text>
+                      </TouchableOpacity>
+                    ))}
+
+                    {/* Add New Address Button */}
+                    <TouchableOpacity
+                      onPress={() => setShowAddNewAddress(true)}
+                      style={styles.addNewAddressButton}
+                    >
+                      <Ionicons name="add-circle" size={24} color="#FF6B35" />
+                      <Text style={styles.addNewAddressText}>
+                        Add New Address
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <>
+                    {/* Add New Address Form */}
+                    <View style={styles.formContainer}>
+                      <Text style={styles.formTitle}>Add New Address</Text>
+
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="First Name"
+                        placeholderTextColor="#999"
+                        value={newAddressForm.firstName}
+                        onChangeText={(text: string) =>
+                          setNewAddressForm({
+                            ...newAddressForm,
+                            firstName: text,
+                          })
+                        }
+                      />
+
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="Last Name"
+                        placeholderTextColor="#999"
+                        value={newAddressForm.lastName}
+                        onChangeText={(text: string) =>
+                          setNewAddressForm({
+                            ...newAddressForm,
+                            lastName: text,
+                          })
+                        }
+                      />
+
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="Phone Number"
+                        placeholderTextColor="#999"
+                        keyboardType="phone-pad"
+                        value={newAddressForm.phone}
+                        onChangeText={(text: string) =>
+                          setNewAddressForm({ ...newAddressForm, phone: text })
+                        }
+                      />
+
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="Address"
+                        placeholderTextColor="#999"
+                        multiline
+                        numberOfLines={3}
+                        value={newAddressForm.address}
+                        onChangeText={(text: string) =>
+                          setNewAddressForm({
+                            ...newAddressForm,
+                            address: text,
+                          })
+                        }
+                      />
+
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="City"
+                        placeholderTextColor="#999"
+                        value={newAddressForm.city}
+                        onChangeText={(text: string) =>
+                          setNewAddressForm({ ...newAddressForm, city: text })
+                        }
+                      />
+
+                      <View style={styles.dropdownField}>
+                        <TouchableOpacity
+                          style={styles.dropdownButton}
+                          activeOpacity={0.7}
+                          onPress={() =>
+                            setShowProvinceDropdown(!showProvinceDropdown)
+                          }
+                        >
+                          <Text
+                            style={
+                              newAddressForm.province
+                                ? styles.dropdownButtonText
+                                : styles.dropdownButtonPlaceholder
+                            }
+                          >
+                            {newAddressForm.province || 'Select Province'}
+                          </Text>
                           <Ionicons
-                            name="checkmark-circle"
-                            size={24}
-                            color="#FF6B35"
+                            name={
+                              showProvinceDropdown
+                                ? 'chevron-up'
+                                : 'chevron-down'
+                            }
+                            size={18}
+                            color="#666"
                           />
+                        </TouchableOpacity>
+
+                        {showProvinceDropdown && (
+                          <View style={styles.dropdownList}>
+                            {SRI_LANKA_PROVINCES.map((province) => (
+                              <TouchableOpacity
+                                key={province}
+                                style={styles.dropdownItem}
+                                onPress={() => {
+                                  setNewAddressForm({
+                                    ...newAddressForm,
+                                    province,
+                                  });
+                                  setShowProvinceDropdown(false);
+                                }}
+                              >
+                                <Text style={styles.dropdownItemText}>
+                                  {province}
+                                </Text>
+                              </TouchableOpacity>
+                            ))}
+                          </View>
                         )}
                       </View>
-                      <Text style={styles.addressName}>{address.name}</Text>
-                      <Text style={styles.addressPhone}>{address.phone}</Text>
-                      <Text style={styles.addressText}>{address.address}</Text>
-                      <Text style={styles.addressCity}>{address.city}</Text>
-                    </TouchableOpacity>
-                  ))}
 
-                  {/* Add New Address Button */}
-                  <TouchableOpacity
-                    onPress={() => setShowAddNewAddress(true)}
-                    style={styles.addNewAddressButton}
-                  >
-                    <Ionicons name="add-circle" size={24} color="#FF6B35" />
-                    <Text style={styles.addNewAddressText}>
-                      Add New Address
-                    </Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <>
-                  {/* Add New Address Form */}
-                  <View style={styles.formContainer}>
-                    <Text style={styles.formTitle}>Add New Address</Text>
-
-                    <TextInput
-                      style={styles.textInput}
-                      placeholder="Full Name"
-                      placeholderTextColor="#999"
-                      value={newAddressForm.name}
-                      onChangeText={(text: string) =>
-                        setNewAddressForm({ ...newAddressForm, name: text })
-                      }
-                    />
-
-                    <TextInput
-                      style={styles.textInput}
-                      placeholder="Phone Number"
-                      placeholderTextColor="#999"
-                      value={newAddressForm.phone}
-                      onChangeText={(text: string) =>
-                        setNewAddressForm({ ...newAddressForm, phone: text })
-                      }
-                    />
-
-                    <TextInput
-                      style={styles.textInput}
-                      placeholder="Address"
-                      placeholderTextColor="#999"
-                      multiline
-                      numberOfLines={3}
-                      value={newAddressForm.address}
-                      onChangeText={(text: string) =>
-                        setNewAddressForm({ ...newAddressForm, address: text })
-                      }
-                    />
-
-                    <TextInput
-                      style={styles.textInput}
-                      placeholder="City"
-                      placeholderTextColor="#999"
-                      value={newAddressForm.city}
-                      onChangeText={(text: string) =>
-                        setNewAddressForm({ ...newAddressForm, city: text })
-                      }
-                    />
-
-                    <TouchableOpacity
-                      style={styles.saveAddressButton}
-                      onPress={() => {
-                        if (
-                          newAddressForm.name &&
-                          newAddressForm.phone &&
-                          newAddressForm.address &&
-                          newAddressForm.city
-                        ) {
-                          const newAddr: Address = {
-                            id: addresses.length + 1,
-                            type: 'Other',
-                            ...newAddressForm,
-                          };
-                          setSelectedAddress(newAddr);
-                          setShowAddressModal(false);
-                          setShowAddNewAddress(false);
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="Postal Code"
+                        placeholderTextColor="#999"
+                        keyboardType="number-pad"
+                        value={newAddressForm.postalCode}
+                        onChangeText={(text: string) =>
                           setNewAddressForm({
-                            name: '',
-                            phone: '',
-                            address: '',
-                            city: '',
-                          });
+                            ...newAddressForm,
+                            postalCode: text,
+                          })
                         }
-                      }}
-                    >
-                      <Text style={styles.saveAddressButtonText}>
-                        Save Address
-                      </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={styles.backButton2}
-                      onPress={() => setShowAddNewAddress(false)}
-                    >
-                      <Text style={styles.backButtonText}>Back</Text>
-                    </TouchableOpacity>
-                  </View>
-                </>
-              )}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Voucher Modal */}
-      <Modal visible={showVoucherModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            {/* Modal Header */}
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Available Vouchers</Text>
-              <TouchableOpacity onPress={() => setShowVoucherModal(false)}>
-                <Ionicons name="close" size={24} color="#1a1a1a" />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView
-              style={styles.modalBody}
-              showsVerticalScrollIndicator={false}
-            >
-              {vouchers.map((voucher) => (
-                <TouchableOpacity
-                  key={voucher.id}
-                  onPress={() => {
-                    setAppliedVoucher(voucher);
-                    setShowVoucherModal(false);
-                  }}
-                  style={[
-                    styles.voucherCard,
-                    appliedVoucher?.id === voucher.id &&
-                      styles.voucherCardSelected,
-                  ]}
-                >
-                  <View style={styles.voucherLeft}>
-                    <View style={styles.voucherCodeContainer}>
-                      <Ionicons name="ticket" size={20} color="#FF6B35" />
-                      <Text style={styles.voucherCode}>{voucher.code}</Text>
-                    </View>
-                    <Text style={styles.voucherDescription}>
-                      {voucher.description}
-                    </Text>
-                    {voucher.minAmount > 0 && (
-                      <Text style={styles.voucherMinAmount}>
-                        Min. spend: Rs. {voucher.minAmount}
-                      </Text>
-                    )}
-                  </View>
-
-                  <View style={styles.voucherRight}>
-                    <View style={styles.discountCircle}>
-                      <Text style={styles.discountPercent}>
-                        {voucher.discount}%
-                      </Text>
-                      <Text style={styles.discountOff}>OFF</Text>
-                    </View>
-                    {appliedVoucher?.id === voucher.id && (
-                      <Ionicons
-                        name="checkmark-circle"
-                        size={24}
-                        color="#27AE60"
                       />
-                    )}
-                  </View>
-                </TouchableOpacity>
-              ))}
 
-              {appliedVoucher && (
-                <TouchableOpacity
-                  onPress={() => {
-                    setAppliedVoucher(null);
-                    setShowVoucherModal(false);
-                  }}
-                  style={styles.removeVoucherButton}
-                >
-                  <Ionicons name="close-circle" size={20} color="#FF6B35" />
-                  <Text style={styles.removeVoucherText}>Remove Voucher</Text>
-                </TouchableOpacity>
-              )}
-            </ScrollView>
+                      <View style={styles.billingRow}>
+                        <Text style={styles.billingLabel}>
+                          Use as billing address
+                        </Text>
+                        <Switch
+                          value={newAddressForm.useAsBilling}
+                          onValueChange={(value: boolean) =>
+                            setNewAddressForm({
+                              ...newAddressForm,
+                              useAsBilling: value,
+                            })
+                          }
+                          trackColor={{ false: '#ccc', true: '#FF6B35' }}
+                          thumbColor="#fff"
+                        />
+                      </View>
+
+                      <TouchableOpacity
+                        style={styles.saveAddressButton}
+                        onPress={async () => {
+                          if (
+                            newAddressForm.firstName &&
+                            newAddressForm.lastName &&
+                            newAddressForm.phone &&
+                            newAddressForm.address &&
+                            newAddressForm.city &&
+                            newAddressForm.province &&
+                            newAddressForm.postalCode
+                          ) {
+                            try {
+                              const addressPayload = {
+                                firstName: newAddressForm.firstName,
+                                lastName: newAddressForm.lastName,
+                                address: newAddressForm.address,
+                                city: newAddressForm.city,
+                                province: newAddressForm.province,
+                                postalCode: newAddressForm.postalCode,
+                                phone: newAddressForm.phone,
+                                useAsBilling: newAddressForm.useAsBilling,
+                              };
+
+                              const formData = new FormData();
+                              formData.append('email', DEFAULT_EMAIL);
+                              formData.append(
+                                'address',
+                                JSON.stringify(addressPayload),
+                              );
+
+                              const response = await fetch(
+                                `${BASE_URL}/api/user/address/add`,
+                                {
+                                  method: 'POST',
+                                  body: formData,
+                                },
+                              );
+
+                              if (!response.ok) {
+                                console.error(
+                                  'Failed to add address:',
+                                  response.status,
+                                );
+                                return;
+                              }
+
+                              await loadAddresses();
+
+                              setShowAddressModal(false);
+                              setShowAddNewAddress(false);
+                              setNewAddressForm({
+                                firstName: '',
+                                lastName: '',
+                                address: '',
+                                city: '',
+                                province: '',
+                                postalCode: '',
+                                phone: '',
+                                useAsBilling: true,
+                              });
+                              setShowProvinceDropdown(false);
+                            } catch (error) {
+                              console.error('Error adding address:', error);
+                            }
+                          }
+                        }}
+                      >
+                        <Text style={styles.saveAddressButtonText}>
+                          Save Address
+                        </Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.backButton2}
+                        onPress={() => setShowAddNewAddress(false)}
+                      >
+                        <Text style={styles.backButtonText}>Back</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                )}
+              </ScrollView>
+            </View>
           </View>
-        </View>
-      </Modal>
-    </View>
-   </SafeAreaView>
+        </Modal>
+
+        {/* Voucher Modal */}
+        <Modal visible={showVoucherModal} transparent animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              {/* Modal Header */}
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Available Vouchers</Text>
+                <TouchableOpacity onPress={() => setShowVoucherModal(false)}>
+                  <Ionicons name="close" size={24} color="#1a1a1a" />
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView
+                style={styles.modalBody}
+                showsVerticalScrollIndicator={false}
+              >
+                {vouchers.map((voucher) => (
+                  <TouchableOpacity
+                    key={voucher.id}
+                    onPress={() => {
+                      setAppliedVoucher(voucher);
+                      setShowVoucherModal(false);
+                    }}
+                    style={[
+                      styles.voucherCard,
+                      appliedVoucher?.id === voucher.id &&
+                        styles.voucherCardSelected,
+                    ]}
+                  >
+                    <View style={styles.voucherLeft}>
+                      <View style={styles.voucherCodeContainer}>
+                        <Ionicons name="ticket" size={20} color="#FF6B35" />
+                        <Text style={styles.voucherCode}>{voucher.code}</Text>
+                      </View>
+                      <Text style={styles.voucherDescription}>
+                        {voucher.description}
+                      </Text>
+                      {voucher.minAmount > 0 && (
+                        <Text style={styles.voucherMinAmount}>
+                          Min. spend: Rs. {voucher.minAmount}
+                        </Text>
+                      )}
+                    </View>
+
+                    <View style={styles.voucherRight}>
+                      <View style={styles.discountCircle}>
+                        <Text style={styles.discountPercent}>
+                          {voucher.discount}%
+                        </Text>
+                        <Text style={styles.discountOff}>OFF</Text>
+                      </View>
+                      {appliedVoucher?.id === voucher.id && (
+                        <Ionicons
+                          name="checkmark-circle"
+                          size={24}
+                          color="#27AE60"
+                        />
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                ))}
+
+                {appliedVoucher && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setAppliedVoucher(null);
+                      setShowVoucherModal(false);
+                    }}
+                    style={styles.removeVoucherButton}
+                  >
+                    <Ionicons name="close-circle" size={20} color="#FF6B35" />
+                    <Text style={styles.removeVoucherText}>Remove Voucher</Text>
+                  </TouchableOpacity>
+                )}
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -1003,6 +1239,55 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(12),
     fontSize: moderateScale(13),
     color: '#1a1a1a',
+  },
+  dropdownField: {
+    marginBottom: verticalScale(12),
+  },
+  dropdownButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#F5F5F5',
+    borderRadius: moderateScale(8),
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    paddingHorizontal: scale(12),
+    paddingVertical: verticalScale(12),
+  },
+  dropdownButtonText: {
+    fontSize: moderateScale(13),
+    color: '#1a1a1a',
+  },
+  dropdownButtonPlaceholder: {
+    fontSize: moderateScale(13),
+    color: '#999',
+  },
+  dropdownList: {
+    marginTop: verticalScale(4),
+    backgroundColor: '#FFFFFF',
+    borderRadius: moderateScale(8),
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    overflow: 'hidden',
+  },
+  dropdownItem: {
+    paddingHorizontal: scale(12),
+    paddingVertical: verticalScale(10),
+  },
+  dropdownItemText: {
+    fontSize: moderateScale(13),
+    color: '#1a1a1a',
+  },
+  billingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: verticalScale(12),
+  },
+  billingLabel: {
+    fontSize: moderateScale(13),
+    color: '#1a1a1a',
+    fontWeight: '500',
   },
   saveAddressButton: {
     backgroundColor: '#FF6B35',
