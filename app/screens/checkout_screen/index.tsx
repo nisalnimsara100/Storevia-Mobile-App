@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as React from 'react';
 import {
   Image,
@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+
 
 interface CartItem {
   id: number;
@@ -140,12 +141,14 @@ const CheckoutScreen = () => {
   const discount = parseFloat(calculateDiscount());
   const total = (subtotal - discount + shippingCost).toFixed(2);
 
+  const router = useRouter();
+
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={['top', 'bottom']}>
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Order Review</Text>
