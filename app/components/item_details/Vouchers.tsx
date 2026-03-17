@@ -8,8 +8,11 @@ import {
   View,
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import { s, vs} from 'react-native-size-matters';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
+
+const USER_EMAIL = process.env.EXPO_PUBLIC_APP_EMAIL;
 
 interface Voucher {
   id: string | number;
@@ -126,7 +129,7 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
 
   useEffect(() => {
     const fetchVouchers = async (storeId: number) => {
-      const userEmail = 'namal@gmail.com';
+      const userEmail = USER_EMAIL;
       console.log(
         'Fetching vouchers for store ID:',
         storeId,
@@ -179,7 +182,7 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
     //   return;
     // }
 
-    const userEmail = 'namal@gmail.com';
+    const userEmail = USER_EMAIL;
 
     try {
       const response = await fetch(`${BASE_URL}/api/seller/collect_voucher`, {
@@ -255,64 +258,70 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
 
       {/* Scrollable Section */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {vouchers.map((item) => (
-          <View key={item.id} style={styles.ticketWrapper}>
-            <View
-              style={[
-                styles.ticketCard,
-                {
-                  backgroundColor: item.bgColor,
-                  borderColor: item.accentColor,
-                },
-              ]}
-            >
-              {/* Left Section */}
-              <View style={styles.leftSection}>
-                <Text style={[styles.amount, { color: item.accentColor }]}>
-                  {item.voucherCode}
-                </Text>
-                <Text style={styles.condition}>{item.condition}</Text>
-                <Text style={styles.dateRange}>
-                  Till {item.voucherExpiryDate}
-                </Text>
-              </View>
-
-              {/* Middle Section (Divider + Notches) */}
-              <View style={styles.dividerContainer}>
-                {renderTicketNotch('top', '#F5F5F5', item.accentColor)}
-
-                {[...Array(12)].map((_, i) => (
-                  <View key={i} style={styles.dashSegment} />
-                ))}
-
-                {renderTicketNotch('bottom', '#F5F5F5', item.accentColor)}
-              </View>
-
-              {/* Right Section */}
-              <View style={styles.rightSection}>
-                <TouchableOpacity
-                  style={[
-                    styles.collectBtn,
-                    { backgroundColor: item.accentColor },
-                  ]}
-                  disabled={collectedVoucherIds.has(item.voucherCode)}
-                  onPress={() => {
-                    collectVoucher(
-                      item.voucherCode,
-                      item.voucherStoreID || (storeID as number),
-                    );
-                  }}
-                >
-                  <Text style={styles.collectText}>
-                    {collectedVoucherIds.has(item.voucherCode)
-                      ? 'Collected'
-                      : 'Collect'}
+        {vouchers.length === 0 ? (
+          <Text style={{ paddingLeft: 20, color: '#888' }}>
+            No vouchers available
+          </Text>
+        ) : (
+          vouchers.map((item) => (
+            <View key={item.id} style={styles.ticketWrapper}>
+              <View
+                style={[
+                  styles.ticketCard,
+                  {
+                    backgroundColor: item.bgColor,
+                    borderColor: item.accentColor,
+                  },
+                ]}
+              >
+                {/* Left Section */}
+                <View style={styles.leftSection}>
+                  <Text style={[styles.amount, { color: item.accentColor }]}>
+                    {item.voucherCode}
                   </Text>
-                </TouchableOpacity>
+                  <Text style={styles.condition}>{item.condition}</Text>
+                  <Text style={styles.dateRange}>
+                    Till {item.voucherExpiryDate}
+                  </Text>
+                </View>
+
+                {/* Middle Section */}
+                <View style={styles.dividerContainer}>
+                  {renderTicketNotch('top', '#F5F5F5', item.accentColor)}
+
+                  {[...Array(12)].map((_, i) => (
+                    <View key={i} style={styles.dashSegment} />
+                  ))}
+
+                  {renderTicketNotch('bottom', '#F5F5F5', item.accentColor)}
+                </View>
+
+                {/* Right Section */}
+                <View style={styles.rightSection}>
+                  <TouchableOpacity
+                    style={[
+                      styles.collectBtn,
+                      { backgroundColor: item.accentColor },
+                    ]}
+                    disabled={collectedVoucherIds.has(item.voucherCode)}
+                    onPress={() => {
+                      collectVoucher(
+                        item.voucherCode,
+                        item.voucherStoreID || (storeID as number),
+                      );
+                    }}
+                  >
+                    <Text style={styles.collectText}>
+                      {collectedVoucherIds.has(item.voucherCode)
+                        ? 'Collected'
+                        : 'Collect'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        ))}
+          ))
+        )}
       </ScrollView>
     </View>
   );
@@ -351,11 +360,11 @@ const styles = StyleSheet.create({
   },
   ticketWrapper: {
     marginRight: 12,
-    paddingLeft: 20,
+    paddingLeft: s(20),
   },
   ticketCard: {
-    width: 280,
-    height: 110,
+    width: s(240),
+    height: vs(80),
     borderRadius: 12,
     borderWidth: 1.5,
     flexDirection: 'row',
@@ -451,7 +460,7 @@ const styles = StyleSheet.create({
   },
   collectText: {
     color: '#FFF',
-    fontWeight: '700',
-    fontSize: 13,
+    fontWeight: '500',
+    fontSize: 12,
   },
 });
