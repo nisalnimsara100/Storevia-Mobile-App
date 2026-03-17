@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as React from 'react';
+import { useState } from 'react';
 import {
   Image,
   Modal,
@@ -39,6 +40,9 @@ interface Voucher {
   discount: number;
   minAmount: number;
   description: string;
+  discountType?: 'percentage' | 'flat';
+  storeID?: number;
+  voucherType?: 'product' | 'shipping';
 }
 
 interface ApiAddress {
@@ -83,7 +87,7 @@ const mapApiAddressToAddress = (addr: ApiAddress): Address => {
 
 const BASE_URL =
   process.env.EXPO_PUBLIC_APP_BASE_URL ?? 'http://192.168.0.100:8000';
-const DEFAULT_EMAIL = 'devindathisera@gmail.com';
+const DEFAULT_EMAIL = 'namal@gmail.com';
 
 const SRI_LANKA_PROVINCES = [
   'Western Province',
@@ -105,9 +109,7 @@ const CheckoutScreen = () => {
   const [selectedAddress, setSelectedAddress] = React.useState<Address | null>(
     null,
   );
-  const [appliedVoucher, setAppliedVoucher] = React.useState<Voucher | null>(
-    null,
-  );
+  const [appliedVouchers, setAppliedVouchers] = React.useState<Voucher[]>([]);
   const [showAddNewAddress, setShowAddNewAddress] = React.useState(false);
   const [newAddressForm, setNewAddressForm] = React.useState({
     firstName: '',
@@ -119,8 +121,25 @@ const CheckoutScreen = () => {
     phone: '',
     useAsBilling: true,
   });
-  const [addresses, setAddresses] = React.useState<Address[]>([]);
+
+  interface UserVoucher {
+    voucher_id: number;
+    store_id: number;
+    user_email: string;
+    voucher_code: string;
+    voucherDescription: string;
+    voucherDiscountType: 'percentage' | 'flat';
+    voucherDiscountRate: string;
+    voucherDiscountPrice: string;
+    voucherExpiryDate: string;
+    voucher_minimumSpend: string;
+    voucherStoreID: number;
+    voucher_type: 'product' | 'shipping';
+  }
+
+  const [addresses, setAddresses] = useState<Address[]>([]);
   const [showProvinceDropdown, setShowProvinceDropdown] = React.useState(false);
+  const [userVouchers, setUserVouchers] = useState<UserVoucher[]>([]);
 
   const loadAddresses = React.useCallback(async () => {
     try {
@@ -152,30 +171,40 @@ const CheckoutScreen = () => {
     }
   }, []);
 
-  // Sample vouchers
-  const vouchers: Voucher[] = [
-    {
-      id: 1,
-      code: 'WELCOME50',
-      discount: 50,
-      minAmount: 200,
-      description: 'Get Rs.50 off on orders above Rs.200',
-    },
-    {
-      id: 2,
-      code: 'SAVE100',
-      discount: 100,
-      minAmount: 500,
-      description: 'Get Rs.100 off on orders above Rs.500',
-    },
-    {
-      id: 3,
-      code: 'SHIP50',
-      discount: 50,
-      minAmount: 0,
-      description: 'Free shipping on all orders',
-    },
-  ];
+  const fetchUserCollectedVouchers = async () => {
+    const email = DEFAULT_EMAIL;
+    if (!email) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/user/get_voucher/${email}`);
+      const data = await res.json();
+      console.log('Fetched user vouchers:', data);
+      if (data.status === 'success' && Array.isArray(data.vouchers)) {
+        setUserVouchers(data.vouchers);
+      }
+    } catch (err) {
+      console.error('Error fetching user vouchers:', err);
+    }
+  };
+
+  // Convert user vouchers to Voucher format
+  const vouchers: Voucher[] = userVouchers.map((uv, index) => {
+    const discountType = uv.voucherDiscountType;
+    const discountAmount =
+      discountType === 'percentage'
+        ? parseFloat(uv.voucherDiscountRate)
+        : parseFloat(uv.voucherDiscountPrice);
+
+    return {
+      id: uv.voucher_id || index,
+      code: uv.voucher_code,
+      discount: discountAmount,
+      minAmount: parseFloat(uv.voucher_minimumSpend),
+      description: uv.voucherDescription,
+      discountType: discountType,
+      storeID: uv.voucherStoreID,
+      voucherType: uv.voucher_type,
+    };
+  });
 
   React.useEffect(() => {
     if (cartItems) {
@@ -191,6 +220,7 @@ const CheckoutScreen = () => {
 
   React.useEffect(() => {
     loadAddresses();
+    fetchUserCollectedVouchers();
   }, [loadAddresses]);
 
   const calculateSubtotal = () => {
@@ -212,10 +242,42 @@ const CheckoutScreen = () => {
       .toFixed(2);
   };
 
+  const calculateVoucherDiscount = () => {
+    if (appliedVouchers.length === 0) return 0;
+
+    const subtotal = parseFloat(calculateSubtotal());
+    const productDiscount = parseFloat(calculateDiscount());
+    const netAmount = subtotal - productDiscount;
+
+    let totalVoucherDiscount = 0;
+    let remainingAmount = netAmount;
+
+    appliedVouchers.forEach((voucher) => {
+      // Check if minimum spend is met
+      if (remainingAmount < voucher.minAmount) return;
+
+      // Calculate discount based on type
+      let voucherAmount = 0;
+      if (voucher.discountType === 'percentage') {
+        voucherAmount = (remainingAmount * voucher.discount) / 100;
+      } else {
+        voucherAmount = Math.min(voucher.discount, remainingAmount);
+      }
+
+      totalVoucherDiscount += voucherAmount;
+      remainingAmount -= voucherAmount;
+    });
+
+    return totalVoucherDiscount;
+  };
+
   const shippingCost = 0;
   const subtotal = parseFloat(calculateSubtotal());
   const discount = parseFloat(calculateDiscount());
-  const total = (subtotal - discount + shippingCost).toFixed(2);
+  const voucherDiscount = calculateVoucherDiscount();
+  const total = (subtotal - discount - voucherDiscount + shippingCost).toFixed(
+    2,
+  );
 
   const router = useRouter();
 
@@ -352,9 +414,9 @@ const CheckoutScreen = () => {
                   </View>
                   <View style={styles.infoContent}>
                     <Text style={styles.infoLabel}>Promo Code</Text>
-                    <Text style={styles.infoValue}>
-                      {appliedVoucher
-                        ? appliedVoucher.code
+                    <Text style={styles.infoValue} numberOfLines={1}>
+                      {appliedVouchers.length > 0
+                        ? `${appliedVouchers.length} voucher${appliedVouchers.length > 1 ? 's' : ''} applied`
                         : 'Apply Coupon Code'}
                     </Text>
                   </View>
@@ -384,6 +446,29 @@ const CheckoutScreen = () => {
                     </View>
                   )}
 
+                  {appliedVouchers.length > 0 && (
+                    <>
+                      {appliedVouchers.map((voucher) => (
+                        <View key={voucher.id} style={styles.priceRow}>
+                          <Text style={styles.discountLabel}>
+                            Voucher ({voucher.code})
+                          </Text>
+                          <Text style={styles.discountValue}>
+                            - Rs.{' '}
+                            {voucher.discountType === 'percentage'
+                              ? (
+                                  ((parseFloat(calculateSubtotal()) -
+                                    parseFloat(calculateDiscount())) *
+                                    voucher.discount) /
+                                  100
+                                ).toFixed(2)
+                              : voucher.discount.toFixed(2)}
+                          </Text>
+                        </View>
+                      ))}
+                    </>
+                  )}
+
                   <View style={styles.priceRow}>
                     <Text style={styles.priceLabel}>Shipping</Text>
                     <Text style={[styles.priceValue, { color: '#27AE60' }]}>
@@ -405,7 +490,10 @@ const CheckoutScreen = () => {
                       color="#27AE60"
                     />
                     <Text style={styles.savingsText}>
-                      You saved Rs. {discount}
+                      You saved Rs.{' '}
+                      {(
+                        parseFloat(discount) + calculateVoucherDiscount()
+                      ).toFixed(2)}
                     </Text>
                   </View>
                 </View>
@@ -764,64 +852,117 @@ const CheckoutScreen = () => {
                 style={styles.modalBody}
                 showsVerticalScrollIndicator={false}
               >
-                {vouchers.map((voucher) => (
-                  <TouchableOpacity
-                    key={voucher.id}
-                    onPress={() => {
-                      setAppliedVoucher(voucher);
-                      setShowVoucherModal(false);
-                    }}
-                    style={[
-                      styles.voucherCard,
-                      appliedVoucher?.id === voucher.id &&
-                        styles.voucherCardSelected,
-                    ]}
-                  >
-                    <View style={styles.voucherLeft}>
-                      <View style={styles.voucherCodeContainer}>
-                        <Ionicons name="ticket" size={20} color="#FF6B35" />
-                        <Text style={styles.voucherCode}>{voucher.code}</Text>
-                      </View>
-                      <Text style={styles.voucherDescription}>
-                        {voucher.description}
-                      </Text>
-                      {voucher.minAmount > 0 && (
-                        <Text style={styles.voucherMinAmount}>
-                          Min. spend: Rs. {voucher.minAmount}
-                        </Text>
-                      )}
-                    </View>
+                {vouchers.map((voucher) => {
+                  const isApplied = appliedVouchers.some(
+                    (v) => v.id === voucher.id,
+                  );
+                  const isShipping = voucher.voucherType === 'shipping';
+                  const cardBgColor = isShipping ? '#E8F9F8' : '#FFF8EC';
+                  const iconColor = isShipping ? '#27AE60' : '#FF6B35';
 
-                    <View style={styles.voucherRight}>
-                      <View style={styles.discountCircle}>
-                        <Text style={styles.discountPercent}>
-                          {voucher.discount}%
+                  return (
+                    <TouchableOpacity
+                      key={voucher.id}
+                      onPress={() => {
+                        if (isApplied) {
+                          setAppliedVouchers(
+                            appliedVouchers.filter((v) => v.id !== voucher.id),
+                          );
+                        } else {
+                          setAppliedVouchers([...appliedVouchers, voucher]);
+                        }
+                      }}
+                      style={[
+                        styles.voucherCard,
+                        { backgroundColor: cardBgColor },
+                        isApplied && styles.voucherCardSelected,
+                      ]}
+                    >
+                      <View style={styles.voucherLeft}>
+                        <View style={styles.voucherCodeContainer}>
+                          <Ionicons name="ticket" size={20} color={iconColor} />
+                          <Text style={styles.voucherCode}>{voucher.code}</Text>
+                        </View>
+                        <Text style={styles.voucherDescription}>
+                          {voucher.description}
                         </Text>
-                        <Text style={styles.discountOff}>OFF</Text>
+                        {voucher.minAmount > 0 && (
+                          <Text style={styles.voucherMinAmount}>
+                            Min. spend: Rs. {voucher.minAmount}
+                          </Text>
+                        )}
+                        <Text
+                          style={[styles.voucherMinAmount, { marginTop: 4 }]}
+                        >
+                          Discount:{' '}
+                          {voucher.discountType === 'percentage'
+                            ? `${voucher.discount}%`
+                            : `Rs. ${voucher.discount}`}
+                        </Text>
+                        {isShipping && (
+                          <Text
+                            style={[
+                              styles.voucherMinAmount,
+                              { marginTop: 4, color: '#27AE60' },
+                              
+                            ]}
+                          >
+                            (Shipping Voucher)
+                          </Text>
+                        )}
                       </View>
-                      {appliedVoucher?.id === voucher.id && (
-                        <Ionicons
-                          name="checkmark-circle"
-                          size={24}
-                          color="#27AE60"
-                        />
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                ))}
 
-                {appliedVoucher && (
+                      <View style={styles.voucherRight}>
+                        <View
+                          style={[
+                            styles.discountCircle,
+                            { backgroundColor: iconColor },
+                          ]}
+                        >
+                          <Text
+                            style={[styles.discountPercent, { color: '#fff' }]}
+                          >
+                            {voucher.discount}
+                            {voucher.discountType === 'percentage' ? '%' : ''}
+                          </Text>
+                          <Text style={[styles.discountOff, { color: '#fff' }]}>
+                            {voucher.discountType === 'percentage'
+                              ? 'OFF'
+                              : 'OFF'}
+                          </Text>
+                        </View>
+                        {isApplied && (
+                          <Ionicons
+                            name="checkmark-circle"
+                            size={24}
+                            color={iconColor}
+                          />
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+
+                {appliedVouchers.length > 0 && (
                   <TouchableOpacity
                     onPress={() => {
-                      setAppliedVoucher(null);
-                      setShowVoucherModal(false);
+                      setAppliedVouchers([]);
                     }}
                     style={styles.removeVoucherButton}
                   >
                     <Ionicons name="close-circle" size={20} color="#FF6B35" />
-                    <Text style={styles.removeVoucherText}>Remove Voucher</Text>
+                    <Text style={styles.removeVoucherText}>
+                      Remove All Vouchers
+                    </Text>
                   </TouchableOpacity>
                 )}
+
+                <TouchableOpacity
+                  onPress={() => setShowVoucherModal(false)}
+                  style={styles.doneButton}
+                >
+                  <Text style={styles.doneButtonText}>Done</Text>
+                </TouchableOpacity>
               </ScrollView>
             </View>
           </View>
@@ -1364,6 +1505,7 @@ const styles = StyleSheet.create({
     height: scale(60),
     borderRadius: moderateScale(30),
     backgroundColor: '#FF6B35',
+    borderWidth: 0,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: verticalScale(8),
@@ -1394,5 +1536,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FF6B35',
     marginLeft: scale(8),
+  },
+  doneButton: {
+    backgroundColor: '#FF6B35',
+    borderRadius: moderateScale(12),
+    paddingVertical: verticalScale(14),
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: verticalScale(16),
+    marginHorizontal: scale(16),
+  },
+  doneButtonText: {
+    fontSize: moderateScale(16),
+    fontWeight: '700',
+    color: '#fff',
   },
 });

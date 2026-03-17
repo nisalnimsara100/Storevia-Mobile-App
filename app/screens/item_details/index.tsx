@@ -19,6 +19,9 @@ const ItemDetailsScreen = () => {
     ? JSON.parse(product as string)
     : null;
 
+  const storeId = parsedProduct?.store_id;
+  console.log('Received storeId:', typeof(storeId));
+
   if (!parsedProduct) {
     return (
       <View style={styles.container}>
@@ -37,7 +40,7 @@ const ItemDetailsScreen = () => {
       <ProductCard product={parsedProduct} />
 
       <View style={styles.sectionContainer}>
-        <Vouchers />
+        <Vouchers storeID={storeId} />
       </View>
 
       <View style={styles.sectionContainer}>
