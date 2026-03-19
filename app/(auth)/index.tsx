@@ -1,5 +1,13 @@
-import { router } from "expo-router";
+import { useRouter } from 'expo-router';
+import  React, { useEffect } from 'react';
+import { View } from 'react-native';
 
-router.replace('/'); 
-// OR if the group isn't the root:
-router.replace('./(auth)');
+export default function AuthIndex() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('./LoginSignup');
+  }, [router]);
+
+  return <View />;
+}
