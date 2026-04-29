@@ -28,30 +28,53 @@ export default function ChatLayout() {
       />
       <Stack.Screen
         name="[chatId]"
-        options={({ route }) => ({
-          headerTitle: () => (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333333' }}>banana3C</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 8 }}>
-                <Ionicons name="time-outline" size={12} color="#666666" />
-                <Text style={{ fontSize: 12, color: '#666666', marginLeft: 4 }}>1d</Text>
+        options={({ route }) => {
+          const params = route.params as {
+            storeName?: string;
+            productName?: string;
+          };
+          const resolvedStoreName = params?.storeName?.trim() || 'Store';
+          const resolvedProductName = params?.productName?.trim() || 'Product';
+
+          return {
+            headerTitle: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333333' }}>
+                    {resolvedStoreName}
+                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+                    <Ionicons name="pricetag-outline" size={12} color="#666666" />
+                    <Text style={{ fontSize: 12, color: '#666666', marginLeft: 4 }}>
+                      {resolvedProductName}
+                    </Text>
+                  </View>
+                </View>
               </View>
-            </View>
-          ),
-          headerBackVisible: true,
-          headerRight: () => (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TouchableOpacity style={{ marginRight: 8 }}>
-                <Ionicons name="storefront-outline" size={24} color="#333333" />
-              </TouchableOpacity>
-              <TouchableOpacity 
-                onPress={() => router.push('/screens/chat_screen/settings')}
-              >
-                <Ionicons name="ellipsis-vertical" size={24} color="#333333" />
-              </TouchableOpacity>
-            </View>
-          ),
-        })}
+            ),
+            headerBackVisible: true,
+            headerRight: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TouchableOpacity style={{ marginRight: 8 }}>
+                  <Ionicons name="storefront-outline" size={24} color="#333333" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: '/screens/chat_screen/settings',
+                      params: {
+                        storeName: resolvedStoreName,
+                        productName: resolvedProductName,
+                      },
+                    })
+                  }
+                >
+                  <Ionicons name="ellipsis-vertical" size={24} color="#333333" />
+                </TouchableOpacity>
+              </View>
+            ),
+          };
+        }}
       />
       <Stack.Screen
         name="settings"

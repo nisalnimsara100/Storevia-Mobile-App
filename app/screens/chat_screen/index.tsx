@@ -1,20 +1,29 @@
-import { router } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import React, { useState } from 'react'
 import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-// Mock chat data
-const mockChats = [
-  {
-    id: '1',
-    username: 'banana3C',
-    date: '01/02/2025',
-    message: 'Please tell us how you think of agent ...',
-    avatar: '🍌', // Using emoji as avatar for simplicity
-    isNew: true,
-  },
-]
-
 const ChatScreen = () => {
+  const { storeName, productName } = useLocalSearchParams()
+  const resolvedStoreName =
+    typeof storeName === 'string' && storeName.trim().length > 0
+      ? storeName.trim()
+      : 'Store'
+  const resolvedProductName =
+    typeof productName === 'string' && productName.trim().length > 0
+      ? productName.trim()
+      : 'Product'
+
+  // Mock chat data
+  const mockChats = [
+    {
+      id: '1',
+      username: resolvedStoreName,
+      date: '01/02/2025',
+      message: `Chat about ${resolvedProductName}`,
+      avatar: '🏪',
+      isNew: true,
+    },
+  ]
   // State to control whether to show chats or empty state
   const [hasChats, setHasChats] = useState(true) // Set to true to show chat list, false for empty state
   const [chats, setChats] = useState(mockChats)
@@ -26,7 +35,11 @@ const ChatScreen = () => {
   const handleChatPress = (chatId: string) => {
     router.push({
       pathname: '/screens/chat_screen/[chatId]',
-      params: { chatId }
+      params: {
+        chatId,
+        storeName: resolvedStoreName,
+        productName: resolvedProductName,
+      }
     })
   }
 

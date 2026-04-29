@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useRef } from "react";
+import { router } from 'expo-router';
+import React, { useEffect, useRef, useState } from "react";
 import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 interface ShopData {
@@ -20,7 +21,21 @@ interface ShopData {
   chatResponse: string | number; 
 }
 
-const ShopDetails = () => {
+interface ShopDetailsProps {
+  storeId?: number | string;
+  storeName?: string;
+  productName?: string;
+  productImage?: string;
+  productId?: number | string;
+}
+
+const ShopDetails = ({
+  storeId,
+  storeName,
+  productName,
+  productImage,
+  productId,
+}: ShopDetailsProps) => {
   const [shopData, setShopData] = useState<ShopData | null>(null);
   const [loading, setLoading] = useState(true);
   
@@ -63,6 +78,21 @@ const ShopDetails = () => {
 
   const toggleFollow = () => {
     setIsFollowing((prev) => !prev);
+  };
+
+  const handleChatPress = () => {
+    const chatId = storeId ?? shopData?.id ?? 'seller';
+    router.push({
+      pathname: '/screens/chat_screen/[chatId]',
+      params: {
+        chatId: String(chatId),
+        storeId: storeId != null ? String(storeId) : '',
+        storeName: storeName ?? shopData?.name ?? 'Store',
+        productName: productName ?? 'Product',
+        productImage: productImage ?? '',
+        productId: productId != null ? String(productId) : '',
+      },
+    });
   };
   const getBadgeStatus = (percentage: number) => {
     if (percentage >= 75) {
@@ -132,10 +162,15 @@ const ShopDetails = () => {
           )}
         </View>
 
-        {/* Visit Button */}
-        <TouchableOpacity style={styles.visitButton}>
-          <Text style={styles.visitButtonText}>Visit Store</Text>
-        </TouchableOpacity>
+        {/* Action Buttons */}
+        <View style={styles.actionButtons}>
+          <TouchableOpacity style={styles.visitButton}>
+            <Text style={styles.visitButtonText}>Visit Store</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.chatButton} onPress={handleChatPress}>
+            <Text style={styles.chatButtonText}>Chat with Seller</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* --- BOTTOM SECTION: Stats Grid --- */}
@@ -289,6 +324,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "500",
   },
+  actionButtons: {
+    alignItems: 'flex-end',
+    gap: 8,
+  },
   visitButton: {
     backgroundColor: "#FF5722", 
     paddingVertical: 8,
@@ -299,6 +338,19 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
     fontSize: 14,
+  },
+  chatButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#FF5722',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  chatButtonText: {
+    color: '#FF5722',
+    fontWeight: '600',
+    fontSize: 13,
   },
 
   /* --- Stats Row Styles --- */
