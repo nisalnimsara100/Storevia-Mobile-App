@@ -27,6 +27,7 @@ import LargeProductTile from '../components/LargeProductTile';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 
+
 const { width } = Dimensions.get('window');
 
 const DEFAULT_CATEGORIES = [
