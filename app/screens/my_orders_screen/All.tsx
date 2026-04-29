@@ -48,7 +48,11 @@ interface OrdersResponse {
   message: string;
 }
 
-const All = () => {
+interface AllProps {
+  statusFilter?: string[];
+}
+
+const All = ({ statusFilter }: AllProps) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -122,6 +126,15 @@ const All = () => {
     fetchOrders();
   }, []);
 
+  const normalizedFilters = statusFilter?.map((status) =>
+    status.trim().toLowerCase(),
+  );
+  const filteredOrders = normalizedFilters?.length
+    ? orders.filter((order) =>
+        normalizedFilters.includes(order.order_status.toLowerCase()),
+      )
+    : orders;
+
   if (loading) {
     return (
       <View style={styles.stateContainer}>
@@ -142,10 +155,13 @@ const All = () => {
     );
   }
 
-  if (orders.length === 0) {
+  if (filteredOrders.length === 0) {
+    const emptyMessage = statusFilter?.length
+      ? 'No orders for this status.'
+      : 'No orders yet.';
     return (
       <View style={styles.stateContainer}>
-        <Text style={styles.stateText}>No orders yet.</Text>
+        <Text style={styles.stateText}>{emptyMessage}</Text>
       </View>
     );
   }
@@ -156,7 +172,7 @@ const All = () => {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 40 }}
     >
-      {orders.map((order) => {
+      {filteredOrders.map((order) => {
         const itemCount = order.order_items.reduce(
           (sum, item) => sum + (item.quantity ?? 0),
           0,
