@@ -1,16 +1,26 @@
 import { Ionicons } from '@expo/vector-icons'
+import { useLocalSearchParams } from 'expo-router'
 import React, { useState } from 'react'
 import {
-    Alert,
-    StyleSheet,
-    Switch,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const ChatSettings = () => {
+  const { storeName, productName } = useLocalSearchParams()
+  const resolvedStoreName =
+    typeof storeName === 'string' && storeName.trim().length > 0
+      ? storeName.trim()
+      : 'Store'
+  const resolvedProductName =
+    typeof productName === 'string' && productName.trim().length > 0
+      ? productName.trim()
+      : 'Product'
   const [muteNotifications, setMuteNotifications] = useState(false)
   const [addToBlacklist, setAddToBlacklist] = useState(false)
 
@@ -38,7 +48,7 @@ const ChatSettings = () => {
   }
 
   const handleUserProfile = () => {
-    Alert.alert('Profile', 'Opening seller profile...')
+    Alert.alert('Profile', `Opening ${resolvedStoreName} profile...`)
   }
 
   return (
@@ -46,9 +56,14 @@ const ChatSettings = () => {
       {/* User Profile Section */}
       <TouchableOpacity style={styles.userSection} onPress={handleUserProfile}>
         <View style={styles.userAvatar}>
-          <Text style={styles.userAvatarText}>🍌</Text>
+          <Text style={styles.userAvatarText}>🏪</Text>
         </View>
-        <Text style={styles.username}>banana3C</Text>
+        <View style={styles.userTextGroup}>
+          <Text style={styles.username}>{resolvedStoreName}</Text>
+          <Text style={styles.userSubtitle} numberOfLines={1}>
+            Chat about {resolvedProductName}
+          </Text>
+        </View>
         <Ionicons name="chevron-forward" size={20} color="#999999" />
       </TouchableOpacity>
 
@@ -114,10 +129,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   username: {
-    flex: 1,
     fontSize: 18,
     fontWeight: '600',
     color: '#333333',
+  },
+  userTextGroup: {
+    flex: 1,
+  },
+  userSubtitle: {
+    marginTop: 4,
+    fontSize: 13,
+    color: '#777777',
   },
   settingsContainer: {
     backgroundColor: '#FFFFFF',

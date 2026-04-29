@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
   FlatList,
+  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -17,21 +18,24 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// Demo messages
-const demoMessages = [
-  {
-    id: '1',
-    text: 'Hi',
-    sender: 'user',
-    timestamp: '10:15 AM',
-  },
-  {
-    id: '2',
-    text: 'Hi how are you',
-    sender: 'seller',
-    timestamp: '10:16 AM',
-  },
-];
+type ChatSender = 'user' | 'seller' | 'system';
+
+interface ChatMessage {
+  id: string;
+  text: string;
+  sender: ChatSender;
+  timestamp: Date;
+}
+
+interface ChatMessageApi {
+  message_id: number | string;
+  message: string;
+  sender: ChatSender;
+  created_at?: string | null;
+}
+
+const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
+const USER_EMAIL = process.env.EXPO_PUBLIC_APP_EMAIL;
 
 // Emoji data from the image
 const emojiData = [
@@ -50,28 +54,162 @@ const attachmentOptions = [
 ];
 
 const ChatConversation = () => {
-  const { chatId } = useLocalSearchParams();
-  const [messages, setMessages] = useState(demoMessages);
-  const [inputText, setInputText] = useState('');
+  const { chatId, storeId, storeName, productName, productImage, productId } =
+    useLocalSearchParams();
+  const chatMeta = useMemo(() => {
+    const resolvedStore =
+      typeof storeName === 'string' && storeName.trim().length > 0
+        ? storeName.trim()
+        : 'Store';
+    const resolvedProduct =
+      typeof productName === 'string' && productName.trim().length > 0
+        ? productName.trim()
+        : 'Product';
+    const resolvedStoreId =
+      typeof storeId === 'string' && storeId.trim().length > 0
+        ? Number(storeId)
+        : undefined;
+    const resolvedProductId =
+      typeof productId === 'string' && productId.trim().length > 0
+        ? Number(productId)
+        : undefined;
+    const resolvedImage =
+      typeof productImage === 'string' && productImage.trim().length > 0
+        ? productImage.trim()
+        : undefined;
+    return {
+      store: resolvedStore,
+      product: resolvedProduct,
+      chatId,
+      storeId: resolvedStoreId,
+      productId: resolvedProductId,
+      productImage: resolvedImage,
+    };
+  }, [storeName, productName, productImage, productId, storeId, chatId]);
+
+  const initialMessages: ChatMessage[] = useMemo(
+    () => [
+      {
+        id: 'welcome-1',
+        text: `Welcome to ${chatMeta.store}! Ask us anything about ${chatMeta.product}.`,
+        sender: 'system',
+        timestamp: new Date(),
+      },
+      {
+        id: 'welcome-2',
+        text: `Hi! Thanks for your interest in ${chatMeta.product}. How can we help?`,
+        sender: 'seller',
+        timestamp: new Date(),
+      },
+    ],
+    [chatMeta.product, chatMeta.store],
+  );
+
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const [chatInput, setChatInput] = useState('');
   const [showAttachments, setShowAttachments] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
 
-  const handleSendMessage = () => {
-    if (inputText.trim()) {
-      const newMessage = {
-        id: Date.now().toString(),
-        text: inputText.trim(),
-        sender: 'user',
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
+  const normalizeChatMessage = (msg: ChatMessageApi): ChatMessage => {
+    const rawTime = msg.created_at ?? new Date().toISOString();
+
+    return {
+      id: String(msg.message_id),
+      text: msg.message,
+      sender: msg.sender,
+      timestamp: new Date(rawTime),
+    };
+  };
+
+  const fetchChatMessages = async (nextProductId?: number, nextStoreId?: number) => {
+    if (!BASE_URL || !nextProductId || !nextStoreId) return;
+
+    const userEmail = USER_EMAIL ?? '';
+    try {
+      const response = await fetch(`${BASE_URL}/api/messages/get_messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_id: nextProductId,
+          store_id: nextStoreId,
+          user_email: userEmail,
+          from: 'product_page',
+          sender: 'user',
         }),
-      };
-      setMessages([...messages, newMessage]);
-      setInputText('');
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to load chat messages');
+      }
+
+      const result = await response.json();
+      const items: ChatMessageApi[] = result.messages || [];
+      const mapped = items.map(normalizeChatMessage);
+
+      setMessages(() => {
+        const merged = [...initialMessages, ...mapped];
+        const seen = new Set<string>();
+        return merged.filter((msg) => {
+          if (seen.has(msg.id)) return false;
+          seen.add(msg.id);
+          return true;
+        });
+      });
+    } catch (error) {
+      console.error('Error loading chat messages:', error);
     }
   };
+
+  const sendChatMessage = async (text: string) => {
+    if (!BASE_URL || !chatMeta.productId || !chatMeta.storeId) return;
+    const userEmail = USER_EMAIL ?? '';
+
+    const optimistic: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      text,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, optimistic]);
+    setChatInput('');
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/messages/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_id: chatMeta.productId,
+          store_id: chatMeta.storeId,
+          from: 'product_page',
+          sender: 'user',
+          user_email: userEmail,
+          message: text,
+        }),
+      });
+
+      const result = await response.json();
+      console.log('Send message response:', result?.status ?? result);
+
+      if (!response.ok) {
+        throw new Error('Failed to send chat message');
+      }
+    } catch (error) {
+      console.error('Error sending chat message:', error);
+    }
+  };
+
+  const handleSendChat = async () => {
+    const trimmed = chatInput.trim();
+    if (!trimmed) return;
+    await sendChatMessage(trimmed);
+  };
+
+  useEffect(() => {
+    fetchChatMessages(chatMeta.productId, chatMeta.storeId);
+  }, [chatMeta.productId, chatMeta.storeId]);
+
 
   const toggleAttachments = () => {
     setShowEmojis(false);
@@ -94,7 +232,7 @@ const ChatConversation = () => {
   };
 
   const handleEmojiPress = (emoji: string) => {
-    setInputText(inputText + emoji);
+    setChatInput(chatInput + emoji);
   };
 
   const handleAttachmentPress = (option: (typeof attachmentOptions)[0]) => {
@@ -102,7 +240,7 @@ const ChatConversation = () => {
     Alert.alert(option.label, `${option.label} functionality coming soon!`);
   };
 
-  const renderMessage = ({ item }: { item: (typeof demoMessages)[0] }) => (
+  const renderMessage = ({ item }: { item: ChatMessage }) => (
     <View
       style={[
         styles.messageContainer,
@@ -114,7 +252,11 @@ const ChatConversation = () => {
       <View
         style={[
           styles.messageBubble,
-          item.sender === 'user' ? styles.userBubble : styles.sellerBubble,
+          item.sender === 'user'
+            ? styles.userBubble
+            : item.sender === 'system'
+              ? styles.systemBubble
+              : styles.sellerBubble,
         ]}
       >
         <Text
@@ -122,13 +264,20 @@ const ChatConversation = () => {
             styles.messageText,
             item.sender === 'user'
               ? styles.userMessageText
-              : styles.sellerMessageText,
+              : item.sender === 'system'
+                ? styles.systemMessageText
+                : styles.sellerMessageText,
           ]}
         >
           {item.text}
         </Text>
       </View>
-      <Text style={styles.timestamp}>{item.timestamp}</Text>
+      <Text style={styles.timestamp}>
+        {item.timestamp.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
+      </Text>
     </View>
   );
 
@@ -223,6 +372,23 @@ const ChatConversation = () => {
         {/* Messages List */}
         <TouchableWithoutFeedback onPress={dismissKeyboardAndMenus}>
           <View style={styles.chatArea}>
+            {chatMeta.productImage ? (
+              <View style={styles.productPreview}>
+                <Image
+                  source={{ uri: chatMeta.productImage }}
+                  style={styles.productImage}
+                  resizeMode="cover"
+                />
+                <View style={styles.productPreviewText}>
+                  <Text style={styles.productPreviewTitle} numberOfLines={1}>
+                    {chatMeta.product}
+                  </Text>
+                  <Text style={styles.productPreviewStore} numberOfLines={1}>
+                    {chatMeta.store}
+                  </Text>
+                </View>
+              </View>
+            ) : null}
             <FlatList
               data={messages}
               renderItem={renderMessage}
@@ -261,8 +427,8 @@ const ChatConversation = () => {
           <TextInput
             style={styles.textInput}
             placeholder="Type your message..."
-            value={inputText}
-            onChangeText={setInputText}
+            value={chatInput}
+            onChangeText={setChatInput}
             multiline
             maxLength={500}
           />
@@ -274,6 +440,10 @@ const ChatConversation = () => {
             <Text style={styles.emojiButtonText}>😊</Text>
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity style={styles.sendButton} onPress={handleSendChat}>
+          <Ionicons name="send" size={18} color="#FFFFFF" />
+        </TouchableOpacity>
 
           {/* Menus render AFTER input so input stays on top */}
           {showAttachments && renderAttachmentMenu()}
@@ -291,6 +461,38 @@ const styles = StyleSheet.create({
   },
   chatArea: {
     flex: 1,
+  },
+  productPreview: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 4,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E6E6E6',
+  },
+  productImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: '#F0F0F0',
+  },
+  productPreviewText: {
+    marginLeft: 10,
+    flex: 1,
+  },
+  productPreviewTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333333',
+  },
+  productPreviewStore: {
+    marginTop: 2,
+    fontSize: 12,
+    color: '#777777',
   },
   bottomFixedSection: {
     backgroundColor: '#FFFFFF',
@@ -326,6 +528,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E0E0E0',
   },
+  systemBubble: {
+    backgroundColor: '#FFF7E6',
+    borderWidth: 1,
+    borderColor: '#FFE2B3',
+  },
   messageText: {
     fontSize: 16,
   },
@@ -334,6 +541,9 @@ const styles = StyleSheet.create({
   },
   sellerMessageText: {
     color: '#333333',
+  },
+  systemMessageText: {
+    color: '#8A5A00',
   },
   timestamp: {
     fontSize: 12,
@@ -397,6 +607,17 @@ const styles = StyleSheet.create({
     maxHeight: 100,
     backgroundColor: '#F8F8F8',
     marginHorizontal: 8,
+  },
+  sendButton: {
+    alignSelf: 'flex-end',
+    marginRight: 16,
+    marginBottom: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FF5722',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   attachmentMenu: {
     backgroundColor: '#FFFFFF',

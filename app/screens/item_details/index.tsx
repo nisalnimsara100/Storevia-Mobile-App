@@ -1,13 +1,13 @@
-import ShopDetails from '@/app/components/item_details/ShopDetails'
 import ProductCard from '@/app/components/item_details/ProductCard'
+import ShopDetails from '@/app/components/item_details/ShopDetails'
 import Vouchers from '@/app/components/item_details/Vouchers'
 import { useLocalSearchParams } from 'expo-router'
 import React from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 // import { products } from '../../../data/productsData'
-import Ratings from '@/app/components/item_details/Ratings'
-import ProductDetails from '@/app/components/item_details/ProductDetails'
 import MoreFromStore from '@/app/components/item_details/MoreFromStore'
+import ProductDetails from '@/app/components/item_details/ProductDetails'
+import Ratings from '@/app/components/item_details/Ratings'
 
 
 const ItemDetailsScreen = () => {
@@ -19,7 +19,19 @@ const ItemDetailsScreen = () => {
     ? JSON.parse(product as string)
     : null;
 
-  const storeId = parsedProduct?.store_id;
+  const storeId = parsedProduct?.store_id ?? parsedProduct?.store?.store_id;
+  const storeName =
+    parsedProduct?.store_name ?? parsedProduct?.store?.store_name ?? 'Store';
+  const productName = parsedProduct?.name ?? parsedProduct?.product_name ?? 'Product';
+  const productId = parsedProduct?.id ?? parsedProduct?.product_id;
+  const productImage =
+    typeof parsedProduct?.product_image === 'string'
+      ? parsedProduct.product_image
+      : typeof parsedProduct?.image === 'string'
+        ? parsedProduct.image
+        : typeof parsedProduct?.images?.[0] === 'string'
+          ? parsedProduct.images[0]
+          : undefined;
   console.log('Received storeId:', typeof(storeId));
 
   if (!parsedProduct) {
@@ -44,7 +56,13 @@ const ItemDetailsScreen = () => {
       </View>
 
       <View style={styles.sectionContainer}>
-        <ShopDetails />
+        <ShopDetails
+          storeId={storeId}
+          storeName={storeName}
+          productName={productName}
+          productImage={productImage}
+          productId={productId}
+        />
       </View>
 
       <View style={styles.sectionContainer}>

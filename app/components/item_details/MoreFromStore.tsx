@@ -4,7 +4,7 @@ import React from 'react'
 const MoreFromStore = () => {
   return (
     <View>
-      <Text>MoreFromStore</Text>
+      <Text>MoreFromStore22222</Text>
     </View>
   )
 }
