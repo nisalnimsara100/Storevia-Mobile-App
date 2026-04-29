@@ -26,7 +26,6 @@ import FlashSaleCard from '../components/FlashSaleCard';
 import LargeProductTile from '../components/LargeProductTile';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
-const TEST_VAR = process.env.EXPO_PUBLIC_TEST_VAR;
 // test123
 
 const { width } = Dimensions.get('window');
