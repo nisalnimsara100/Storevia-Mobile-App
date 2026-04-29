@@ -1,7 +1,7 @@
 name: Sync Env Template
 on:
   push:
-    branches: [ main ]
+    branches: [ '**' ] # Run on all branches
 jobs:
   sync:
     runs-on: ubuntu-latest
