@@ -1,131 +1,261 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-const orders = [
-  {
-    id: '1',
-    shopName: 'shopme',
-    status: 'Delivered',
-    statusColor: '#4A90E2',
-    title: '2835 RGB LED Strip Light With Power Adapter 300 LEDs/5m DC 12V High Lu...',
-    variant: 'Color family:5M RGB',
-    price: '1,049',
-    total: '1,389',
-    qty: 1,
-    // Use high-resolution Unsplash images for better reliability
-    image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=200&auto=format&fit=crop', 
-    buttons: ['Return/Refund', 'Buy again'],
-  },
-  {
-    id: '2',
-    shopName: 'V Tech',
-    status: 'Cancelled',
-    statusColor: '#4A90E2',
-    title: '12V Neon LED Strip Light, 12V, 1 Meter - Neon Strip -Neon light strip',
-    variant: 'Color family:Warm White',
-    price: '347',
-    total: '687',
-    qty: 1,
-    image: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=200&auto=format&fit=crop',
-    buttons: ['Cancelled', 'Buy again'],
-  },
-  {
-    id: '3',
-    shopName: 'ANF',
-    status: 'Delivered',
-    statusColor: '#4A90E2',
-    title: 'Laptop Stand Aluminum For Desk Adjustable Ergonomic Notebook Holde...',
-    variant: 'Color Family:Multicolor, Fan Dimensions:Not Specified',
-    price: '1,299',
-    total: '1,299',
-    qty: 1,
-    image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?q=80&w=200&auto=format&fit=crop',
-    buttons: ['Buy again'],
-  },
-  {
-    id: '4',
-    shopName: 'Tech Hub',
-    status: 'Delivered',
-    statusColor: '#4A90E2',
-    title: 'Wireless Bluetooth Mouse 2.4G Rechargeable Silent Mouse...',
-    variant: 'Color: Matte Black',
-    price: '850',
-    total: '950',
-    qty: 1,
-    image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?q=80&w=200&auto=format&fit=crop',
-    buttons: ['Return/Refund', 'Buy again'],
-  }
-];
+const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
+const USER_EMAIL = process.env.EXPO_PUBLIC_APP_EMAIL;
+
+interface OrderItem {
+  id: number;
+  order_id: number;
+  product_id: number;
+  seller_id: number;
+  product_name: string;
+  product_image: string;
+  quantity: number;
+  item_price: string;
+  order_status: string;
+  cancel_reason: string | null;
+}
+
+interface Order {
+  id: number;
+  order_number: string;
+  address_id: number;
+  delivery_date: string | null;
+  note: string | null;
+  order_fee: string;
+  voucher_discount_amount: string;
+  order_cod: string;
+  order_status: string;
+  user_email: string;
+  created_at: string;
+  cancel_reason: string | null;
+  order_items: OrderItem[];
+  order_varients: unknown[];
+}
+
+interface OrdersResponse {
+  orders: Order[];
+  message: string;
+}
 
 const All = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const formatPrice = (value: string | number) => {
+    const parsed = typeof value === 'string' ? parseFloat(value) : value;
+    if (Number.isNaN(parsed)) return String(value);
+    return parsed.toLocaleString();
+  };
+
+  const getStatusColor = (status: string) => {
+    const normalized = status.toLowerCase();
+    if (normalized === 'cancelled' || normalized === 'canceled') return '#E53935';
+    if (normalized === 'delivered') return '#4CAF50';
+    if (normalized === 'placed') return '#FF5722';
+    return '#4A90E2';
+  };
+
+  const getButtonsForStatus = (status: string) => {
+    const normalized = status.toLowerCase();
+    if (normalized === 'cancelled' || normalized === 'canceled') {
+      return ['Cancelled', 'Buy again'];
+    }
+    if (normalized === 'delivered') {
+      return ['Return/Refund', 'Buy again'];
+    }
+    return ['Buy again'];
+  };
+
+  const fetchOrders = async () => {
+    if (!BASE_URL) {
+      setError('Base URL not configured.');
+      setLoading(false);
+      return;
+    }
+
+    if (!USER_EMAIL) {
+      setError('User email not available.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch(`${BASE_URL}/api/orders/user_orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ email: USER_EMAIL }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch orders.');
+      }
+
+      const data: OrdersResponse = await response.json();
+      setOrders(data.orders ?? []);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+      setError('Unable to load orders. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.stateContainer}>
+        <ActivityIndicator size="small" color="#FF5722" />
+        <Text style={styles.stateText}>Loading orders...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.stateContainer}>
+        <Text style={styles.stateText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={fetchOrders}>
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <View style={styles.stateContainer}>
+        <Text style={styles.stateText}>No orders yet.</Text>
+      </View>
+    );
+  }
+
   return (
-    <ScrollView 
-      style={styles.container} 
+    <ScrollView
+      style={styles.container}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 40 }}
     >
-      {orders.map((order) => (
-        <View key={order.id} style={styles.orderCard}>
-          <View style={styles.shopHeader}>
-            <View style={styles.shopInfo}>
-              <MaterialCommunityIcons name="storefront-outline" size={18} color="black" />
-              <Text style={styles.shopName}>{order.shopName}</Text>
-              <Ionicons name="chevron-forward" size={16} color="#999" />
-            </View>
-            <Text style={[styles.statusText, { color: order.statusColor }]}>{order.status}</Text>
-          </View>
+      {orders.map((order) => {
+        const itemCount = order.order_items.reduce(
+          (sum, item) => sum + (item.quantity ?? 0),
+          0,
+        );
+        const buttons = getButtonsForStatus(order.order_status);
 
-          <View style={styles.productSection}>
-            {/* Added onError and default background to debug */}
-            <View style={styles.imageWrapper}>
-              <Image 
-                source={{ uri: order.image }} 
-                style={styles.productImage}
-                resizeMode="cover"
-              />
-            </View>
-            
-            <View style={styles.productDetails}>
-              <Text style={styles.productTitle} numberOfLines={2}>
-                {order.title}
-              </Text>
-              <View style={styles.variantBadge}>
-                <Text style={styles.variantText}>{order.variant}</Text>
+        return (
+          <View key={order.id} style={styles.orderCard}>
+            <View style={styles.shopHeader}>
+              <View style={styles.shopInfo}>
+                <MaterialCommunityIcons
+                  name="storefront-outline"
+                  size={18}
+                  color="black"
+                />
+                <Text style={styles.shopName}>{order.order_number}</Text>
+                <Ionicons name="chevron-forward" size={16} color="#999" />
               </View>
-              <View style={styles.priceQtyRow}>
-                <Text style={styles.priceText}>Rs. {order.price}</Text>
-                <Text style={styles.qtyText}>Qty: {order.qty}</Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>
-              Total({order.qty} Item): <Text style={styles.totalAmount}>Rs. {order.total}</Text>
-            </Text>
-          </View>
-
-          <View style={styles.buttonGroup}>
-            {order.buttons.map((btn, index) => (
-              <TouchableOpacity 
-                key={index} 
+              <Text
                 style={[
-                  styles.button, 
-                  btn === 'Buy again' ? styles.primaryButton : styles.secondaryButton
+                  styles.statusText,
+                  { color: getStatusColor(order.order_status) },
                 ]}
               >
-                <Text style={[
-                  styles.buttonText,
-                  btn === 'Buy again' ? styles.primaryButtonText : styles.secondaryButtonText
-                ]}>
-                  {btn}
-                </Text>
-              </TouchableOpacity>
+                {order.order_status}
+              </Text>
+            </View>
+
+            {order.order_items.map((item, index) => (
+              <View
+                key={`${order.id}-${item.id}`}
+                style={[
+                  styles.productSection,
+                  index > 0 && styles.productSectionSpacing,
+                ]}
+              >
+                <View style={styles.imageWrapper}>
+                  <Image
+                    source={{ uri: item.product_image }}
+                    style={styles.productImage}
+                    resizeMode="cover"
+                  />
+                </View>
+
+                <View style={styles.productDetails}>
+                  <Text style={styles.productTitle} numberOfLines={2}>
+                    {item.product_name}
+                  </Text>
+                  <View style={styles.variantBadge}>
+                    <Text style={styles.variantText}>
+                      Delivery: {order.delivery_date ?? 'TBD'}
+                    </Text>
+                  </View>
+                  <View style={styles.priceQtyRow}>
+                    <Text style={styles.priceText}>
+                      Rs. {formatPrice(item.item_price)}
+                    </Text>
+                    <Text style={styles.qtyText}>Qty: {item.quantity}</Text>
+                  </View>
+                </View>
+              </View>
             ))}
+
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>
+                Total({itemCount} Item{itemCount === 1 ? '' : 's'}):{' '}
+                <Text style={styles.totalAmount}>
+                  Rs. {formatPrice(order.order_fee)}
+                </Text>
+              </Text>
+            </View>
+
+            <View style={styles.buttonGroup}>
+              {buttons.map((btn) => (
+                <TouchableOpacity
+                  key={`${order.id}-${btn}`}
+                  style={[
+                    styles.button,
+                    btn === 'Buy again'
+                      ? styles.primaryButton
+                      : styles.secondaryButton,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      btn === 'Buy again'
+                        ? styles.primaryButtonText
+                        : styles.secondaryButtonText,
+                    ]}
+                  >
+                    {btn}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-        </View>
-      ))}
+        );
+      })}
     </ScrollView>
   );
 };
@@ -134,6 +264,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+  },
+  stateContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    backgroundColor: '#FFFFFF',
+  },
+  stateText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#555',
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: 6,
+    backgroundColor: '#FF5722',
+  },
+  retryButtonText: {
+    color: '#FFF',
+    fontWeight: '700',
+    fontSize: 13,
   },
   orderCard: {
     padding: 15,
@@ -161,6 +316,9 @@ const styles = StyleSheet.create({
   },
   productSection: {
     flexDirection: 'row',
+  },
+  productSectionSpacing: {
+    marginTop: 14,
   },
   imageWrapper: {
     width: 90,
