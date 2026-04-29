@@ -220,14 +220,20 @@ const LoginSignup = ({ onLogin }: Props) => {
                 <Text style={styles.orangeActionText}>LOGIN</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.googleCircleBtn}>
-                <Image
-                  source={{
-                    uri: 'https://img.icons8.com/color/48/google-logo.png',
-                  }}
-                  style={{ width: 24, height: 24 }}
-                />
-              </TouchableOpacity>
+              <View style={styles.socialBtnsRow}>
+                <TouchableOpacity style={styles.socialCircleBtn}>
+                  <Image
+                    source={{
+                      uri: 'https://img.icons8.com/color/48/google-logo.png',
+                    }}
+                    style={{ width: 24, height: 24 }}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.socialCircleBtn}>
+                  <Ionicons name="logo-apple" size={24} color="#000" />
+                </TouchableOpacity>
+              </View>
 
               <View style={styles.popupFooter}>
                 <Text style={styles.footerGray}>Don&lsquo;t have an account? </Text>
@@ -364,14 +370,20 @@ const LoginSignup = ({ onLogin }: Props) => {
                   <Text style={styles.orangeActionText}>SIGN UP</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.googleCircleBtn}>
-                  <Image
-                    source={{
-                      uri: 'https://img.icons8.com/color/48/google-logo.png',
-                    }}
-                    style={{ width: 24, height: 24 }}
-                  />
-                </TouchableOpacity>
+                <View style={styles.socialBtnsRow}>
+                  <TouchableOpacity style={styles.socialCircleBtn}>
+                    <Image
+                      source={{
+                        uri: 'https://img.icons8.com/color/48/google-logo.png',
+                      }}
+                      style={{ width: 24, height: 24 }}
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.socialCircleBtn}>
+                    <Ionicons name="logo-apple" size={24} color="#000" />
+                  </TouchableOpacity>
+                </View>
 
                 <View style={styles.popupFooter}>
                   <Text style={styles.footerGray}>
@@ -576,9 +588,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   orangeActionText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
-  googleCircleBtn: {
-    alignSelf: 'center',
+  socialBtnsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
     marginTop: 20,
+  },
+  socialCircleBtn: {
     width: 45,
     height: 45,
     borderRadius: 25,
@@ -588,6 +604,10 @@ const styles = StyleSheet.create({
     elevation: 3,
     borderWidth: 1,
     borderColor: '#eee',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   popupFooter: {
     flexDirection: 'row',
