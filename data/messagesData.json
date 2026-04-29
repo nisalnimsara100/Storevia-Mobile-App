@@ -1,0 +1,138 @@
+{
+  "newCustomer": {
+    "isNewCustomer": true,
+    "promotions": [
+      {
+        "id": 1,
+        "type": "promo",
+        "title": "1 MIN of Candy = Coins 🤑😍",
+        "date": "22/09/2025",
+        "content": "1 MINUTE OF CANDY = COINS FOR REAL DARAZ DEALS!",
+        "actionText": "Play Now",
+        "backgroundColor": "#4FC3F7",
+        "footerText": "Start Playing NOW 🔥💰🎁",
+        "isNew": false
+      },
+      {
+        "id": 2,
+        "type": "promo",
+        "title": "Flash Sale 50% Off 🔥",
+        "date": "21/09/2025",
+        "content": "MEGA FLASH SALE - UP TO 50% OFF ON ALL ITEMS!",
+        "actionText": "Shop Now",
+        "backgroundColor": "#FF6B35",
+        "footerText": "Limited Time Offer! 🎉🛍️",
+        "isNew": true
+      },
+      {
+        "id": 3,
+        "type": "promo",
+        "title": "Free Delivery Weekend 🚚",
+        "date": "20/09/2025",
+        "content": "FREE DELIVERY ON ALL ORDERS THIS WEEKEND ONLY!",
+        "actionText": "Order Now",
+        "backgroundColor": "#4CAF50",
+        "footerText": "Weekend Special! 📦🚚",
+        "isNew": false
+      }
+    ],
+    "orders": [],
+    "deliveries": []
+  },
+  "existingCustomer": {
+    "isNewCustomer": false,
+    "promotions": [
+      {
+        "id": 1,
+        "type": "promo",
+        "title": "1 MIN of Candy = Coins 🤑😍",
+        "date": "22/09/2025",
+        "content": "1 MINUTE OF CANDY = COINS FOR REAL DARAZ DEALS!",
+        "actionText": "Play Now",
+        "backgroundColor": "#4FC3F7",
+        "footerText": "Start Playing NOW 🔥💰🎁",
+        "isNew": false
+      },
+      {
+        "id": 2,
+        "type": "promo",
+        "title": "Flash Sale 50% Off 🔥",
+        "date": "21/09/2025",
+        "content": "MEGA FLASH SALE - UP TO 50% OFF ON ALL ITEMS!",
+        "actionText": "Shop Now",
+        "backgroundColor": "#FF6B35",
+        "footerText": "Limited Time Offer! 🎉🛍️",
+        "isNew": true
+      }
+    ],
+    "orders": [
+      {
+        "id": 3,
+        "type": "order",
+        "title": "Your order has arrived! Need assistance? Tap here.",
+        "date": "20/09/2025",
+        "content": "Great news! Your order has been delivered successfully. We hope you enjoy your purchase. Thank you for shopping with Daraz. Got any quest...",
+        "orderNumber": "Order # 220396840601",
+        "status": "delivered",
+        "trackingId": "TR001234567890"
+      },
+      {
+        "id": 4,
+        "type": "order",
+        "title": "Order confirmed! Preparing for shipment.",
+        "date": "19/09/2025",
+        "content": "Your order is being prepared and will be shipped soon. Track your order for real-time updates.",
+        "orderNumber": "Order # 220396840602",
+        "status": "processing",
+        "trackingId": "TR001234567891"
+      }
+    ],
+    "deliveries": [
+      {
+        "id": 6,
+        "type": "delivery",
+        "title": "Delivered",
+        "date": "19/09/2025",
+        "content": "Your feedback will help others make the right choice. Tap here to share your review",
+        "orderNumber": "Order # 220396840602",
+        "deliveryStatus": "completed",
+        "deliveredBy": "John Delivery",
+        "deliveryTime": "2:30 PM"
+      },
+      {
+        "id": 7,
+        "type": "delivery",
+        "title": "Package Delivered Successfully",
+        "date": "18/09/2025",
+        "content": "Your order has been delivered to your address. Thank you for choosing us!",
+        "orderNumber": "Order # 220396840600",
+        "deliveryStatus": "completed",
+        "deliveredBy": "Sarah Express",
+        "deliveryTime": "11:45 AM"
+      }
+    ]
+  },
+  "promotionTemplates": [
+    {
+      "title": "Buy 1 Get 1 Free 🎁",
+      "content": "AMAZING BUY ONE GET ONE FREE OFFER ON SELECTED ITEMS!",
+      "actionText": "Shop Now",
+      "backgroundColor": "#9C27B0",
+      "footerText": "Double the Joy! 🎁✨"
+    },
+    {
+      "title": "New User Special 💎",
+      "content": "EXCLUSIVE 30% OFF FOR NEW USERS - LIMITED TIME!",
+      "actionText": "Claim Now",
+      "backgroundColor": "#FF9800",
+      "footerText": "Welcome Bonus! 💎🎉"
+    },
+    {
+      "title": "Midnight Sale ⭐",
+      "content": "MIDNIGHT SALE - EXTRA 40% OFF EVERYTHING!",
+      "actionText": "Shop Now",
+      "backgroundColor": "#3F51B5",
+      "footerText": "Midnight Magic! ⭐🌙"
+    }
+  ]
+}

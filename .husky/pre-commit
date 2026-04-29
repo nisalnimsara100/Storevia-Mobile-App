@@ -1,0 +1,3 @@
+#!/bin/sh
+node scripts/sync-env.js to-text
+git add env.text
