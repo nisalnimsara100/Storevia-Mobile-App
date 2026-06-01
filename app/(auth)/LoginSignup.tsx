@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Constants, { AppOwnership } from 'expo-constants';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as AppleAuthentication from 'expo-apple-authentication';
@@ -48,8 +49,7 @@ const LoginSignup = ({ onLogin }: Props) => {
   const [signUpPassword, setSignUpPassword] = useState('');
   const [signUpConfirmPassword, setSignUpConfirmPassword] = useState('');
   const [signUpPasswordVisible, setSignUpPasswordVisible] = useState(false);
-  const [signUpConfirmPasswordVisible, setSignUpConfirmPasswordVisible] =
-    useState(false);
+  const [signUpConfirmPasswordVisible, setSignUpConfirmPasswordVisible] = useState(false);
 
   const handleAuthSuccess = () => {
     const username = loginEmail;
@@ -67,11 +67,26 @@ const LoginSignup = ({ onLogin }: Props) => {
   };
 
   // Google Auth Setup
+  const isExpoGo = Constants.appOwnership === 'expo' || Constants.appOwnership === AppOwnership.Expo;
+  const iosRedirectUri = 'com.googleusercontent.apps.259108551499-tom35p3qv65mqp5ghcl5bhupvpmefacj:/oauth2redirect';
+  const androidRedirectUri = 'com.googleusercontent.apps.259108551499-u5m4hktopeo0igsofo8hjrlm8gtinkfa:/oauth2redirect';
+
+  const customRedirectUri = Platform.OS === 'ios' ? iosRedirectUri : Platform.OS === 'android' ? androidRedirectUri : undefined;
+
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || 'your-web-client-id.apps.googleusercontent.com',
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || 'your-ios-client-id.apps.googleusercontent.com',
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || 'your-android-client-id.apps.googleusercontent.com',
+    redirectUri: isExpoGo ? undefined : customRedirectUri,
   });
+
+  useEffect(() => {
+    if (request) {
+      console.log("=== GOOGLE AUTH URL ===");
+      console.log(request.url);
+      console.log("=======================");
+    }
+  }, [request]);
 
   useEffect(() => {
     if (response?.type === 'success') {

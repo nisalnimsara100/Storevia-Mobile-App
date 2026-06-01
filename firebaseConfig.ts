@@ -1,6 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuth } from 'firebase/auth';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -12,12 +11,17 @@ const firebaseConfig = {
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase app only if it hasn't been initialized already
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+let app;
+let auth: any = null;
 
-// Initialize Firebase Auth with React Native Persistence
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
+try {
+  // Initialize Firebase app only if it hasn't been initialized already
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  
+  // Initialize Firebase Auth
+  auth = getAuth(app);
+} catch (error) {
+  console.warn("Firebase initialization failed! Please update your .env file with real Firebase keys.", error);
+}
 
 export { app, auth };

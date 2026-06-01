@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dimensions,
   Image,
@@ -11,6 +11,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { auth } from '../../firebaseConfig';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 
 // IMPORT THE LOGIN PAGE
 import LoginSignup from '../(auth)/LoginSignup';
@@ -24,12 +26,24 @@ const responsiveFontSize = (size: number): number => {
 
 const Account = () => {
   // STATE TO CHECK LOGIN
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username] = useState('Ashen Widanagamage');
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = () => {
+    signOut(auth).catch((error) => console.log('Error logging out: ', error));
+  };
 
   // IF NOT LOGGED IN, SHOW THE LOGIN PAGE
-  if (!isLoggedIn) {
-    return <LoginSignup onLogin={() => setIsLoggedIn(true)} />;
+  if (!user && !loading) {
+    return <LoginSignup onLogin={() => {}} />;
   }
 
   // IF LOGGED IN, SHOW THE FULL PROFILE
@@ -43,8 +57,8 @@ const Account = () => {
             <TouchableOpacity onPress={() => router.push('/screens/settings_screen')}>
               <Ionicons name="settings-outline" size={scale(22)} color="#333" />
             </TouchableOpacity>
-            {/* Logout button for easy testing */}
-            <TouchableOpacity onPress={() => setIsLoggedIn(false)} style={{ marginLeft: 15 }}>
+            {/* Logout button */}
+            <TouchableOpacity onPress={handleLogout} style={{ marginLeft: 15 }}>
               <Ionicons name="log-out-outline" size={scale(22)} color="#ff4d4f" />
             </TouchableOpacity>
           </View>
@@ -52,7 +66,7 @@ const Account = () => {
           <View style={styles.profileRow}>
             <View style={styles.avatarContainer}>
               <Image
-                source={require('../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg')}
+                source={user?.photoURL ? { uri: user.photoURL } : require('../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg')}
                 style={styles.profilePic}
               />
               <View style={styles.cameraIcon}>
@@ -61,7 +75,7 @@ const Account = () => {
             </View>
 
             <View style={styles.profileInfo}>
-              <Text style={styles.usernameText}>{username}</Text>
+              <Text style={styles.usernameText}>{user?.displayName || user?.email || 'Storevia User'}</Text>
               <Text style={styles.statsText}>
                 Wishlist · <Text style={styles.boldStat}>0</Text> Followed Stores ·{' '}
                 <Text style={styles.boldStat}>0</Text> Vouchers ·{' '}
