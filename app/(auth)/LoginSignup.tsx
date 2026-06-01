@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dimensions,
   Image,
@@ -14,6 +14,15 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Crypto from 'expo-crypto';
+import { GoogleAuthProvider, OAuthProvider, signInWithCredential } from 'firebase/auth';
+import { auth } from '../../firebaseConfig';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const { width: screenWidth } = Dimensions.get('window');
 const scale = (size: number) => (screenWidth / 375) * size;
@@ -42,7 +51,6 @@ const LoginSignup = ({ onLogin }: Props) => {
   const [signUpConfirmPasswordVisible, setSignUpConfirmPasswordVisible] =
     useState(false);
 
-  // This function is called when the user clicks the ORANGE button inside the popups
   const handleAuthSuccess = () => {
     const username = loginEmail;
     const password = loginPassword;
@@ -56,6 +64,65 @@ const LoginSignup = ({ onLogin }: Props) => {
       alert('Invalid credentials! Please use "user" for both email and password to log in.');
     }
       
+  };
+
+  // Google Auth Setup
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || 'your-web-client-id.apps.googleusercontent.com',
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || 'your-ios-client-id.apps.googleusercontent.com',
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || 'your-android-client-id.apps.googleusercontent.com',
+  });
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      const credential = GoogleAuthProvider.credential(id_token);
+      signInWithCredential(auth, credential)
+        .then(() => {
+          setLoginVisible(false);
+          setSignUpVisible(false);
+          onLogin();
+        })
+        .catch(error => {
+          alert(`Google Login Error: ${error.message}`);
+        });
+    }
+  }, [response]);
+
+  // Apple Auth Setup
+  const handleAppleLogin = async () => {
+    try {
+      const nonce = Math.random().toString(36).substring(2, 10);
+      const hashedNonce = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        nonce
+      );
+
+      const appleCredential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+        nonce: hashedNonce,
+      });
+
+      const { identityToken } = appleCredential;
+      if (identityToken) {
+        const provider = new OAuthProvider('apple.com');
+        const credential = provider.credential({
+          idToken: identityToken,
+          rawNonce: nonce,
+        });
+        await signInWithCredential(auth, credential);
+        setLoginVisible(false);
+        setSignUpVisible(false);
+        onLogin();
+      }
+    } catch (error: any) {
+      if (error.code !== 'ERR_REQUEST_CANCELED') {
+        alert(`Apple Login Error: ${error.message}`);
+      }
+    }
   };
 
   return (
@@ -221,7 +288,10 @@ const LoginSignup = ({ onLogin }: Props) => {
               </TouchableOpacity>
 
               <View style={styles.socialBtnsRow}>
-                <TouchableOpacity style={styles.socialCircleBtn}>
+                <TouchableOpacity 
+                  style={styles.socialCircleBtn}
+                  onPress={() => promptAsync()}
+                >
                   <Image
                     source={{
                       uri: 'https://img.icons8.com/color/48/google-logo.png',
@@ -230,9 +300,14 @@ const LoginSignup = ({ onLogin }: Props) => {
                   />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.socialCircleBtn}>
-                  <Ionicons name="logo-apple" size={24} color="#000" />
-                </TouchableOpacity>
+                {Platform.OS === 'ios' && (
+                  <TouchableOpacity 
+                    style={styles.socialCircleBtn}
+                    onPress={handleAppleLogin}
+                  >
+                    <Ionicons name="logo-apple" size={24} color="#000" />
+                  </TouchableOpacity>
+                )}
               </View>
 
               <View style={styles.popupFooter}>
@@ -371,7 +446,10 @@ const LoginSignup = ({ onLogin }: Props) => {
                 </TouchableOpacity>
 
                 <View style={styles.socialBtnsRow}>
-                  <TouchableOpacity style={styles.socialCircleBtn}>
+                  <TouchableOpacity 
+                    style={styles.socialCircleBtn}
+                    onPress={() => promptAsync()}
+                  >
                     <Image
                       source={{
                         uri: 'https://img.icons8.com/color/48/google-logo.png',
@@ -380,9 +458,14 @@ const LoginSignup = ({ onLogin }: Props) => {
                     />
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.socialCircleBtn}>
-                    <Ionicons name="logo-apple" size={24} color="#000" />
-                  </TouchableOpacity>
+                  {Platform.OS === 'ios' && (
+                    <TouchableOpacity 
+                      style={styles.socialCircleBtn}
+                      onPress={handleAppleLogin}
+                    >
+                      <Ionicons name="logo-apple" size={24} color="#000" />
+                    </TouchableOpacity>
+                  )}
                 </View>
 
                 <View style={styles.popupFooter}>

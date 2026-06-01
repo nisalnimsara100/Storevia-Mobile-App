@@ -1,3 +1,23 @@
 #!/bin/sh
+
+# Load shell profiles safely (avoid [ ... ] && ... under sh -e)
+if [ -f "$HOME/.profile" ]; then
+  . "$HOME/.profile"
+fi
+
+if [ -f "$HOME/.bashrc" ]; then
+  . "$HOME/.bashrc"
+fi
+
+if [ -f "$HOME/.zshrc" ]; then
+  . "$HOME/.zshrc"
+fi
+
+# Also try loading nvm specifically if it exists
+export NVM_DIR="$HOME/.nvm"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  . "$NVM_DIR/nvm.sh"
+fi
+
 node scripts/sync-env.js to-text
 git add env.text
