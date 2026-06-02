@@ -20,7 +20,14 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Crypto from 'expo-crypto';
-import { GoogleAuthProvider, OAuthProvider, signInWithCredential } from 'firebase/auth';
+import { 
+  GoogleAuthProvider, 
+  OAuthProvider, 
+  signInWithCredential,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile
+} from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -51,19 +58,46 @@ const LoginSignup = ({ onLogin }: Props) => {
   const [signUpPasswordVisible, setSignUpPasswordVisible] = useState(false);
   const [signUpConfirmPasswordVisible, setSignUpConfirmPasswordVisible] = useState(false);
 
-  const handleAuthSuccess = () => {
-    const username = loginEmail;
-    const password = loginPassword;
+  const handleLogin = async () => {
+    if (!loginEmail || !loginPassword) {
+      alert('Please fill in all login fields.');
+      return;
+    }
 
-    if(username === 'user' && password === 'user') {
+    try {
+      await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
       setLoginVisible(false);
       setSignUpVisible(false);
       onLogin();
+    } catch (error: any) {
+      alert(`Login Error: ${error.message}`);
     }
-    else{
-      alert('Invalid credentials! Please use "user" for both email and password to log in.');
+  };
+
+  const handleSignUp = async () => {
+    if (!signUpEmail || !signUpPassword || !signUpConfirmPassword || !signUpFirstName || !signUpLastName) {
+      alert('Please fill in all required sign-up fields.');
+      return;
     }
-      
+
+    if (signUpPassword !== signUpConfirmPassword) {
+      alert('Passwords do not match.');
+      return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword);
+      if (userCredential.user) {
+        await updateProfile(userCredential.user, {
+          displayName: `${signUpFirstName} ${signUpLastName}`
+        });
+      }
+      setLoginVisible(false);
+      setSignUpVisible(false);
+      onLogin();
+    } catch (error: any) {
+      alert(`Sign Up Error: ${error.message}`);
+    }
   };
 
   // Google Auth Setup
@@ -297,7 +331,7 @@ const LoginSignup = ({ onLogin }: Props) => {
 
               <TouchableOpacity
                 style={styles.orangeActionBtn}
-                onPress={handleAuthSuccess}
+                onPress={handleLogin}
               >
                 <Text style={styles.orangeActionText}>LOGIN</Text>
               </TouchableOpacity>
@@ -455,7 +489,7 @@ const LoginSignup = ({ onLogin }: Props) => {
 
                 <TouchableOpacity
                   style={styles.orangeActionBtn}
-                  onPress={handleAuthSuccess}
+                  onPress={handleSignUp}
                 >
                   <Text style={styles.orangeActionText}>SIGN UP</Text>
                 </TouchableOpacity>

@@ -17,8 +17,14 @@
             "CFBundleURLSchemes": [
               "com.googleusercontent.apps.259108551499-tom35p3qv65mqp5ghcl5bhupvpmefacj"
             ]
+          },
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.259108551499-tom35p3qv65mqp5ghcl5bhupvpmefacj"
+            ]
           }
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -58,6 +64,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "6c309473-f113-4086-808b-48f6b4813f8d"
+      }
     }
   }
 }
