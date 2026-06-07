@@ -1,6 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState, useEffect } from 'react';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Google from 'expo-auth-session/providers/google';
+import Constants, { AppOwnership } from 'expo-constants';
+import * as Crypto from 'expo-crypto';
+import * as WebBrowser from 'expo-web-browser';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -14,21 +20,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import Constants, { AppOwnership } from 'expo-constants';
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-import * as AppleAuthentication from 'expo-apple-authentication';
-import * as Crypto from 'expo-crypto';
-import { 
-  GoogleAuthProvider, 
-  OAuthProvider, 
-  signInWithCredential,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  updateProfile
-} from 'firebase/auth';
-import { auth } from '../../firebaseConfig';
+import { useAuth } from '../context/authContext';
+import { useAuthStore } from '../stores/useAuthStore';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -40,8 +33,13 @@ interface Props {
 }
 
 const LoginSignup = ({ onLogin }: Props) => {
+  const { signIn, signUp, signInWithGoogle, signInWithApple, loading } =
+    useAuth();
+  const { user } = useAuthStore();
+
   const [loginVisible, setLoginVisible] = useState(false);
   const [signUpVisible, setSignUpVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
@@ -56,26 +54,45 @@ const LoginSignup = ({ onLogin }: Props) => {
   const [signUpPassword, setSignUpPassword] = useState('');
   const [signUpConfirmPassword, setSignUpConfirmPassword] = useState('');
   const [signUpPasswordVisible, setSignUpPasswordVisible] = useState(false);
-  const [signUpConfirmPasswordVisible, setSignUpConfirmPasswordVisible] = useState(false);
+  const [signUpConfirmPasswordVisible, setSignUpConfirmPasswordVisible] =
+    useState(false);
 
+  // 🔐 Handle Email/Password Login
   const handleLogin = async () => {
     if (!loginEmail || !loginPassword) {
       alert('Please fill in all login fields.');
       return;
     }
 
+    setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
-      setLoginVisible(false);
-      setSignUpVisible(false);
-      onLogin();
+      const result = await signIn(loginEmail, loginPassword);
+      if (result.success) {
+        setLoginVisible(false);
+        setSignUpVisible(false);
+        setLoginEmail('');
+        setLoginPassword('');
+        alert('✅ Login successful!');
+        onLogin();
+      } else {
+        alert(`❌ Login Error: ${result.error}`);
+      }
     } catch (error: any) {
-      alert(`Login Error: ${error.message}`);
+      alert(`❌ Login Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // 📝 Handle Email/Password Sign Up
   const handleSignUp = async () => {
-    if (!signUpEmail || !signUpPassword || !signUpConfirmPassword || !signUpFirstName || !signUpLastName) {
+    if (
+      !signUpEmail ||
+      !signUpPassword ||
+      !signUpConfirmPassword ||
+      !signUpFirstName ||
+      !signUpLastName
+    ) {
       alert('Please fill in all required sign-up fields.');
       return;
     }
@@ -85,66 +102,106 @@ const LoginSignup = ({ onLogin }: Props) => {
       return;
     }
 
+    if (signUpPassword.length < 6) {
+      alert('Password must be at least 6 characters.');
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword);
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, {
-          displayName: `${signUpFirstName} ${signUpLastName}`
-        });
+      const result = await signUp(
+        signUpEmail,
+        signUpPassword,
+        signUpFirstName,
+        signUpLastName,
+        signUpPhone,
+      );
+
+      if (result.success) {
+        setLoginVisible(false);
+        setSignUpVisible(false);
+        // Clear form
+        setSignUpFirstName('');
+        setSignUpLastName('');
+        setSignUpEmail('');
+        setSignUpPhone('');
+        setSignUpPassword('');
+        setSignUpConfirmPassword('');
+        alert('✅ Sign up successful! Welcome to Storevia!');
+        onLogin();
+      } else {
+        alert(`❌ Sign Up Error: ${result.error}`);
       }
-      setLoginVisible(false);
-      setSignUpVisible(false);
-      onLogin();
     } catch (error: any) {
-      alert(`Sign Up Error: ${error.message}`);
+      alert(`❌ Sign Up Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Google Auth Setup
-  const isExpoGo = Constants.appOwnership === 'expo' || Constants.appOwnership === AppOwnership.Expo;
-  const iosRedirectUri = 'com.googleusercontent.apps.259108551499-tom35p3qv65mqp5ghcl5bhupvpmefacj:/oauth2redirect';
-  const androidRedirectUri = 'com.googleusercontent.apps.259108551499-u5m4hktopeo0igsofo8hjrlm8gtinkfa:/oauth2redirect';
+  // 🔵 Google Auth Setup
+  const isExpoGo =
+    Constants.appOwnership === 'expo' ||
+    Constants.appOwnership === AppOwnership.Expo;
+  const iosRedirectUri =
+    'com.googleusercontent.apps.259108551499-tom35p3qv65mqp5ghcl5bhupvpmefacj:/oauth2redirect';
+  const androidRedirectUri =
+    'com.googleusercontent.apps.259108551499-u5m4hktopeo0igsofo8hjrlm8gtinkfa:/oauth2redirect';
 
-  const customRedirectUri = Platform.OS === 'ios' ? iosRedirectUri : Platform.OS === 'android' ? androidRedirectUri : undefined;
+  const customRedirectUri =
+    Platform.OS === 'ios'
+      ? iosRedirectUri
+      : Platform.OS === 'android'
+        ? androidRedirectUri
+        : undefined;
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || 'your-web-client-id.apps.googleusercontent.com',
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || 'your-ios-client-id.apps.googleusercontent.com',
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || 'your-android-client-id.apps.googleusercontent.com',
+    clientId:
+      process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ||
+      'your-web-client-id.apps.googleusercontent.com',
+    iosClientId:
+      process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
+      'your-ios-client-id.apps.googleusercontent.com',
+    androidClientId:
+      process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ||
+      'your-android-client-id.apps.googleusercontent.com',
     redirectUri: isExpoGo ? undefined : customRedirectUri,
   });
 
   useEffect(() => {
     if (request) {
-      console.log("=== GOOGLE AUTH URL ===");
+      console.log('=== GOOGLE AUTH URL ===');
       console.log(request.url);
-      console.log("=======================");
+      console.log('=======================');
     }
   }, [request]);
 
   useEffect(() => {
     if (response?.type === 'success') {
       const { id_token } = response.params;
-      const credential = GoogleAuthProvider.credential(id_token);
-      signInWithCredential(auth, credential)
-        .then(() => {
-          setLoginVisible(false);
-          setSignUpVisible(false);
-          onLogin();
+      signInWithGoogle(id_token)
+        .then((result) => {
+          if (result.success) {
+            setLoginVisible(false);
+            setSignUpVisible(false);
+            onLogin();
+          } else {
+            alert(`❌ Google Login Error: ${result.error}`);
+          }
         })
-        .catch(error => {
-          alert(`Google Login Error: ${error.message}`);
+        .catch((error) => {
+          alert(`❌ Google Login Error: ${error.message}`);
         });
     }
   }, [response]);
 
-  // Apple Auth Setup
+  // 🍎 Apple Auth Setup
   const handleAppleLogin = async () => {
     try {
       const nonce = Math.random().toString(36).substring(2, 10);
       const hashedNonce = await Crypto.digestStringAsync(
         Crypto.CryptoDigestAlgorithm.SHA256,
-        nonce
+        nonce,
       );
 
       const appleCredential = await AppleAuthentication.signInAsync({
@@ -157,19 +214,18 @@ const LoginSignup = ({ onLogin }: Props) => {
 
       const { identityToken } = appleCredential;
       if (identityToken) {
-        const provider = new OAuthProvider('apple.com');
-        const credential = provider.credential({
-          idToken: identityToken,
-          rawNonce: nonce,
-        });
-        await signInWithCredential(auth, credential);
-        setLoginVisible(false);
-        setSignUpVisible(false);
-        onLogin();
+        const result = await signInWithApple(identityToken, nonce);
+        if (result.success) {
+          setLoginVisible(false);
+          setSignUpVisible(false);
+          onLogin();
+        } else {
+          alert(`❌ Apple Login Error: ${result.error}`);
+        }
       }
     } catch (error: any) {
       if (error.code !== 'ERR_REQUEST_CANCELED') {
-        alert(`Apple Login Error: ${error.message}`);
+        alert(`❌ Apple Login Error: ${error.message}`);
       }
     }
   };
@@ -189,12 +245,14 @@ const LoginSignup = ({ onLogin }: Props) => {
             <TouchableOpacity
               style={styles.loginBtn}
               onPress={() => setLoginVisible(true)}
+              disabled={isLoading}
             >
               <Text style={styles.loginText}>Login</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.signUpBtn}
               onPress={() => setSignUpVisible(true)}
+              disabled={isLoading}
             >
               <Text style={styles.signUpText}>Sign Up</Text>
             </TouchableOpacity>
@@ -276,6 +334,7 @@ const LoginSignup = ({ onLogin }: Props) => {
               <TouchableOpacity
                 style={styles.closeBtn}
                 onPress={() => setLoginVisible(false)}
+                disabled={isLoading}
               >
                 <Ionicons name="close" size={24} color="#999" />
               </TouchableOpacity>
@@ -292,6 +351,9 @@ const LoginSignup = ({ onLogin }: Props) => {
                 placeholderTextColor="#999"
                 value={loginEmail}
                 onChangeText={setLoginEmail}
+                editable={!isLoading}
+                keyboardType="email-address"
+                autoCapitalize="none"
               />
 
               <View
@@ -302,7 +364,7 @@ const LoginSignup = ({ onLogin }: Props) => {
                 }}
               >
                 <Text style={styles.inputLabel}>Password</Text>
-                <TouchableOpacity>
+                <TouchableOpacity disabled={isLoading}>
                   <Text style={{ color: '#f36d21', fontSize: 12 }}>
                     Forgot?
                   </Text>
@@ -316,9 +378,11 @@ const LoginSignup = ({ onLogin }: Props) => {
                   placeholderTextColor="#999"
                   value={loginPassword}
                   onChangeText={setLoginPassword}
+                  editable={!isLoading}
                 />
                 <TouchableOpacity
                   onPress={() => setLoginPasswordVisible(!loginPasswordVisible)}
+                  disabled={isLoading}
                 >
                   <Ionicons
                     name={loginPasswordVisible ? 'eye' : 'eye-off-outline'}
@@ -330,16 +394,26 @@ const LoginSignup = ({ onLogin }: Props) => {
               </View>
 
               <TouchableOpacity
-                style={styles.orangeActionBtn}
+                style={[
+                  styles.orangeActionBtn,
+                  isLoading && styles.disabledBtn,
+                ]}
                 onPress={handleLogin}
+                disabled={isLoading}
               >
-                <Text style={styles.orangeActionText}>LOGIN</Text>
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.orangeActionText}>LOGIN</Text>
+                )}
               </TouchableOpacity>
 
+              {/* Social Login Options */}
               <View style={styles.socialBtnsRow}>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.socialCircleBtn}
                   onPress={() => promptAsync()}
+                  disabled={isLoading}
                 >
                   <Image
                     source={{
@@ -350,9 +424,10 @@ const LoginSignup = ({ onLogin }: Props) => {
                 </TouchableOpacity>
 
                 {Platform.OS === 'ios' && (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.socialCircleBtn}
                     onPress={handleAppleLogin}
+                    disabled={isLoading}
                   >
                     <Ionicons name="logo-apple" size={24} color="#000" />
                   </TouchableOpacity>
@@ -360,12 +435,15 @@ const LoginSignup = ({ onLogin }: Props) => {
               </View>
 
               <View style={styles.popupFooter}>
-                <Text style={styles.footerGray}>Don&lsquo;t have an account? </Text>
+                <Text style={styles.footerGray}>
+                  Don&lsquo;t have an account?{' '}
+                </Text>
                 <TouchableOpacity
                   onPress={() => {
                     setLoginVisible(false);
                     setSignUpVisible(true);
                   }}
+                  disabled={isLoading}
                 >
                   <Text style={{ color: '#f36d21', fontWeight: 'bold' }}>
                     Sign Up
@@ -388,6 +466,7 @@ const LoginSignup = ({ onLogin }: Props) => {
                 <TouchableOpacity
                   style={styles.closeBtn}
                   onPress={() => setSignUpVisible(false)}
+                  disabled={isLoading}
                 >
                   <Ionicons name="close" size={24} color="#999" />
                 </TouchableOpacity>
@@ -404,6 +483,7 @@ const LoginSignup = ({ onLogin }: Props) => {
                   placeholderTextColor="#999"
                   value={signUpFirstName}
                   onChangeText={setSignUpFirstName}
+                  editable={!isLoading}
                 />
 
                 <Text style={styles.inputLabel}>Last Name</Text>
@@ -413,6 +493,7 @@ const LoginSignup = ({ onLogin }: Props) => {
                   placeholderTextColor="#999"
                   value={signUpLastName}
                   onChangeText={setSignUpLastName}
+                  editable={!isLoading}
                 />
 
                 <Text style={styles.inputLabel}>Email</Text>
@@ -423,6 +504,8 @@ const LoginSignup = ({ onLogin }: Props) => {
                   value={signUpEmail}
                   onChangeText={setSignUpEmail}
                   keyboardType="email-address"
+                  editable={!isLoading}
+                  autoCapitalize="none"
                 />
 
                 <Text style={styles.inputLabel}>Phone Number</Text>
@@ -433,6 +516,7 @@ const LoginSignup = ({ onLogin }: Props) => {
                   value={signUpPhone}
                   onChangeText={setSignUpPhone}
                   keyboardType="phone-pad"
+                  editable={!isLoading}
                 />
 
                 <Text style={styles.inputLabel}>Password</Text>
@@ -440,15 +524,17 @@ const LoginSignup = ({ onLogin }: Props) => {
                   <TextInput
                     style={styles.textInput}
                     secureTextEntry={!signUpPasswordVisible}
-                    placeholder="Create a password"
+                    placeholder="Create a password (min 6 chars)"
                     placeholderTextColor="#999"
                     value={signUpPassword}
                     onChangeText={setSignUpPassword}
+                    editable={!isLoading}
                   />
                   <TouchableOpacity
                     onPress={() =>
                       setSignUpPasswordVisible(!signUpPasswordVisible)
                     }
+                    disabled={isLoading}
                   >
                     <Ionicons
                       name={signUpPasswordVisible ? 'eye' : 'eye-off-outline'}
@@ -468,6 +554,7 @@ const LoginSignup = ({ onLogin }: Props) => {
                     placeholderTextColor="#999"
                     value={signUpConfirmPassword}
                     onChangeText={setSignUpConfirmPassword}
+                    editable={!isLoading}
                   />
                   <TouchableOpacity
                     onPress={() =>
@@ -475,6 +562,7 @@ const LoginSignup = ({ onLogin }: Props) => {
                         !signUpConfirmPasswordVisible,
                       )
                     }
+                    disabled={isLoading}
                   >
                     <Ionicons
                       name={
@@ -488,16 +576,26 @@ const LoginSignup = ({ onLogin }: Props) => {
                 </View>
 
                 <TouchableOpacity
-                  style={styles.orangeActionBtn}
+                  style={[
+                    styles.orangeActionBtn,
+                    isLoading && styles.disabledBtn,
+                  ]}
                   onPress={handleSignUp}
+                  disabled={isLoading}
                 >
-                  <Text style={styles.orangeActionText}>SIGN UP</Text>
+                  {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.orangeActionText}>SIGN UP</Text>
+                  )}
                 </TouchableOpacity>
 
+                {/* Social Signup Options */}
                 <View style={styles.socialBtnsRow}>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.socialCircleBtn}
                     onPress={() => promptAsync()}
+                    disabled={isLoading}
                   >
                     <Image
                       source={{
@@ -508,9 +606,10 @@ const LoginSignup = ({ onLogin }: Props) => {
                   </TouchableOpacity>
 
                   {Platform.OS === 'ios' && (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       style={styles.socialCircleBtn}
                       onPress={handleAppleLogin}
+                      disabled={isLoading}
                     >
                       <Ionicons name="logo-apple" size={24} color="#000" />
                     </TouchableOpacity>
@@ -526,6 +625,7 @@ const LoginSignup = ({ onLogin }: Props) => {
                       setSignUpVisible(false);
                       setLoginVisible(true);
                     }}
+                    disabled={isLoading}
                   >
                     <Text style={{ color: '#f36d21', fontWeight: 'bold' }}>
                       Log In
@@ -718,6 +818,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 20,
+  },
+  disabledBtn: {
+    backgroundColor: '#cccccc',
+    opacity: 0.6,
   },
   orangeActionText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
   socialBtnsRow: {

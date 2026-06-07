@@ -1,5 +1,6 @@
 import React from 'react';
 import Toast from 'react-native-toast-message';
+import { AuthProvider } from './authContext';
 import { CartProvider } from './cartContext';
 
 export const CartProviderWrapper = ({
@@ -8,9 +9,11 @@ export const CartProviderWrapper = ({
   children: React.ReactNode;
 }) => {
   return (
-    <CartProvider>
-      {children}
-      <Toast />
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        {children}
+        <Toast />
+      </CartProvider>
+    </AuthProvider>
   );
 };
