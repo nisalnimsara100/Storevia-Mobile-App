@@ -302,7 +302,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const sessionStartTime = Date.now();
       useAuthStore.getState().setSessionStartTime(sessionStartTime);
 
-        console.log('🔐 Zustand Store State:', useAuthStore.getState());
+      // Try to authenticate with backend (optional)
+      try {
+        const res = await fetch(`${BASE_API_URL}/api/firebase-login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          // Ensure name is properly set from response or Firebase
+          const userData = data?.user || {};
+          const userName = userData.name || fullName;
+          useAuthStore.getState().setUser({
+            ...data,
+            user: {
+              ...userData,
+              name: userName, // Use constructed full name
+            },
+          });
+          useAuthStore.getState().setAuthToken(token);
+          console.log('✅ Sign up successful:', data);
+          console.log('🔐 Zustand Store State:', useAuthStore.getState());
+        } else {
+          throw new Error('Backend authentication failed');
+        }
       } catch (backendError) {
         console.warn(
           '⚠️ Backend unavailable, using Firebase auth only:',
@@ -321,6 +348,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         useAuthStore.getState().setAuthToken(token);
         console.log('✅ Sign up successful (Firebase only)');
         console.log('🔐 Zustand Store State:', useAuthStore.getState());
+      }
+
+      // Fetch initial user data
+      if (result.user.email) {
+        await fetchInitialUserData(result.user.email, token);
       }
 
       return { success: true, user: result.user, token };
