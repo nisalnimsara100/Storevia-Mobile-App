@@ -287,7 +287,8 @@ const Home = () => {
                       >
                         <View
                           style={{ width: scale(70), height: scale(70) }}
-                          className="bg-white p-4 rounded-2xl shadow-md flex items-center justify-center"
+                          style={{ borderWidth: 1, borderColor: '#e8e8e8' }}
+                        className="bg-white p-4 rounded-2xl flex items-center justify-center"
                         >
                           <IconComponent
                             width={scale(35)}
@@ -359,7 +360,7 @@ const Home = () => {
               numColumns={2}
               renderItem={({ item }) => <LargeProductTile item={item} />}
               showsVerticalScrollIndicator={false}
-              scrollEnabled={false} // Disable scrolling for nested FlatList
+              scrollEnabled={false}
             />
           </View>
         );
@@ -392,7 +393,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FC8107FF',
+    backgroundColor: '#f97316',
     paddingHorizontal: moderateScale(10),
     paddingBottom: moderateScale(8),
   },
@@ -416,7 +417,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   searchButton: {
-    backgroundColor: '#f57c00',
+    backgroundColor: '#f97316',
     borderRadius: moderateScale(8),
     paddingVertical: verticalScale(4),
     paddingHorizontal: scale(8),
@@ -446,7 +447,7 @@ const styles = StyleSheet.create({
   },
   bannerSection: {
     alignItems: 'center',
-    backgroundColor: '#FC8107FF',
+    backgroundColor: '#f97316',
     paddingVertical: verticalScale(10),
   },
   slide: {
@@ -492,7 +493,7 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(80),
   },
   banner: {
-    backgroundColor: '#FC8107FF',
+    backgroundColor: '#f97316',
     padding: moderateScale(5),
     alignItems: 'center',
   },

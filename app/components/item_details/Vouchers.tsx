@@ -369,11 +369,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     flexDirection: 'row',
     overflow: 'visible',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
   },
   leftSection: {
     flex: 2,

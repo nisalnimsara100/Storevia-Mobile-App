@@ -23,7 +23,7 @@ const promos = [
 const PromoCard = ({ item }: { item: any }) => {
   return (
     <View className="px-4">
-      <TouchableOpacity activeOpacity={0.95} className="bg-white rounded-2xl overflow-hidden my-3 shadow-md">
+      <TouchableOpacity activeOpacity={0.95} style={{ borderWidth: 1, borderColor: '#e8e8e8' }} className="bg-white rounded-2xl overflow-hidden my-3">
         <View className="flex-row items-center p-4">
           <View className="w-12 h-12 bg-pink-400 rounded-lg items-center justify-center mr-3 relative">
             <Ionicons name="megaphone" size={18} color="white" />

@@ -446,7 +446,7 @@ const CheckoutScreen = () => {
               {/* Order Items Section */}
               <View style={styles.sectionContainer}>
                 <View style={styles.sectionHeader}>
-                  <Ionicons name="bag-check" size={20} color="#FF6B35" />
+                  <Ionicons name="bag-check" size={20} color="#f97316" />
                   <Text style={styles.sectionTitle}>
                     Order Items ({items.length})
                   </Text>
@@ -532,7 +532,7 @@ const CheckoutScreen = () => {
                   style={styles.infoCard}
                 >
                   <View style={styles.infoBadge}>
-                    <Ionicons name="location" size={20} color="#FF6B35" />
+                    <Ionicons name="location" size={20} color="#f97316" />
                   </View>
                   <View style={styles.infoContent}>
                     <Text style={styles.infoLabel}>Delivery Address</Text>
@@ -551,7 +551,7 @@ const CheckoutScreen = () => {
                   style={styles.infoCard}
                 >
                   <View style={styles.infoBadge}>
-                    <Ionicons name="ticket" size={20} color="#FF6B35" />
+                    <Ionicons name="ticket" size={20} color="#f97316" />
                   </View>
                   <View style={styles.infoContent}>
                     <Text style={styles.infoLabel}>Promo Code</Text>
@@ -568,7 +568,7 @@ const CheckoutScreen = () => {
               {/* Price Breakdown Section */}
               <View style={styles.sectionContainer}>
                 <View style={styles.sectionHeader}>
-                  <Ionicons name="calculator" size={20} color="#FF6B35" />
+                  <Ionicons name="calculator" size={20} color="#f97316" />
                   <Text style={styles.sectionTitle}>Price Details</Text>
                 </View>
 
@@ -720,7 +720,7 @@ const CheckoutScreen = () => {
                             <Ionicons
                               name="checkmark-circle"
                               size={24}
-                              color="#FF6B35"
+                              color="#f97316"
                             />
                           )}
                         </View>
@@ -738,7 +738,7 @@ const CheckoutScreen = () => {
                       onPress={() => setShowAddNewAddress(true)}
                       style={styles.addNewAddressButton}
                     >
-                      <Ionicons name="add-circle" size={24} color="#FF6B35" />
+                      <Ionicons name="add-circle" size={24} color="#f97316" />
                       <Text style={styles.addNewAddressText}>
                         Add New Address
                       </Text>
@@ -889,7 +889,7 @@ const CheckoutScreen = () => {
                               useAsBilling: value,
                             })
                           }
-                          trackColor={{ false: '#ccc', true: '#FF6B35' }}
+                          trackColor={{ false: '#ccc', true: '#f97316' }}
                           thumbColor="#fff"
                         />
                       </View>
@@ -1003,7 +1003,7 @@ const CheckoutScreen = () => {
                   );
                   const isShipping = voucher.voucherType === 'shipping';
                   const cardBgColor = isShipping ? '#E8F9F8' : '#FFF8EC';
-                  const iconColor = isShipping ? '#27AE60' : '#FF6B35';
+                  const iconColor = isShipping ? '#27AE60' : '#f97316';
 
                   return (
                     <TouchableOpacity
@@ -1094,7 +1094,7 @@ const CheckoutScreen = () => {
                     }}
                     style={styles.removeVoucherButton}
                   >
-                    <Ionicons name="close-circle" size={20} color="#FF6B35" />
+                    <Ionicons name="close-circle" size={20} color="#f97316" />
                     <Text style={styles.removeVoucherText}>
                       Remove All Vouchers
                     </Text>
@@ -1127,7 +1127,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#f97316',
     paddingVertical: verticalScale(12),
     paddingHorizontal: scale(16),
     paddingTop: verticalScale(16),
@@ -1189,7 +1189,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -8,
     right: -8,
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#f97316',
     borderRadius: moderateScale(12),
     paddingHorizontal: scale(6),
     paddingVertical: verticalScale(2),
@@ -1216,7 +1216,7 @@ const styles = StyleSheet.create({
   currentPrice: {
     fontSize: moderateScale(14),
     fontWeight: '700',
-    color: '#FF6B35',
+    color: '#f97316',
   },
   originalPrice: {
     fontSize: moderateScale(12),
@@ -1248,7 +1248,7 @@ const styles = StyleSheet.create({
   itemTotal: {
     fontSize: moderateScale(12),
     fontWeight: '600',
-    color: '#FF6B35',
+    color: '#f97316',
   },
   divider: {
     height: 1,
@@ -1286,7 +1286,7 @@ const styles = StyleSheet.create({
   infoValue: {
     fontSize: moderateScale(13),
     fontWeight: '500',
-    color: '#FF6B35',
+    color: '#f97316',
   },
   priceBreakdown: {
     backgroundColor: '#F9F9F9',
@@ -1338,7 +1338,7 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: moderateScale(16),
     fontWeight: '700',
-    color: '#FF6B35',
+    color: '#f97316',
   },
   savingsContainer: {
     flexDirection: 'row',
@@ -1360,7 +1360,7 @@ const styles = StyleSheet.create({
   },
   proceedButton: {
     flexDirection: 'row',
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#f97316',
     borderRadius: moderateScale(8),
     paddingVertical: verticalScale(14),
     paddingHorizontal: scale(16),
@@ -1375,7 +1375,7 @@ const styles = StyleSheet.create({
   },
   continueShoppingButton: {
     borderWidth: 1.5,
-    borderColor: '#FF6B35',
+    borderColor: '#f97316',
     borderRadius: moderateScale(8),
     paddingVertical: verticalScale(12),
     justifyContent: 'center',
@@ -1384,7 +1384,7 @@ const styles = StyleSheet.create({
   continueShoppingText: {
     fontSize: moderateScale(14),
     fontWeight: '600',
-    color: '#FF6B35',
+    color: '#f97316',
   },
   emptyContainer: {
     flex: 1,
@@ -1446,7 +1446,7 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(12),
   },
   addressCardSelected: {
-    borderColor: '#FF6B35',
+    borderColor: '#f97316',
     backgroundColor: '#FFF5F0',
   },
   addressCardHeader: {
@@ -1456,7 +1456,7 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(8),
   },
   addressType: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#f97316',
     paddingHorizontal: scale(12),
     paddingVertical: verticalScale(4),
     borderRadius: moderateScale(4),
@@ -1485,7 +1485,7 @@ const styles = StyleSheet.create({
   addressCity: {
     fontSize: moderateScale(12),
     fontWeight: '500',
-    color: '#FF6B35',
+    color: '#f97316',
   },
   addNewAddressButton: {
     flexDirection: 'row',
@@ -1493,7 +1493,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderColor: '#FF6B35',
+    borderColor: '#f97316',
     borderRadius: moderateScale(12),
     paddingVertical: verticalScale(16),
     marginBottom: verticalScale(16),
@@ -1501,7 +1501,7 @@ const styles = StyleSheet.create({
   addNewAddressText: {
     fontSize: moderateScale(14),
     fontWeight: '600',
-    color: '#FF6B35',
+    color: '#f97316',
     marginLeft: scale(8),
   },
   // Add New Address Form styles
@@ -1575,7 +1575,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   saveAddressButton: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#f97316',
     borderRadius: moderateScale(8),
     paddingVertical: verticalScale(12),
     justifyContent: 'center',
@@ -1589,7 +1589,7 @@ const styles = StyleSheet.create({
   },
   backButton2: {
     borderWidth: 1.5,
-    borderColor: '#FF6B35',
+    borderColor: '#f97316',
     borderRadius: moderateScale(8),
     paddingVertical: verticalScale(12),
     justifyContent: 'center',
@@ -1598,7 +1598,7 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: moderateScale(14),
     fontWeight: '600',
-    color: '#FF6B35',
+    color: '#f97316',
   },
   // Voucher Card styles
   voucherCard: {
@@ -1613,7 +1613,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   voucherCardSelected: {
-    borderColor: '#FF6B35',
+    borderColor: '#f97316',
     backgroundColor: '#FFF5F0',
   },
   voucherLeft: {
@@ -1627,7 +1627,7 @@ const styles = StyleSheet.create({
   voucherCode: {
     fontSize: moderateScale(14),
     fontWeight: '700',
-    color: '#FF6B35',
+    color: '#f97316',
     marginLeft: scale(8),
   },
   voucherDescription: {
@@ -1648,7 +1648,7 @@ const styles = StyleSheet.create({
     width: scale(60),
     height: scale(60),
     borderRadius: moderateScale(30),
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#f97316',
     borderWidth: 0,
     justifyContent: 'center',
     alignItems: 'center',
@@ -1670,7 +1670,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderColor: '#FF6B35',
+    borderColor: '#f97316',
     borderRadius: moderateScale(12),
     paddingVertical: verticalScale(12),
     marginTop: verticalScale(16),
@@ -1678,11 +1678,11 @@ const styles = StyleSheet.create({
   removeVoucherText: {
     fontSize: moderateScale(14),
     fontWeight: '600',
-    color: '#FF6B35',
+    color: '#f97316',
     marginLeft: scale(8),
   },
   doneButton: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#f97316',
     borderRadius: moderateScale(12),
     paddingVertical: verticalScale(14),
     alignItems: 'center',

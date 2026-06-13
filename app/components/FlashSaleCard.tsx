@@ -12,54 +12,86 @@ type FlashSaleItem = {
   discount: number;
 };
 
-type FlashSaleCardProps = {
-  item: FlashSaleItem;
-};
-
-const FlashSaleCard: React.FC<FlashSaleCardProps> = ({ item }) => {
+const FlashSaleCard: React.FC<{ item: FlashSaleItem }> = ({ item }) => {
   const router = useRouter();
-  
+
   const handleCardPress = () => {
     router.push({
       pathname: '/screens/item_details',
-      params: {
-        product: JSON.stringify(item),
-      },
+      params: { product: JSON.stringify(item) },
     });
   };
-  
+
   return (
     <TouchableOpacity
-      style={{ width: scale(140) }}
-      className="bg-white rounded-xl p-2 m-2 shadow"
+      style={{
+        width: scale(140),
+        backgroundColor: '#fff',
+        borderRadius: moderateScale(10),
+        margin: scale(4),
+        padding: scale(8),
+        overflow: 'hidden',
+      }}
       onPress={handleCardPress}
       activeOpacity={0.8}
     >
       <Image
-        source={
-          typeof item.image === 'string' ? { uri: item.image } : item.image
-        }
-        style={{ width: '100%', height: verticalScale(100) }}
-        className="rounded-md"
+        source={typeof item.image === 'string' ? { uri: item.image } : item.image}
+        style={{ width: '100%', height: verticalScale(100), borderRadius: moderateScale(6) }}
         resizeMode="contain"
       />
 
-      {/* Stock left */}
-      <Text style={{ fontSize: moderateScale(10) }} className="text-red-600 mt-1 font-medium">
+      <Text
+        style={{
+          fontSize: moderateScale(10),
+          color: '#ef4444',
+          marginTop: verticalScale(6),
+          fontWeight: '500',
+        }}
+      >
         Only {item.stock} left
       </Text>
 
-      {/* Price */}
-      <View className="mt-1">
-        <Text style={{ fontSize: moderateScale(14) }} className="text-primary font-bold">Rs.{item.price}</Text>
-        <Text style={{ fontSize: moderateScale(10) }} className="text-gray-400 line-through">
+      <View style={{ marginTop: verticalScale(4) }}>
+        <Text
+          style={{
+            fontSize: moderateScale(14),
+            color: '#f97316',
+            fontWeight: '700',
+          }}
+        >
+          Rs.{item.price}
+        </Text>
+        <Text
+          style={{
+            fontSize: moderateScale(10),
+            color: '#9ca3af',
+            textDecorationLine: 'line-through',
+          }}
+        >
           Rs.{item.oldPrice}
         </Text>
       </View>
 
-      {/* Discount Badge */}
-      <View className="absolute bottom-2 right-2 bg-red-500 px-1.5 py-0.5 rounded">
-        <Text style={{ fontSize: moderateScale(10) }} className="text-white font-semibold">
+      {/* Discount badge */}
+      <View
+        style={{
+          position: 'absolute',
+          top: scale(8),
+          right: scale(8),
+          backgroundColor: '#ef4444',
+          paddingHorizontal: scale(5),
+          paddingVertical: verticalScale(2),
+          borderRadius: moderateScale(4),
+        }}
+      >
+        <Text
+          style={{
+            color: '#fff',
+            fontSize: moderateScale(10),
+            fontWeight: '700',
+          }}
+        >
           -{item.discount}%
         </Text>
       </View>

@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 16,
     borderWidth: 2,
-    borderColor: '#FF9800',
+    borderColor: '#f97316',
   },
   userAvatarText: {
     fontSize: 24,

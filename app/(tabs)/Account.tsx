@@ -94,7 +94,7 @@ const Account = () => {
             </View>
             <View style={styles.promoContentRow}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.promoSubText}>Enjoy <Text style={{ color: '#f36d21', fontWeight: 'bold' }}>60% OFF</Text>{'\n'}with Gems</Text>
+                <Text style={styles.promoSubText}>Enjoy <Text style={{ color: '#f97316', fontWeight: 'bold' }}>60% OFF</Text>{'\n'}with Gems</Text>
                 <TouchableOpacity style={styles.collectBtn}><Text style={styles.btnText}>Collect</Text></TouchableOpacity>
               </View>
               <Image source={{ uri: 'https://img.icons8.com/fluency/96/diamond.png' }} style={styles.promoImage} />
@@ -108,7 +108,7 @@ const Account = () => {
             </View>
             <View style={styles.promoContentRow}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.promoSubText}>Share, Invite &{'\n'}Win <Text style={{ color: '#f36d21', fontWeight: 'bold' }}>Free Prizes!</Text></Text>
+                <Text style={styles.promoSubText}>Share, Invite &{'\n'}Win <Text style={{ color: '#f97316', fontWeight: 'bold' }}>Free Prizes!</Text></Text>
                 <TouchableOpacity style={styles.playBtn}><Text style={styles.btnText}>Play</Text></TouchableOpacity>
               </View>
               <Image source={{ uri: 'https://img.icons8.com/fluency/96/gift.png' }} style={styles.promoImage} />
@@ -189,7 +189,7 @@ const Account = () => {
 const OrderItem = ({ icon, label, badge }: any) => (
   <TouchableOpacity style={styles.orderItem}>
     <View>
-      <Ionicons name={icon} size={scale(24)} color="#f36d21" />
+      <Ionicons name={icon} size={scale(24)} color="#f97316" />
       {badge && <View style={styles.badge}><Text style={styles.badgeText}>{badge}</Text></View>}
     </View>
     <Text style={styles.orderLabel}>{label}</Text>
@@ -227,17 +227,17 @@ const styles = StyleSheet.create({
   statsText: { fontSize: responsiveFontSize(10), color: '#888', marginTop: scale(2) },
   boldStat: { color: '#333', fontWeight: 'bold' },
   promoRow: { flexDirection: 'row', justifyContent: 'space-between', padding: scale(10) },
-  promoCard: { backgroundColor: '#fff', width: '49%', borderRadius: scale(8), padding: scale(10) },
+  promoCard: { backgroundColor: '#fff', width: '49%', borderRadius: scale(10), borderWidth: 1, borderColor: '#e8e8e8', padding: scale(10) },
   promoHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: scale(8) },
   smallIcon: { width: scale(14), height: scale(14) },
   promoTitle: { fontWeight: 'bold', fontSize: responsiveFontSize(11) },
   promoContentRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   promoSubText: { fontSize: responsiveFontSize(9), color: '#333', marginBottom: scale(8) },
   promoImage: { width: scale(45), height: scale(45), marginLeft: 5 },
-  collectBtn: { backgroundColor: '#f36d21', paddingHorizontal: scale(10), paddingVertical: scale(3), borderRadius: scale(15), alignSelf: 'flex-start' },
-  playBtn: { backgroundColor: '#f36d21', paddingHorizontal: scale(12), paddingVertical: scale(3), borderRadius: scale(15), alignSelf: 'flex-start' },
+  collectBtn: { backgroundColor: '#f97316', paddingHorizontal: scale(10), paddingVertical: scale(3), borderRadius: scale(15), alignSelf: 'flex-start' },
+  playBtn: { backgroundColor: '#f97316', paddingHorizontal: scale(12), paddingVertical: scale(3), borderRadius: scale(15), alignSelf: 'flex-start' },
   btnText: { color: '#fff', fontSize: responsiveFontSize(9), fontWeight: 'bold' },
-  sectionCard: { backgroundColor: '#fff', marginHorizontal: scale(10), borderRadius: scale(8), padding: scale(12), marginBottom: scale(10) },
+  sectionCard: { backgroundColor: '#fff', marginHorizontal: scale(10), borderRadius: scale(10), borderWidth: 1, borderColor: '#e8e8e8', padding: scale(12), marginBottom: scale(10) },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: scale(12) },
   sectionTitle: { fontWeight: 'bold', fontSize: responsiveFontSize(13) },
   viewAll: { fontSize: responsiveFontSize(10), color: '#999' },
@@ -250,8 +250,8 @@ const styles = StyleSheet.create({
   reviewThumb: { width: scale(35), height: scale(35), marginRight: scale(10), borderRadius: 4 },
   reviewText: { fontSize: responsiveFontSize(11), fontWeight: 'bold', color: '#333' },
   reviewSubText: { color: '#999', fontSize: responsiveFontSize(9) },
-  reviewBtn: { borderWidth: 1, borderColor: '#f36d21', paddingHorizontal: scale(8), paddingVertical: scale(4), borderRadius: scale(4) },
-  reviewBtnText: { color: '#f36d21', fontSize: responsiveFontSize(9), fontWeight: 'bold' },
+  reviewBtn: { borderWidth: 1, borderColor: '#f97316', paddingHorizontal: scale(8), paddingVertical: scale(4), borderRadius: scale(4) },
+  reviewBtnText: { color: '#f97316', fontSize: responsiveFontSize(9), fontWeight: 'bold' },
   bannerWrapper: { marginHorizontal: scale(10), marginBottom: scale(10) },
   adBanner: { width: '100%', height: scale(150), borderRadius: scale(8) },
   productCard: { width: scale(95), marginRight: scale(15) },
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   discountText: { color: '#fff', fontSize: 8, fontWeight: 'bold' },
   priceText: { fontSize: 11, fontWeight: 'bold', color: '#ff4d4f', marginTop: 5 },
   oldPriceText: { fontSize: 9, color: '#999', textDecorationLine: 'line-through' },
-  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', backgroundColor: '#fff', marginHorizontal: scale(10), borderRadius: scale(8), paddingVertical: scale(12) },
+  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', backgroundColor: '#fff', marginHorizontal: scale(10), borderRadius: scale(10), borderWidth: 1, borderColor: '#e8e8e8', paddingVertical: scale(12) },
   gridItem: { width: '25%', alignItems: 'center', paddingVertical: scale(10) },
   gridImg: { width: scale(26), height: scale(26), marginBottom: scale(8) },
   gridLabel: { fontSize: responsiveFontSize(8.5), textAlign: 'center', color: '#333' },

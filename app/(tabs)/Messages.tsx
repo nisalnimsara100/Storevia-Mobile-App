@@ -362,7 +362,7 @@ const Messages: React.FC = () => {
         <Text style={styles.headerTitle}>Messages</Text>
         {hasMessages && (
           <TouchableOpacity onPress={handleMarkAllAsRead}>
-            <Text style={styles.markAsReadText}>📖 Mark all as read</Text>
+            <Text style={styles.markAsReadText}>Mark all as read</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -370,29 +370,29 @@ const Messages: React.FC = () => {
       {/* Navigation Tabs */}
       <View style={styles.tabsContainer}>
         <TouchableOpacity style={styles.tab} onPress={handleChatPress}>
-          <View style={[styles.tabIcon, { backgroundColor: '#4CAF50' }]}>
-            <Ionicons name="chatbubble" size={20} color="white" />
+          <View style={styles.tabIcon}>
+            <Ionicons name="chatbubble-outline" size={20} color="#f97316" />
           </View>
           <Text style={styles.tabText}>Chats</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.tab} onPress={handleOrdersPress}>
-          <View style={[styles.tabIcon, { backgroundColor: '#2196F3' }]}>
-            <Ionicons name="receipt" size={20} color="white" />
+          <View style={styles.tabIcon}>
+            <Ionicons name="receipt-outline" size={20} color="#f97316" />
           </View>
           <Text style={styles.tabText}>Orders</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.tab} onPress={handleActivitiesPress}>
-          <View style={[styles.tabIcon, { backgroundColor: '#FF9800' }]}>
-            <Ionicons name="notifications" size={20} color="white" />
+          <View style={styles.tabIcon}>
+            <Ionicons name="notifications-outline" size={20} color="#f97316" />
           </View>
           <Text style={styles.tabText}>Activities</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.tab} onPress={handlePromosPress}>
-          <View style={[styles.tabIcon, { backgroundColor: '#E91E63' }]}>
-            <Ionicons name="megaphone" size={20} color="white" />
+          <View style={styles.tabIcon}>
+            <Ionicons name="megaphone-outline" size={20} color="#f97316" />
             {promotionMessages.length > 0 && <View style={styles.notificationDot} />}
           </View>
           <Text style={styles.tabText}>Promos</Text>
@@ -410,7 +410,7 @@ const Messages: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#f5f5f5',
   },
   header: {
     flexDirection: 'row',
@@ -418,37 +418,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    backgroundColor: '#f97316',
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333333',
+    fontWeight: '700',
+    color: '#ffffff',
   },
   markAsReadText: {
-    fontSize: 14,
-    color: '#666666',
+    fontSize: 13,
+    color: '#fff7ed',
   },
   tabsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 16,
+    paddingVertical: 12,
     paddingHorizontal: 8,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e8e8e8',
   },
   tab: {
     alignItems: 'center',
     flex: 1,
   },
   tabIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e8e8e8',
+    backgroundColor: '#fff7ed',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 4,
-    position: 'relative',
   },
   notificationDot: {
     position: 'absolute',
@@ -457,11 +460,11 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#FF1744',
+    backgroundColor: '#ef4444',
   },
   tabText: {
-    fontSize: 12,
-    color: '#666666',
+    fontSize: 11,
+    color: '#6b7280',
     textAlign: 'center',
   },
   content: {
@@ -473,16 +476,18 @@ const styles = StyleSheet.create({
   lastDaysHeader: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#f5f5f5',
   },
   lastDaysText: {
-    fontSize: 14,
-    color: '#666666',
+    fontSize: 12,
+    color: '#6b7280',
     fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   messageDate: {
-    fontSize: 12,
-    color: '#999999',
+    fontSize: 11,
+    color: '#9ca3af',
     paddingHorizontal: 12,
     marginBottom: 8,
   },
@@ -495,60 +500,65 @@ const styles = StyleSheet.create({
     paddingVertical: 100,
   },
   emptyIconContainer: {
-    marginBottom: 24,
+    marginBottom: 20,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#fff7ed',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyStateText: {
-    fontSize: 16,
-    color: '#666666',
+    fontSize: 14,
+    color: '#6b7280',
     textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
+    lineHeight: 22,
+    marginBottom: 28,
   },
   startShoppingButton: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#f97316',
     paddingHorizontal: 32,
     paddingVertical: 12,
-    borderRadius: 25,
+    borderRadius: 8,
   },
   startShoppingText: {
-    color: '#FFFFFF',
+    color: '#ffffff',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   noMessagesContainer: {
     padding: 32,
     alignItems: 'center',
   },
   noMessagesText: {
-    fontSize: 16,
-    color: '#999999',
+    fontSize: 14,
+    color: '#9ca3af',
     textAlign: 'center',
   },
   newMessageContainer: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF1744',
+    borderLeftWidth: 3,
+    borderLeftColor: '#f97316',
   },
   newBadge: {
-    backgroundColor: '#FF1744',
+    backgroundColor: '#f97316',
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 10,
+    borderRadius: 4,
   },
   newBadgeText: {
-    color: '#FFFFFF',
+    color: '#ffffff',
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   // Promotion styles
   promoMessageContainer: {
-    margin: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    marginHorizontal: 12,
+    marginTop: 8,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e8e8e8',
+    overflow: 'hidden',
   },
   promoHeader: {
     flexDirection: 'row',
@@ -556,91 +566,98 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   promoIconContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#FFE5E5',
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fde8d8',
+    backgroundColor: '#fff7ed',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
   },
   promoTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333333',
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#111827',
     flex: 1,
   },
   promoImageContainer: {
-    margin: 12,
+    marginHorizontal: 12,
+    marginBottom: 12,
     borderRadius: 8,
-    padding: 16,
+    padding: 14,
   },
   promoContent: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 12,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 10,
   },
   playButton: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 16,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 15,
+    borderRadius: 6,
     alignSelf: 'flex-start',
   },
   playButtonText: {
-    color: '#FFFFFF',
+    color: '#ffffff',
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   promoFooter: {
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
     fontSize: 12,
-    color: '#666666',
+    color: '#6b7280',
   },
   // Order styles
   orderMessageContainer: {
-    margin: 16,
+    marginHorizontal: 12,
     marginTop: 8,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e8e8e8',
+    overflow: 'hidden',
   },
   orderHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f5f5f5',
   },
   orderIconContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#FFF3E0',
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fde8d8',
+    backgroundColor: '#fff7ed',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
   },
   orderTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333333',
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#111827',
     flex: 1,
   },
   orderContent: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
-    paddingTop: 0,
   },
   orderImageContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#FFF3E0',
+    width: 48,
+    height: 48,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#fde8d8',
+    backgroundColor: '#fff7ed',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -650,63 +667,66 @@ const styles = StyleSheet.create({
   },
   orderText: {
     fontSize: 13,
-    color: '#666666',
+    color: '#6b7280',
     lineHeight: 18,
     marginBottom: 4,
   },
   orderNumber: {
-    fontSize: 12,
-    color: '#999999',
+    fontSize: 11,
+    color: '#9ca3af',
     marginBottom: 2,
   },
   orderStatus: {
     fontSize: 12,
-    color: '#FF6B35',
-    fontWeight: '500',
+    color: '#f97316',
+    fontWeight: '600',
   },
   // Delivery styles
   deliveryMessageContainer: {
-    margin: 16,
+    marginHorizontal: 12,
     marginTop: 8,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e8e8e8',
+    overflow: 'hidden',
   },
   deliveryHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f5f5f5',
   },
   deliveryIconContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#E8F5E8',
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#d1fae5',
+    backgroundColor: '#f0fdf4',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
   },
   deliveryTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333333',
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#111827',
     flex: 1,
   },
   deliveryContent: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
-    paddingTop: 0,
   },
   deliveryImageContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#E8F5E8',
+    width: 48,
+    height: 48,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#d1fae5',
+    backgroundColor: '#f0fdf4',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -716,19 +736,19 @@ const styles = StyleSheet.create({
   },
   deliveryText: {
     fontSize: 13,
-    color: '#666666',
+    color: '#6b7280',
     lineHeight: 18,
     marginBottom: 4,
   },
   deliveryStatus: {
     fontSize: 12,
-    color: '#4CAF50',
-    fontWeight: '500',
+    color: '#22c55e',
+    fontWeight: '600',
     marginBottom: 2,
   },
   deliveryTime: {
-    fontSize: 12,
-    color: '#999999',
+    fontSize: 11,
+    color: '#9ca3af',
   },
 });
 

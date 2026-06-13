@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 interface ProductItem {
   id: number;
@@ -20,23 +20,21 @@ interface ProductItem {
 
 export default function LargeProductTile({ item }: { item: ProductItem }) {
   const router = useRouter();
-  
+
   const handleCardPress = () => {
     router.push({
       pathname: '/screens/item_details',
-      params: {
-        product: JSON.stringify(item),
-      },
+      params: { product: JSON.stringify(item) },
     });
   };
-  
+
   const formatNumber = (n?: number) => {
     if (n === undefined || n === null) return '0';
     if (n < 1000) return String(n);
-    if (n < 1000000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + 'k';
-    return (n / 1000000).toFixed(1) + 'M';
+    if (n < 1_000_000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + 'k';
+    return (n / 1_000_000).toFixed(1) + 'M';
   };
-  
+
   return (
     <TouchableOpacity
       style={{
@@ -44,68 +42,176 @@ export default function LargeProductTile({ item }: { item: ProductItem }) {
         backgroundColor: '#fff',
         borderRadius: moderateScale(10),
         margin: scale(4),
-        padding: 0,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: verticalScale(2) },
-        shadowOpacity: 0.08,
-        shadowRadius: moderateScale(6),
-        elevation: 2,
         overflow: 'hidden',
       }}
       onPress={handleCardPress}
       activeOpacity={0.9}
     >
-      {/* Image with badges overlay */}
-      <View style={{ position: 'relative', width: '100%', height: verticalScale(160) }}>
+      {/* Image */}
+      <View style={{ width: '100%', height: verticalScale(160) }}>
         <Image
           source={typeof item.image === 'string' ? { uri: item.image } : item.image}
           style={{ width: '100%', height: '100%' }}
           resizeMode="cover"
         />
 
-        {/* Connected badges at bottom-left (smaller + inset) */}
-        <View style={{ position: 'absolute', bottom: 0, left: 0, flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ backgroundColor: '#4a8b71', paddingHorizontal: scale(6), paddingVertical: verticalScale(4), borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}>
-              <Text numberOfLines={1} ellipsizeMode='tail' style={{ color: '#fff', fontSize: moderateScale(9), fontWeight: '700', letterSpacing: -0.5 }}>FREE DELIVERY</Text>
-            </View>
-            <View style={{ backgroundColor: '#b67ba5', paddingHorizontal: scale(3), paddingVertical: verticalScale(4), borderTopRightRadius: moderateScale(5), borderBottomRightRadius: moderateScale(5), flexDirection: 'row', alignItems: 'center' }}>
-              <Text numberOfLines={1} ellipsizeMode='tail' style={{ color: '#fff', fontSize: moderateScale(9), fontWeight: '700', letterSpacing: -0.5 }}>GEMS</Text>
-            </View>
+        {/* Bottom badge strip */}
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            flexDirection: 'row',
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: '#16a34a',
+              paddingHorizontal: scale(6),
+              paddingVertical: verticalScale(3),
+            }}
+          >
+            <Text
+              style={{ color: '#fff', fontSize: moderateScale(9), fontWeight: '700' }}
+            >
+              FREE DELIVERY
+            </Text>
+          </View>
+          <View
+            style={{
+              backgroundColor: '#7c3aed',
+              paddingHorizontal: scale(6),
+              paddingVertical: verticalScale(3),
+            }}
+          >
+            <Text
+              style={{ color: '#fff', fontSize: moderateScale(9), fontWeight: '700' }}
+            >
+              GEMS
+            </Text>
+          </View>
         </View>
       </View>
 
-      {/* Body content */}
+      {/* Body */}
       <View style={{ padding: scale(8) }}>
-        <Text style={{ fontSize: moderateScale(13), fontWeight: '400', color: '#333', lineHeight: verticalScale(18) }} numberOfLines={2}>
+        <Text
+          style={{
+            fontSize: moderateScale(13),
+            fontWeight: '400',
+            color: '#111827',
+            lineHeight: verticalScale(18),
+          }}
+          numberOfLines={2}
+        >
           {item.name}
         </Text>
 
         {/* Price row */}
-        <View style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: verticalScale(4) }}>
-          <Text style={{ color: '#ff5722', fontWeight: '700', fontSize: moderateScale(18) }}>Rs.{item.price.toFixed(2)}</Text>
-          {item.discount !== undefined && (
-            <Text style={{ color: '#ff5722', fontSize: moderateScale(13), fontWeight: '600', marginLeft: scale(6) }}>-{item.discount}%</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'baseline',
+            marginTop: verticalScale(4),
+          }}
+        >
+          <Text
+            style={{
+              color: '#f97316',
+              fontWeight: '700',
+              fontSize: moderateScale(16),
+            }}
+          >
+            Rs.{item.price.toFixed(2)}
+          </Text>
+          {item.discount !== undefined && item.discount > 0 && (
+            <Text
+              style={{
+                color: '#ef4444',
+                fontSize: moderateScale(12),
+                fontWeight: '600',
+                marginLeft: scale(6),
+              }}
+            >
+              -{item.discount}%
+            </Text>
           )}
         </View>
 
-        {/* Gems save pill */}
+        {/* Gems badges */}
         {item.badges && item.badges.length > 0 && (
           <View style={{ marginTop: verticalScale(4) }}>
             {item.badges.map((b, i) => (
-              <View key={i} style={{ alignSelf: 'flex-start', backgroundColor: '#b67ba5', paddingHorizontal: scale(8), paddingVertical: verticalScale(4), borderRadius: moderateScale(10), flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="diamond" size={moderateScale(10)} color="#fff" style={{ marginRight: scale(4) }} />
-                <Text style={{ color: '#fff', fontSize: moderateScale(11), fontWeight: '600', letterSpacing: -0.2 }}>{b}</Text>
+              <View
+                key={i}
+                style={{
+                  alignSelf: 'flex-start',
+                  backgroundColor: '#f3e8ff',
+                  borderWidth: 1,
+                  borderColor: '#d8b4fe',
+                  paddingHorizontal: scale(8),
+                  paddingVertical: verticalScale(3),
+                  borderRadius: moderateScale(6),
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <Ionicons
+                  name="diamond"
+                  size={moderateScale(10)}
+                  color="#7c3aed"
+                  style={{ marginRight: scale(3) }}
+                />
+                <Text
+                  style={{
+                    color: '#7c3aed',
+                    fontSize: moderateScale(10),
+                    fontWeight: '600',
+                  }}
+                >
+                  {b}
+                </Text>
               </View>
             ))}
           </View>
         )}
 
         {/* Rating + Sold */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: verticalScale(4) }}>
-          <Ionicons name="star" size={moderateScale(14)} color="#ffc107" />
-          <Text style={{ fontSize: moderateScale(12), color: '#888', marginLeft: scale(3), fontWeight: '500' }}>{item.rating ?? '-'}</Text>
-          <Text style={{ fontSize: moderateScale(11), color: '#aaa', marginLeft: scale(3) }}>({item.reviews ?? 0})</Text>
-          <Text style={{ fontSize: moderateScale(11), color: '#aaa', marginLeft: scale(6) }}>| {formatNumber(item.sold)} Sold</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: verticalScale(4),
+          }}
+        >
+          <Ionicons name="star" size={moderateScale(12)} color="#fbbf24" />
+          <Text
+            style={{
+              fontSize: moderateScale(11),
+              color: '#6b7280',
+              marginLeft: scale(3),
+            }}
+          >
+            {item.rating ?? '-'}
+          </Text>
+          <Text
+            style={{
+              fontSize: moderateScale(11),
+              color: '#9ca3af',
+              marginLeft: scale(3),
+            }}
+          >
+            ({item.reviews ?? 0})
+          </Text>
+          <Text
+            style={{
+              fontSize: moderateScale(11),
+              color: '#9ca3af',
+              marginLeft: scale(6),
+            }}
+          >
+            | {formatNumber(item.sold)} Sold
+          </Text>
         </View>
       </View>
     </TouchableOpacity>

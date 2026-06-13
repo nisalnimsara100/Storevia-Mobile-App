@@ -42,6 +42,7 @@ interface CartItem {
 const Cart = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { user } = useAuthStore();
 
@@ -49,7 +50,7 @@ const Cart = () => {
   // Fetch cart from API
   const fetchCart = async () => {
     console.log('Fetching cart for user from zustand:', user?.email);
-    const email = user?.email || process.env.EXPO_PUBLIC_APP_EMAIL;
+    const email = user?.email;
     if (!email) {
       return;
     }
@@ -77,6 +78,8 @@ const Cart = () => {
     } catch (err) {
       console.error('Error fetching cart:', err);
       setCartItems([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -240,6 +243,67 @@ const Cart = () => {
       </View>
 
       {/* ---------- CONTENT ---------- */}
+      {!loading && cartItems.length === 0 ? (
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: s(32),
+          }}
+        >
+          <View
+            style={{
+              width: s(100),
+              height: s(100),
+              borderRadius: s(50),
+              backgroundColor: '#fff7ed',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: vs(20),
+            }}
+          >
+            <Ionicons name="cart-outline" size={s(52)} color="#f97316" />
+          </View>
+          <Text
+            style={{
+              fontSize: s(20),
+              fontWeight: 'bold',
+              color: '#1f2937',
+              marginBottom: vs(8),
+            }}
+          >
+            Your cart is empty
+          </Text>
+          <Text
+            style={{
+              fontSize: s(13),
+              color: '#6b7280',
+              textAlign: 'center',
+              marginBottom: vs(28),
+              lineHeight: s(20),
+            }}
+          >
+            Looks like you haven't added anything yet. Start exploring and find
+            something you love!
+          </Text>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#f97316',
+              paddingHorizontal: s(32),
+              paddingVertical: vs(12),
+              borderRadius: s(8),
+            }}
+            onPress={() => router.push('/(tabs)/Home')}
+          >
+            <Text
+              style={{ color: '#fff', fontSize: s(15), fontWeight: '700' }}
+            >
+              Start Shopping
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: vs(120) }}
@@ -440,8 +504,10 @@ const Cart = () => {
           </View>
         ))}
       </ScrollView>
+      )}
 
       {/* ---------- CHECKOUT BAR ---------- */}
+      {cartItems.length === 0 ? null : (
       <View
         style={{
           backgroundColor: '#fff',
@@ -487,6 +553,7 @@ const Cart = () => {
           </Text>
         </TouchableOpacity>
       </View>
+      )}
     </SafeAreaView>
   );
 };
