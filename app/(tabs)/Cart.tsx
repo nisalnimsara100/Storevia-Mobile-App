@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { s, vs } from 'react-native-size-matters';
+import { useAuthStore } from '../stores/useAuthStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 
@@ -42,10 +43,13 @@ const Cart = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const router = useRouter();
+  const { user } = useAuthStore();
+
 
   // Fetch cart from API
   const fetchCart = async () => {
-    const email = process.env.EXPO_PUBLIC_APP_EMAIL;
+    console.log('Fetching cart for user from zustand:', user?.email);
+    const email = user?.email || process.env.EXPO_PUBLIC_APP_EMAIL;
     if (!email) {
       return;
     }
