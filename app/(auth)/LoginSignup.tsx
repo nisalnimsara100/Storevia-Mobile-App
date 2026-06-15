@@ -57,6 +57,13 @@ const LoginSignup = ({ onLogin }: Props) => {
   const [signUpConfirmPasswordVisible, setSignUpConfirmPasswordVisible] =
     useState(false);
 
+  // OTP Verification state
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const baseUrl = process.env.EXPO_PUBLIC_APP_BASE_URL;
+
   // 🔐 Handle Email/Password Login
   const handleLogin = async () => {
     if (!loginEmail || !loginPassword) {
@@ -84,7 +91,7 @@ const LoginSignup = ({ onLogin }: Props) => {
     }
   };
 
-  // 📝 Handle Email/Password Sign Up
+  // 📝 Step 1: Handle Email/Password Sign Up - Send OTP
   const handleSignUp = async () => {
     if (
       !signUpEmail ||
@@ -107,8 +114,64 @@ const LoginSignup = ({ onLogin }: Props) => {
       return;
     }
 
-    setIsLoading(true);
+    // Step 1: Validate and send OTP
+    setIsSendingOtp(true);
     try {
+      const res = await fetch(`${baseUrl}/api/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: signUpEmail }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(
+          `❌ OTP Failed: ${data?.message || 'Failed to send OTP. Please try again.'}`,
+        );
+        return;
+      }
+
+      setOtp('');
+      setSignUpVisible(false); // Close signup modal
+      setShowOtpModal(true); // Show OTP modal
+    } catch (error: any) {
+      alert(
+        `❌ Network Error: Could not reach verification server. Please try again.`,
+      );
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  // 📝 Step 2: Verify OTP then complete Firebase registration
+  const handleVerifyOtp = async () => {
+    if (!otp.trim()) {
+      alert('Please enter the OTP sent to your email');
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    try {
+      const verifyRes = await fetch(`${baseUrl}/api/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: signUpEmail, otp }),
+      });
+
+      const verifyData = await verifyRes.json().catch(() => ({}));
+
+      if (
+        !verifyRes.ok ||
+        verifyData?.message !== 'OTP verified successfully'
+      ) {
+        alert(
+          `❌ Invalid OTP: ${verifyData?.message || 'OTP verification failed. Please try again.'}`,
+        );
+        return;
+      }
+
+      // OTP verified — proceed with Firebase signup
+      setIsLoading(true);
       const result = await signUp(
         signUpEmail,
         signUpPassword,
@@ -118,6 +181,7 @@ const LoginSignup = ({ onLogin }: Props) => {
       );
 
       if (result.success) {
+        setShowOtpModal(false);
         setLoginVisible(false);
         setSignUpVisible(false);
         // Clear form
@@ -127,15 +191,21 @@ const LoginSignup = ({ onLogin }: Props) => {
         setSignUpPhone('');
         setSignUpPassword('');
         setSignUpConfirmPassword('');
+        setOtp('');
         alert('✅ Sign up successful! Welcome to Storevia!');
         onLogin();
       } else {
-        alert(`❌ Sign Up Error: ${result.error}`);
+        alert(
+          `❌ Registration Failed: ${result.error || 'Something went wrong'}`,
+        );
       }
     } catch (error: any) {
-      alert(`❌ Sign Up Error: ${error.message}`);
+      alert(
+        `❌ Error: ${error.message || 'Something went wrong. Please try again.'}`,
+      );
     } finally {
       setIsLoading(false);
+      setIsVerifyingOtp(false);
     }
   };
 
@@ -578,12 +648,12 @@ const LoginSignup = ({ onLogin }: Props) => {
                 <TouchableOpacity
                   style={[
                     styles.orangeActionBtn,
-                    isLoading && styles.disabledBtn,
+                    (isLoading || isSendingOtp) && styles.disabledBtn,
                   ]}
                   onPress={handleSignUp}
-                  disabled={isLoading}
+                  disabled={isLoading || isSendingOtp}
                 >
-                  {isLoading ? (
+                  {isLoading || isSendingOtp ? (
                     <ActivityIndicator color="#fff" />
                   ) : (
                     <Text style={styles.orangeActionText}>SIGN UP</Text>
@@ -635,6 +705,83 @@ const LoginSignup = ({ onLogin }: Props) => {
               </ScrollView>
             </View>
           </KeyboardAvoidingView>
+        </View>
+      </Modal>
+
+      {/* --- OTP VERIFICATION MODAL --- */}
+      <Modal visible={showOtpModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.otpModalCard}>
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => {
+                if (!isVerifyingOtp && !isSendingOtp) {
+                  setShowOtpModal(false);
+                  setSignUpVisible(true); // Show signup modal to try again
+                }
+              }}
+              disabled={isVerifyingOtp || isSendingOtp}
+            >
+              <Ionicons name="close" size={24} color="#999" />
+            </TouchableOpacity>
+
+            <View style={styles.otpHeader}>
+              <Ionicons name="mail" size={50} color="#f36d21" />
+            </View>
+
+            <Text style={styles.otpTitle}>Verify Your Email</Text>
+            <Text style={styles.otpSubtitle}>
+              We&lsquo;ve sent a verification code to {'\n'}
+              <Text style={{ fontWeight: 'bold' }}>{signUpEmail}</Text>
+            </Text>
+
+            <Text style={styles.inputLabel}>Enter OTP</Text>
+            <TextInput
+              style={[styles.textInput, styles.otpInput]}
+              placeholder="Enter 6-digit OTP"
+              placeholderTextColor="#999"
+              value={otp}
+              onChangeText={setOtp}
+              keyboardType="number-pad"
+              maxLength={6}
+              editable={!isVerifyingOtp}
+              textAlign="center"
+            />
+
+            <TouchableOpacity
+              style={[
+                styles.orangeActionBtn,
+                (isVerifyingOtp || isSendingOtp) && styles.disabledBtn,
+              ]}
+              onPress={handleVerifyOtp}
+              disabled={isVerifyingOtp || isSendingOtp}
+            >
+              {isVerifyingOtp ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.orangeActionText}>VERIFY</Text>
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.otpFooter}>
+              <Text style={styles.otpFooterText}>
+                Didn&lsquo;t receive the code?
+              </Text>
+              <TouchableOpacity
+                onPress={handleSignUp}
+                disabled={isVerifyingOtp || isSendingOtp}
+              >
+                <Text
+                  style={[
+                    styles.resendText,
+                    (isVerifyingOtp || isSendingOtp) && { opacity: 0.5 },
+                  ]}
+                >
+                  {isSendingOtp ? 'Sending...' : 'Resend OTP'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </Modal>
     </SafeAreaView>
@@ -851,6 +998,58 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   footerGray: { color: '#888', fontSize: 13 },
+
+  // OTP MODAL STYLES
+  otpModalCard: {
+    backgroundColor: '#fff',
+    width: screenWidth * 0.85,
+    borderRadius: 20,
+    padding: 25,
+    elevation: 10,
+    alignItems: 'center',
+  },
+  otpHeader: {
+    marginVertical: 15,
+    backgroundColor: '#fff3e0',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  otpTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#1a1c1e',
+    marginTop: 15,
+  },
+  otpSubtitle: {
+    fontSize: 13,
+    color: '#777',
+    marginTop: 8,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  otpInput: {
+    letterSpacing: 5,
+    fontSize: 18,
+    fontWeight: '600',
+    backgroundColor: '#f5f5f5',
+  },
+  otpFooter: {
+    marginTop: 20,
+    alignItems: 'center',
+    gap: 5,
+  },
+  otpFooterText: {
+    fontSize: 12,
+    color: '#999',
+  },
+  resendText: {
+    fontSize: 13,
+    color: '#f36d21',
+    fontWeight: '600',
+  },
 });
 
 export default LoginSignup;
