@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/app/stores/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as React from 'react';
@@ -149,12 +150,14 @@ const CheckoutScreen = () => {
   const [userVouchers, setUserVouchers] = useState<UserVoucher[]>([]);
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [orderNumber, setOrderNumber] = useState('');
+  const { user } = useAuthStore();
+  const EMAIL = user?.email || DEFAULT_EMAIL;
 
   const loadAddresses = React.useCallback(async () => {
     try {
       const response = await fetch(
         `${BASE_URL}/api/user/address?email=${encodeURIComponent(
-          DEFAULT_EMAIL,
+          EMAIL,
         )}`,
       );
 
@@ -181,7 +184,7 @@ const CheckoutScreen = () => {
   }, []);
 
   const fetchUserCollectedVouchers = async () => {
-    const email = DEFAULT_EMAIL;
+    const email = EMAIL;
     if (!email) return;
     try {
       const res = await fetch(`${BASE_URL}/api/user/get_voucher/${email}`);
@@ -485,14 +488,13 @@ const CheckoutScreen = () => {
                           <Text style={styles.currentPrice}>
                             Rs.{' '}
                             {(
-                              parseFloat(item.product_price) *
-                              (1 -
-                                parseFloat(item.product_discount || '0') / 100)
+                              parseFloat(item.product_price) 
+                             
                             ).toFixed(2)}
                           </Text>
                           {item.product_discount && (
                             <Text style={styles.originalPrice}>
-                              Rs. {item.product_price}
+                              {Math.round(parseFloat(item.product_discount))}% off
                             </Text>
                           )}
                         </View>
@@ -1221,7 +1223,7 @@ const styles = StyleSheet.create({
   originalPrice: {
     fontSize: moderateScale(12),
     color: '#999',
-    textDecorationLine: 'line-through',
+    textDecorationLine: 'none',
     marginLeft: scale(8),
   },
   quantityContainer: {

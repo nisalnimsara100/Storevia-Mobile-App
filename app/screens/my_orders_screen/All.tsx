@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/app/stores/useAuthStore';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import {
@@ -11,7 +12,7 @@ import {
 } from 'react-native';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
-const USER_EMAIL = process.env.EXPO_PUBLIC_APP_EMAIL;
+
 
 interface OrderItem {
   id: number;
@@ -56,6 +57,8 @@ const All = ({ statusFilter }: AllProps) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuthStore();
+  const USER_EMAIL = user?.email;
 
   const formatPrice = (value: string | number) => {
     const parsed = typeof value === 'string' ? parseFloat(value) : value;
