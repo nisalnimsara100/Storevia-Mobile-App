@@ -39,6 +39,12 @@ interface CartItem {
   selected?: boolean;
 }
 
+const isMeaningfulFeatureValue = (value: string | null | undefined): boolean => {
+  const normalized = String(value || '').trim();
+  if (!normalized) return false;
+  return !/^default(?:\s+(?:color|size))?$/i.test(normalized);
+};
+
 const Cart = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -410,6 +416,26 @@ const Cart = () => {
                   >
                     {item.product_category}
                   </Text>
+
+                  {(isMeaningfulFeatureValue(item.product_selected_color) ||
+                    isMeaningfulFeatureValue(item.product_selected_size)) && (
+                    <View className="flex-row gap-3">
+                      {isMeaningfulFeatureValue(item.product_selected_color) && (
+                        <View className="mt-1 bg-green-100 border-2 border-green-400 px-2 py-0.5 rounded-2xl">
+                          <Text className="text-xs text-green-800">
+                            {item.product_selected_color}
+                          </Text>
+                        </View>
+                      )}
+                      {isMeaningfulFeatureValue(item.product_selected_size) && (
+                        <View className="mt-1 bg-blue-100 border-2 border-blue-400 px-2 py-0.5 rounded-2xl">
+                          <Text className="text-xs text-blue-800">
+                            {item.product_selected_size}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  )}
 
                   <View
                     style={{
