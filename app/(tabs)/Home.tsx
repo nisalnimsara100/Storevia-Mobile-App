@@ -9,7 +9,6 @@ import {
   ListRenderItem,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -20,7 +19,7 @@ import {
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import Swiper from 'react-native-swiper';
 
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 
 import FlashSaleCard from '../components/FlashSaleCard';
 import LargeProductTile from '../components/LargeProductTile';
@@ -55,6 +54,7 @@ const DEFAULT_CATEGORIES = [
 
 const Home = () => {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [products, setProducts] = useState<any[]>([]);
   useEffect(() => {
     const fetchProducts = async () => {
@@ -196,16 +196,18 @@ const Home = () => {
             <TouchableOpacity style={styles.iconButton}>
               <Ionicons name="scan" size={24} color="#333" />
             </TouchableOpacity>
-            <View style={styles.searchContainer}>
-              <TextInput
-                style={styles.searchBar}
-                placeholder="Storevia"
-                placeholderTextColor="#aaa"
-              />
-              <TouchableOpacity style={styles.searchButton}>
+            <TouchableOpacity
+              style={styles.searchContainer}
+              activeOpacity={0.8}
+              onPress={() => router.push('/screens/search_screen' as any)}
+            >
+              <Text style={styles.searchBar} numberOfLines={1}>
+                Storevia
+              </Text>
+              <View style={styles.searchButton}>
                 <Text style={styles.searchButtonText}>Search</Text>
-              </TouchableOpacity>
-            </View>
+              </View>
+            </TouchableOpacity>
             <Link href={'/screen_navigation' as any} asChild>
               <TouchableOpacity style={styles.payButton}>
                 <Text style={styles.payText}>Pay</Text>
@@ -413,8 +415,9 @@ const styles = StyleSheet.create({
   searchBar: {
     flex: 1,
     fontSize: moderateScale(14),
-    color: '#333',
+    color: '#aaa',
     height: '100%',
+    textAlignVertical: 'center',
   },
   searchButton: {
     backgroundColor: '#f97316',
