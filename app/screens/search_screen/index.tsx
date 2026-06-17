@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 
 interface Suggestion {
   product_id?: number;
@@ -33,12 +33,13 @@ const DISCOVERY_ITEMS = [
 ];
 
 const SearchScreen = () => {
+  const { param } = useLocalSearchParams();
   const router = useRouter();
   const { user } = useAuthStore();
-  const [localSearchQuery, setLocalSearchQuery] = useState('');
+  const [localSearchQuery, setLocalSearchQuery] = useState((param as string) || '');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearchHistoryOpen, setIsSearchHistoryOpen] = useState(true);
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'history' | 'image'>('history');
   const [discoveryVisible, setDiscoveryVisible] = useState(true);
@@ -69,6 +70,12 @@ const SearchScreen = () => {
   useEffect(() => {
     fetchSearchedHistory();
   }, [fetchSearchedHistory]);
+
+  useEffect(() => {
+    if (param) {
+      setLocalSearchQuery(param as string);
+    }
+  }, [param]);
 
   const saveSearchKeyword = async (keyword: string) => {
     const userEmail = user?.email || '';
@@ -122,7 +129,6 @@ const SearchScreen = () => {
   const fetchSuggestions = async (keyword: string) => {
     if (keyword.trim().length < 1) {
       setSuggestions([]);
-      setSearchResults([]);
       return;
     }
 
@@ -136,22 +142,20 @@ const SearchScreen = () => {
       const data = await res.json();
       console.log("data", data)
       setSuggestions(Array.isArray(data) ? data : []);
-
-      const productRes = await fetch(`${baseUrl}/api/searched_products/${keyword}`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-        },
-      });
-      const productData = await productRes.json();
-      setSearchResults(Array.isArray(productData) ? productData : []);
     } catch {}
   };
 
   const handleInputChange = (value: string) => {
     setLocalSearchQuery(value);
     setIsSearchHistoryOpen(true);
-    fetchSuggestions(value);
+    
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    
+    debounceTimer.current = setTimeout(() => {
+      fetchSuggestions(value);
+    }, 300);
   };
 
   const handleSuggestionClick = (suggestion: Suggestion) => {

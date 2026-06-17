@@ -90,7 +90,7 @@ const Account = () => {
           <View style={styles.promoCard}>
             <View style={styles.promoHeader}>
               <Image source={{ uri: 'https://img.icons8.com/color/48/ruby.png' }} style={styles.smallIcon} />
-              <Text style={styles.promoTitle}> Storevia Gems</Text>
+              <Text style={styles.promoTitle}> Storevia Gems$</Text>
             </View>
             <View style={styles.promoContentRow}>
               <View style={{ flex: 1 }}>
@@ -119,7 +119,7 @@ const Account = () => {
         {/* --- ORDERS SECTION --- */}
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>My Orders</Text>
+            <Text style={styles.sectionTitle}>My Orders2</Text>
             <TouchableOpacity onPress={() => router.push('/screens/my_orders_screen')}>
               <Text style={styles.viewAll}>View All Orders {'>'}</Text>
             </TouchableOpacity>

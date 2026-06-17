@@ -4,10 +4,27 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View, TextInput, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ProductCard from '../components/ProductCard';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+
+import { useAuthStore } from '../stores/useAuthStore';
+
+
+  interface Suggestion {
+  product_id?: number;
+  product_name?: string;
+  product_image?: string;
+  name?: string;
+  [key: string]: any;
+}
+
+interface SearchResult {
+  [key: string]: any;
+}
 
 export default function SearchResultsScreen() {
   const { param } = useLocalSearchParams();
   const router = useRouter();
+  const { user } = useAuthStore();
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('Best Match');
@@ -15,6 +32,7 @@ export default function SearchResultsScreen() {
 
   useEffect(() => {
     if (param) {
+      setLocalSearchQuery(param as string);
       fetchResults(param as string);
     } else {
       setLoading(false);
@@ -40,25 +58,126 @@ export default function SearchResultsScreen() {
     }
   };
 
+
+
+    const [localSearchQuery, setLocalSearchQuery] = useState((param as string) || '');
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+      const [isSearchHistoryOpen, setIsSearchHistoryOpen] = useState(true);
+      const [history, setHistory] = useState<any[]>([]);
+
+      const saveSearchKeyword = async (keyword: string) => {
+    const userEmail = user?.email || '';
+    const formData = new FormData();
+    formData.append('user_email', userEmail);
+    formData.append('keyword', keyword);
+    console.log("User Email: ", userEmail);
+    console.log("Keyword: ", keyword);
+    console.log("Base URL: ", baseUrl);
+
+    try {
+      const res = await fetch(`${baseUrl}/api/save_search_keywords`, {
+        method: 'POST',
+        body: formData,
+      });
+      // await res.json();
+      const data = res.json();
+      console.log("Save Keywords: ", data);
+    } catch(e) {
+      console.log(e);
+    }
+  };
+      
+
+    const fetchSuggestions = async (keyword: string) => {
+    if (keyword.trim().length < 1) {
+      setSuggestions([]);
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${baseUrl}/api/search_keywords/${keyword}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+      const data = await res.json();
+      console.log("data", data)
+      setSuggestions(Array.isArray(data) ? data : []);
+
+      const productRes = await fetch(`${baseUrl}/api/searched_products/${keyword}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+      const productData = await productRes.json();
+      setSearchResults(Array.isArray(productData) ? productData : []);
+    } catch {}
+  };
+
+  const handleInputChange = (value: string) => {
+    setLocalSearchQuery(value);
+    setIsSearchHistoryOpen(true);
+    fetchSuggestions(value);
+  };
+
+    const handleSearch = () => {
+    if (localSearchQuery.trim()) {
+      saveSearchKeyword(localSearchQuery);
+      router.push(`/search?param=${encodeURIComponent(localSearchQuery)}`);
+      setIsSearchHistoryOpen(false);
+      setHistory((prev) => [localSearchQuery.trim(), ...prev.filter((h) => h !== localSearchQuery.trim())]);
+    }
+  };
+
+
+
   const renderHeader = () => (
     <View className="bg-white border-b border-gray-200">
       {/* Top Bar */}
-      <View className="flex-row items-center px-4 py-3">
-        <TouchableOpacity onPress={() => router.back()} className="mr-3">
-          <Ionicons name="chevron-back-outline" size={28} color="#111" />
-        </TouchableOpacity>
-        <View className="flex-1 flex-row items-center h-12 border border-orange-500 rounded-lg px-3 bg-white">
-          <Ionicons name="search" size={20} color="#6b7280" />
-          <TextInput 
-            className="flex-1 ml-2 text-base h-full"
-            defaultValue={param as string}
-            placeholder="Search..."
-          />
-          <TouchableOpacity>
-            <Ionicons name="camera-outline" size={20} color="#6b7280" />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <View className="flex-row items-center px-3 py-2">
+              <TouchableOpacity onPress={() => router.back()} className="pr-2 py-1">
+                <Ionicons name="chevron-back" size={moderateScale(24)} color="#111" />
+              </TouchableOpacity>
+      
+              <View
+                className="flex-1 flex-row items-center bg-white rounded-full px-3 mr-2"
+                style={{
+                  height: verticalScale(38),
+                  borderWidth: 1.5,
+                  borderColor: '#f97316',
+                }}
+              >
+                <TextInput
+                
+                  value={localSearchQuery}
+                  onChangeText={handleInputChange}
+                  onSubmitEditing={() => handleSearch()}
+                  onFocus={() => router.push(`/screens/search_screen?param=${encodeURIComponent(localSearchQuery)}` as any)}
+                  placeholder="Search products, shops, and more"
+                  placeholderTextColor="#9ca3af"
+                  returnKeyType="search"
+                  className="flex-1 text-gray-800"
+                  style={{ fontSize: moderateScale(13), height: '100%' }}
+                />
+                <TouchableOpacity className="pl-2">
+                  <Ionicons name="camera-outline" size={moderateScale(20)} color="#6b7280" />
+                </TouchableOpacity>
+              </View>
+      
+              <TouchableOpacity
+                onPress={() => handleSearch()}
+                className="bg-orange-500 rounded-full"
+                style={{ paddingHorizontal: scale(14), paddingVertical: verticalScale(8) }}
+              >
+                <Text className="text-white font-semibold" style={{ fontSize: moderateScale(13) }}>
+                  Search
+                </Text>
+              </TouchableOpacity>
+            </View>
 
       {/* Primary Nav */}
       <View className="flex-row items-center px-4 py-2 border-b border-gray-100">

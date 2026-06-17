@@ -330,7 +330,7 @@ const LoginSignup = ({ onLogin }: Props) => {
         </View>
 
         {/* --- PROMO SECTION (Original UI) --- */}
-        <View style={styles.promoRow}>
+        {/* <View style={styles.promoRow}>
           <View style={styles.promoCard}>
             <View style={styles.promoHeader}>
               <Ionicons name="diamond-sharp" size={14} color="#C71585" />
@@ -358,10 +358,10 @@ const LoginSignup = ({ onLogin }: Props) => {
               <Text style={styles.btnText}>Play Now</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
 
         {/* --- MY ORDERS SECTION (Original UI) --- */}
-        <View style={styles.sectionCard}>
+        {/* <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>My Orders</Text>
             <Text style={styles.viewAllText}>View All Orders {'>'}</Text>
@@ -373,10 +373,10 @@ const LoginSignup = ({ onLogin }: Props) => {
             <OrderIcon icon="chatbox-ellipses-outline" label="To Review" />
             <OrderIcon icon="refresh-circle-outline" label="Returns" />
           </View>
-        </View>
+        </View> */}
 
         {/* --- TOOLS GRID (Original UI) --- */}
-        <View style={styles.gridContainer}>
+        {/* <View style={styles.gridContainer}>
           <GridItem icon="help-circle" color="#ff4d4f" label="Help Center" />
           <GridItem
             icon="game-controller"
@@ -389,9 +389,9 @@ const LoginSignup = ({ onLogin }: Props) => {
           <GridItem icon="basket" color="#f1c40f" label="Buy Any 3" />
           <GridItem icon="star" color="#1abc9c" label="My Reviews" />
           <GridItem icon="people" color="#e67e22" label="My Affiliates" />
-        </View>
+        </View> */}
 
-        <View style={{ height: 40 }} />
+        {/* <View style={{ height: 40 }} /> */}
       </ScrollView>
 
       {/* --- LOGIN POPUP MODAL --- */}
