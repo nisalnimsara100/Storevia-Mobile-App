@@ -22,6 +22,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/authContext';
 import { useAuthStore } from '../stores/useAuthStore';
+import ProductCard from '../components/ProductCard';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -329,19 +330,20 @@ const LoginSignup = ({ onLogin }: Props) => {
           </View>
         </View>
 
-        {/* --- PROMO SECTION (Original UI) --- */}
-        {/* <View style={styles.promoRow}>
+       {/* --- PROMO SECTION (Updated UI) --- */}
+        <View style={styles.promoRow}>
           <View style={styles.promoCard}>
             <View style={styles.promoHeader}>
               <Ionicons name="diamond-sharp" size={14} color="#C71585" />
               <Text style={styles.promoTitle}> Storevia Gems</Text>
             </View>
+            <Text style={styles.promoTitle}>Enjoy 99% Off with Gems</Text>
             <Image
               source={{ uri: 'https://img.icons8.com/fluency/96/diamond.png' }}
               style={styles.promoPlaceholder}
             />
             <TouchableOpacity style={styles.collectBtn}>
-              <Text style={styles.btnText}>Collect</Text>
+              <Text style={styles.btnText}>Use Now</Text>
             </TouchableOpacity>
           </View>
 
@@ -350,6 +352,7 @@ const LoginSignup = ({ onLogin }: Props) => {
               <Ionicons name="gift" size={14} color="#FFD700" />
               <Text style={styles.promoTitle}> Storevia Freebie</Text>
             </View>
+            <Text style={styles.promoTitle}>Invite & Win iPhone...</Text>
             <Image
               source={{ uri: 'https://img.icons8.com/fluency/96/gift.png' }}
               style={styles.promoPlaceholder}
@@ -358,10 +361,10 @@ const LoginSignup = ({ onLogin }: Props) => {
               <Text style={styles.btnText}>Play Now</Text>
             </TouchableOpacity>
           </View>
-        </View> */}
+        </View>
 
-        {/* --- MY ORDERS SECTION (Original UI) --- */}
-        {/* <View style={styles.sectionCard}>
+        {/* --- MY ORDERS SECTION (Updated UI) --- */}
+        <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>My Orders</Text>
             <Text style={styles.viewAllText}>View All Orders {'>'}</Text>
@@ -371,26 +374,61 @@ const LoginSignup = ({ onLogin }: Props) => {
             <OrderIcon icon="archive-outline" label="To Ship" />
             <OrderIcon icon="bus-outline" label="To Receive" />
             <OrderIcon icon="chatbox-ellipses-outline" label="To Review" />
-            <OrderIcon icon="refresh-circle-outline" label="Returns" />
+            <OrderIcon icon="refresh-circle-outline" label="Returns & Cancellations" />
           </View>
-        </View> */}
+        </View>
 
-        {/* --- TOOLS GRID (Original UI) --- */}
-        {/* <View style={styles.gridContainer}>
-          <GridItem icon="help-circle" color="#ff4d4f" label="Help Center" />
+        {/* --- RECENTLY VIEWED --- */}
+<View style={styles.sectionCard}>
+  <View style={styles.sectionHeader}>
+    <Text style={styles.sectionTitle}>Recently Viewed</Text>
+    <TouchableOpacity>
+      <Text style={styles.viewAllText}>View More {'>'}</Text>
+    </TouchableOpacity>
+  </View>
+  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+    <ProductCard 
+      item={{
+        image: require('../../assets/products/watch.jpg'),
+        price: 4274,
+        oldPrice: 17096,
+        discount: 75
+      }}
+    />
+    <ProductCard 
+      item={{
+        image: require('../../assets/products/wallet.png'),
+        price: 1650,
+        oldPrice: 3000,
+        discount: 30
+      }}
+    />
+    <ProductCard 
+      item={{
+        image: require('../../assets/products/laptop.jpg'),
+        price: 145455,
+        oldPrice: 180000,
+        discount: 5
+      }}
+    />
+  </ScrollView>
+</View>
+
+        {/* --- TOOLS GRID (Updated UI) --- */}
+        <View style={styles.gridContainer}>
+          <GridItem icon="tree" color="#4CAF50" label="Storevia Land" />
           <GridItem
             icon="game-controller"
             color="#3b5998"
             label="Storevia Candy"
           />
+          <GridItem icon="flash" color="#ff9800" label="Pay Utilities" />
+          <GridItem icon="pricetag" color="#9c27b0" label="Vouchers" />
           <GridItem icon="location" color="#f36d21" label="Pickup Points" />
-          <GridItem icon="card" color="#2ecc71" label="Payment Options" />
-          <GridItem icon="headset" color="#9b59b6" label="Customer Care" />
-          <GridItem icon="basket" color="#f1c40f" label="Buy Any 3" />
-          <GridItem icon="star" color="#1abc9c" label="My Reviews" />
-          <GridItem icon="people" color="#e67e22" label="My Affiliates" />
-        </View> */}
-
+          <GridItem icon="card" color="#2ecc71" label="PayLater" />
+          <GridItem icon="basket" color="#f1c40f" label="Choice" />
+          <GridItem icon="mail" color="#2196F3" label="Messages" />
+        </View>
         {/* <View style={{ height: 40 }} /> */}
       </ScrollView>
 
