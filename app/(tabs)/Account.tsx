@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useState, useEffect } from 'react';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -12,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../../firebaseConfig';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { useAuthStore } from '../stores/useAuthStore';
 
 // IMPORT THE LOGIN PAGE
 import LoginSignup from '../(auth)/LoginSignup';
@@ -23,16 +24,53 @@ const responsiveFontSize = (size: number): number => {
   const newSize = size * (screenWidth / 375);
   return Math.max(newSize, size * 0.85);
 };
-
+const BASEURL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 const Account = () => {
   // STATE TO CHECK LOGIN
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [followedStoresCount, setFollowedStoresCount] = useState(0);
+  const [collectedVoucherCount, setCollectedVoucherCount] = useState(0);
+  const profilePicture = useAuthStore((state) => state.user?.profilePicture);
+
+
+  //GET STATS OF USER
+  const getStats = async (email: string) => {
+    console.log("email for stats: ", email);
+    console.log("profile image:",profilePicture)
+    try {
+      const res1 = await fetch(`${BASEURL}/api/user/followed_stores/${encodeURIComponent(email)}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+      const res2 = await fetch(`${BASEURL}/api/user/get_voucher/${encodeURIComponent(email)}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+      const data1 = await res1.json();
+      const data2 = await res2.json();
+      // console.log("User Stats: ", data); 
+      // console.log("User Stats: ", data2.vouchers.length);
+      setFollowedStoresCount(data1.followedStores.length);
+      setCollectedVoucherCount(data2.vouchers.length);
+    } catch (err) {
+      console.error('Error fetching search results:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
+      if (currentUser) {
+        getStats(currentUser.email || '');
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -41,16 +79,18 @@ const Account = () => {
     signOut(auth).catch((error) => console.log('Error logging out: ', error));
   };
 
+
+
   // IF NOT LOGGED IN, SHOW THE LOGIN PAGE
   if (!user && !loading) {
-    return <LoginSignup onLogin={() => {}} />;
+    return <LoginSignup onLogin={() => { }} />;
   }
 
   // IF LOGGED IN, SHOW THE FULL PROFILE
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        
+
         {/* --- HEADER SECTION --- */}
         <View style={styles.headerContainer}>
           <View style={styles.topIcons}>
@@ -66,7 +106,7 @@ const Account = () => {
           <View style={styles.profileRow}>
             <View style={styles.avatarContainer}>
               <Image
-                source={user?.photoURL ? { uri: user.photoURL } : require('../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg')}
+                source={profilePicture ? { uri: user?.photoURL } : require('../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg')}
                 style={styles.profilePic}
               />
               <View style={styles.cameraIcon}>
@@ -77,9 +117,9 @@ const Account = () => {
             <View style={styles.profileInfo}>
               <Text style={styles.usernameText}>{user?.displayName || user?.email || 'Storevia User'}</Text>
               <Text style={styles.statsText}>
-                Wishlist · <Text style={styles.boldStat}>0</Text> Followed Stores ·{' '}
-                <Text style={styles.boldStat}>0</Text> Vouchers ·{' '}
-                <Text style={styles.boldStat}>0</Text>
+                Followed Stores ·{' '}
+                <Text style={styles.boldStat}>{followedStoresCount}</Text> Vouchers ·{' '}
+                <Text style={styles.boldStat}>{collectedVoucherCount}</Text>
               </Text>
             </View>
           </View>
@@ -90,7 +130,7 @@ const Account = () => {
           <View style={styles.promoCard}>
             <View style={styles.promoHeader}>
               <Image source={{ uri: 'https://img.icons8.com/color/48/ruby.png' }} style={styles.smallIcon} />
-              <Text style={styles.promoTitle}> Storevia Gems$</Text>
+              <Text style={styles.promoTitle}> Storevia Gems</Text>
             </View>
             <View style={styles.promoContentRow}>
               <View style={{ flex: 1 }}>
@@ -119,7 +159,7 @@ const Account = () => {
         {/* --- ORDERS SECTION --- */}
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>My Orders2</Text>
+            <Text style={styles.sectionTitle}>My Orders</Text>
             <TouchableOpacity onPress={() => router.push('/screens/my_orders_screen')}>
               <Text style={styles.viewAll}>View All Orders {'>'}</Text>
             </TouchableOpacity>

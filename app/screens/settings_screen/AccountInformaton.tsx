@@ -20,6 +20,7 @@ const AccountInformaton = () => {
   const [fullName, setFullName] = useState('Guest User');
   const [keepUpdatedName, setKeepUpdatedName] = useState('');
 
+  
   // Logout Logic
   const handleLogout = () => {
     Alert.alert(
