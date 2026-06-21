@@ -363,7 +363,8 @@ const LoginSignup = ({ onLogin }: Props) => {
           </View>
         </View>
 
-        {/* --- MY ORDERS SECTION (Updated UI) --- */}
+        {/* --- MY ORDERS SECTION (hidden for now) --- */}
+        {/*
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>My Orders</Text>
@@ -377,6 +378,7 @@ const LoginSignup = ({ onLogin }: Props) => {
             <OrderIcon icon="refresh-circle-outline" label="Returns & Cancellations" />
           </View>
         </View>
+        */}
 
         {/* --- RECENTLY VIEWED --- */}
 <View style={styles.sectionCard}>
