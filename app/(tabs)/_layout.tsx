@@ -1,24 +1,30 @@
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+// Use fixed brand colors so the active tab icon stays the same on every device,
+// regardless of the device's light/dark color scheme (the dark tint was white,
+// which made active icons appear white on some devices).
+const ACTIVE_TINT = '#f97316';
+const INACTIVE_TINT = '#9ca3af';
 
+export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: ACTIVE_TINT,
+        tabBarInactiveTintColor: INACTIVE_TINT,
         headerShown: false,
         tabBarStyle: Platform.select({
           ios: {
             // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
+            backgroundColor: '#ffffff',
           },
-          default: {},
+          default: {
+            backgroundColor: '#ffffff',
+          },
         }),
       }}
     >
