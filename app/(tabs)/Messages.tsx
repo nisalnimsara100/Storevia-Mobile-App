@@ -175,7 +175,7 @@ const Messages: React.FC = () => {
   };
 
   const handleOrdersPress = (): void => {
-    Alert.alert('Orders', 'Opening orders screen...');
+    router.push('/screens/my_orders_screen');
   };
 
   const handleActivitiesPress = (): void => {
