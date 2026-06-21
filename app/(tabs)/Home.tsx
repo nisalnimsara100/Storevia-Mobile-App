@@ -190,7 +190,6 @@ const Home = () => {
     { type: 'bannerSwiper' },
     { type: 'content' },
     { type: 'voucher' },
-    { type: 'middleBanner' },
     { type: 'flashSale' },
     { type: 'products' },
   ];
@@ -363,23 +362,6 @@ const Home = () => {
           </View>
         );
 
-      case 'middleBanner':
-        return (
-          <View style={styles.swiperWrapper} className="mb-4">
-            <Swiper autoplay autoplayTimeout={3} showsPagination>
-              {banners.map((banner) => (
-                <View key={banner.id} style={styles.slide}>
-                  <Image
-                    source={banner.image}
-                    style={styles.slideImage}
-                    resizeMode="cover"
-                  />
-                </View>
-              ))}
-            </Swiper>
-          </View>
-        );
-
       case 'flashSale':
         return (
           <View style={styles.saleContent}>
@@ -419,7 +401,7 @@ const Home = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <SafeAreaView style={styles.container} edges={[]}>
       <FlatList
         data={listData}
         renderItem={renderItem}
@@ -537,7 +519,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: moderateScale(10),
     backgroundColor: '#fff',
-    marginBottom: verticalScale(80),
+    marginBottom: verticalScale(10),
   },
   banner: {
     backgroundColor: '#f97316',
