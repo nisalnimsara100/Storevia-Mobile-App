@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Icons from 'lucide-react-native';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -178,6 +179,7 @@ const Home = () => {
     { type: 'banner' },
     { type: 'bannerSwiper' },
     { type: 'content' },
+    { type: 'voucher' },
     { type: 'middleBanner' },
     { type: 'flashSale' },
     { type: 'products' },
@@ -312,6 +314,62 @@ const Home = () => {
                   horizontal
                   showsHorizontalScrollIndicator={false}
                 />
+              </View>
+            </View>
+          </View>
+        );
+
+      case 'voucher':
+        return (
+          <View style={styles.voucherSection}>
+            <View style={styles.voucherCard}>
+              {/* Header */}
+              <View style={styles.voucherHeader}>
+                <Text style={styles.voucherHeaderTitle}>
+                  Claim Voucher to Save More
+                </Text>
+                <TouchableOpacity onPress={() => console.log('More vouchers')}>
+                  <Text style={styles.voucherMore}>More vouchers ›</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Voucher row */}
+              <View style={styles.voucherBody}>
+                <View style={styles.voucherItem}>
+                  <Text style={[styles.voucherValue, { color: '#2563eb' }]}>
+                    12% OFF
+                  </Text>
+                  <Text style={[styles.voucherLabel, { color: '#3b82f6' }]}>
+                    Storevia Voucher
+                  </Text>
+                </View>
+
+                <View style={styles.voucherDivider} />
+
+                <View style={styles.voucherItem}>
+                  <Text style={[styles.voucherValue, { color: '#0d9488' }]}>
+                    Rs. 285
+                  </Text>
+                  <Text style={[styles.voucherLabel, { color: '#14b8a6' }]}>
+                    Free shipping
+                  </Text>
+                </View>
+
+                <View style={styles.voucherDivider} />
+
+                <TouchableOpacity
+                  activeOpacity={0.85}
+                  onPress={() => console.log('Collect all vouchers')}
+                >
+                  <LinearGradient
+                    colors={['#f97316', '#ec4899']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.collectAllButton}
+                  >
+                    <Text style={styles.collectAllText}>Collect All</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -504,5 +562,66 @@ const styles = StyleSheet.create({
     width: scale(80),
     alignItems: 'center',
     marginHorizontal: scale(6),
+  },
+  voucherSection: {
+    backgroundColor: '#fff',
+    paddingHorizontal: scale(10),
+    paddingBottom: verticalScale(12),
+  },
+  voucherCard: {
+    backgroundColor: '#f0f9ff',
+    borderRadius: moderateScale(12),
+    padding: moderateScale(12),
+  },
+  voucherHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: verticalScale(10),
+  },
+  voucherHeaderTitle: {
+    fontSize: moderateScale(14),
+    fontWeight: 'bold',
+    color: '#1f2937',
+  },
+  voucherMore: {
+    fontSize: moderateScale(12),
+    color: '#6b7280',
+  },
+  voucherBody: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  voucherItem: {
+    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  voucherValue: {
+    fontSize: moderateScale(15),
+    fontWeight: 'bold',
+  },
+  voucherLabel: {
+    fontSize: moderateScale(11),
+    marginTop: verticalScale(2),
+  },
+  voucherDivider: {
+    height: verticalScale(36),
+    borderLeftWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: '#bae6fd',
+    marginHorizontal: scale(8),
+  },
+  collectAllButton: {
+    borderRadius: moderateScale(10),
+    paddingVertical: verticalScale(9),
+    paddingHorizontal: scale(16),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  collectAllText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: moderateScale(13),
   },
 });
