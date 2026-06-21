@@ -178,8 +178,8 @@ const Messages: React.FC = () => {
     router.push('/screens/my_orders_screen');
   };
 
-  const handleActivitiesPress = (): void => {
-    Alert.alert('Activities', 'Opening activities screen...');
+  const handleVouchersPress = (): void => {
+    router.push('/screens/voucher_screen');
   };
 
   const handlePromosPress = (): void => {
@@ -383,11 +383,11 @@ const Messages: React.FC = () => {
           <Text style={styles.tabText}>Orders</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.tab} onPress={handleActivitiesPress}>
+        <TouchableOpacity style={styles.tab} onPress={handleVouchersPress}>
           <View style={styles.tabIcon}>
-            <Ionicons name="notifications-outline" size={20} color="#f97316" />
+            <Ionicons name="ticket-outline" size={20} color="#f97316" />
           </View>
-          <Text style={styles.tabText}>Activities</Text>
+          <Text style={styles.tabText}>Vouchers</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.tab} onPress={handlePromosPress}>
