@@ -156,7 +156,8 @@ const Account = () => {
           </View>
         </View>
 
-        {/* --- ORDERS SECTION --- */}
+        {/* --- ORDERS SECTION (hidden for now) --- */}
+        {/*
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>My Orders</Text>
@@ -172,7 +173,7 @@ const Account = () => {
             <OrderItem icon="refresh-circle-outline" label="Returns" />
           </View>
 
-          {/* Review Banner */}
+          {/* Review Banner *_/}
           <TouchableOpacity style={styles.reviewBanner}>
             <Image source={{ uri: 'https://img.icons8.com/fluency/96/box.png' }} style={styles.reviewThumb} />
             <View style={{ flex: 1 }}>
@@ -184,6 +185,7 @@ const Account = () => {
             </View>
           </TouchableOpacity>
         </View>
+        */}
 
         {/* --- AD BANNER --- */}
         <View style={styles.bannerWrapper}>
