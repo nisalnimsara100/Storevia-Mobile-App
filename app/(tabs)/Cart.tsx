@@ -147,10 +147,10 @@ const Cart = () => {
   const CheckBox = ({ checked = false }) => (
     <View
       style={{
-        width: s(15),
-        height: vs(15),
+        width: s(16),
+        height: s(16),
         borderRadius: s(4),
-        borderWidth: 2,
+        borderWidth: 1.5,
         backgroundColor: checked ? '#f97316' : 'transparent',
         borderColor: checked ? '#f97316' : '#d1d5db',
       }}
@@ -189,7 +189,7 @@ const Cart = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
       {/* ---------- HEADER ---------- */}
       <View
         style={{
@@ -361,7 +361,7 @@ const Cart = () => {
               <Text
                 style={{
                   marginLeft: s(8),
-                  fontSize: s(14),
+                  fontSize: s(13),
                   fontWeight: '600',
                   color: '#1f2937',
                 }}
@@ -388,10 +388,10 @@ const Cart = () => {
                 <Image
                   source={{ uri: item.product_image }}
                   style={{
-                    width: s(80),
-                    height: vs(80),
+                    width: s(64),
+                    height: s(64),
                     borderRadius: s(8),
-                    marginHorizontal: s(12),
+                    marginHorizontal: s(10),
                   }}
                 />
 
@@ -419,22 +419,25 @@ const Cart = () => {
 
                   {(isMeaningfulFeatureValue(item.product_selected_color) ||
                     isMeaningfulFeatureValue(item.product_selected_size)) && (
-                    <View className="flex-row gap-3">
-                      {isMeaningfulFeatureValue(item.product_selected_color) && (
-                        <View className="mt-1 bg-green-100 border-2 border-green-400 px-2 py-0.5 rounded-2xl">
-                          <Text className="text-xs text-green-800">
-                            {item.product_selected_color}
-                          </Text>
-                        </View>
-                      )}
-                      {isMeaningfulFeatureValue(item.product_selected_size) && (
-                        <View className="mt-1 bg-blue-100 border-2 border-blue-400 px-2 py-0.5 rounded-2xl">
-                          <Text className="text-xs text-blue-800">
-                            {item.product_selected_size}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
+                    <Text
+                      style={{
+                        fontSize: s(10),
+                        color: '#6b7280',
+                        marginTop: vs(2),
+                      }}
+                      numberOfLines={1}
+                    >
+                      {[
+                        isMeaningfulFeatureValue(item.product_selected_color)
+                          ? `Color: ${item.product_selected_color}`
+                          : null,
+                        isMeaningfulFeatureValue(item.product_selected_size)
+                          ? `Size: ${item.product_selected_size}`
+                          : null,
+                      ]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </Text>
                   )}
 
                   <View
@@ -485,6 +488,7 @@ const Cart = () => {
                 <View
                   style={{
                     flexDirection: 'row',
+                    alignItems: 'center',
                     borderWidth: 1,
                     borderColor: '#d1d5db',
                     borderRadius: s(6),
@@ -493,21 +497,21 @@ const Cart = () => {
                 >
                   <TouchableOpacity
                     style={{
-                      width: s(24),
-                      height: vs(24),
+                      width: s(20),
+                      height: s(20),
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                     onPress={() => updateQty(item.id, -1)}
                   >
-                    <Text style={{ fontSize: s(18) }}>−</Text>
+                    <Text style={{ fontSize: s(14) }}>−</Text>
                   </TouchableOpacity>
 
                   <Text
                     style={{
-                      paddingHorizontal: s(12),
+                      paddingHorizontal: s(8),
                       alignSelf: 'center',
-                      fontSize: s(14),
+                      fontSize: s(12),
                     }}
                   >
                     {item.product_quantity}
@@ -515,14 +519,14 @@ const Cart = () => {
 
                   <TouchableOpacity
                     style={{
-                      width: s(24),
-                      height: vs(24),
+                      width: s(20),
+                      height: s(20),
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                     onPress={() => updateQty(item.id, 1)}
                   >
-                    <Text style={{ fontSize: s(18) }}>+</Text>
+                    <Text style={{ fontSize: s(14) }}>+</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -551,30 +555,32 @@ const Cart = () => {
           onPress={handleSelectAll}
         >
           <CheckBox checked={selectAll} />
-          <Text style={{ marginLeft: s(8), fontSize: s(14) }}>All</Text>
+          <Text style={{ marginLeft: s(6), fontSize: s(12) }}>All</Text>
         </TouchableOpacity>
 
         <View>
-          <Text
-            style={{ color: '#f97316', fontWeight: 'bold', fontSize: s(14) }}
-          >
-            Subtotal: Rs. {subtotal}
+          <Text style={{ fontSize: s(13), color: '#1f2937' }}>
+            Subtotal:{' '}
+            <Text style={{ color: '#f97316', fontWeight: 'bold' }}>
+              Rs. {subtotal}
+            </Text>
           </Text>
-          <Text style={{ fontSize: s(12), color: '#6b7280' }}>
-            Shipping: Rs. 0
+          <Text style={{ fontSize: s(11), color: '#6b7280' }}>
+            Shipping Fee:{' '}
+            <Text style={{ color: '#f97316', fontWeight: 'bold' }}>Rs. 0</Text>
           </Text>
         </View>
 
         <TouchableOpacity
           style={{
             backgroundColor: '#f97316',
-            paddingHorizontal: s(16),
-            paddingVertical: vs(8),
+            paddingHorizontal: s(14),
+            paddingVertical: vs(7),
             borderRadius: s(6),
           }}
           onPress={handleCheckout}
         >
-          <Text style={{ color: '#fff', fontWeight: '600', fontSize: s(14) }}>
+          <Text style={{ color: '#fff', fontWeight: '600', fontSize: s(12) }}>
             Checkout ({selectedCount})
           </Text>
         </TouchableOpacity>

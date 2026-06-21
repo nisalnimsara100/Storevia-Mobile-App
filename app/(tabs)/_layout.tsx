@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
 
 // Use fixed brand colors so the active tab icon stays the same on every device,
 // regardless of the device's light/dark color scheme (the dark tint was white,
@@ -16,16 +15,12 @@ export default function TabLayout() {
         tabBarActiveTintColor: ACTIVE_TINT,
         tabBarInactiveTintColor: INACTIVE_TINT,
         headerShown: false,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-            backgroundColor: '#ffffff',
-          },
-          default: {
-            backgroundColor: '#ffffff',
-          },
-        }),
+        // Keep the tab bar in normal layout flow (not absolute) on every
+        // platform so screen content always sits above it and is never
+        // covered by the bar.
+        tabBarStyle: {
+          backgroundColor: '#ffffff',
+        },
       }}
     >
       <Tabs.Screen
