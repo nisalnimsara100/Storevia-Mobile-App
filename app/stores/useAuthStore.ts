@@ -56,22 +56,22 @@ export const useAuthStore = create<AuthState>()(
                 data.user.name && data.user.name !== 'unknown user'
                   ? data.user.name
                   : 'User',
-              role: data.user.role,
+              role: data.user.role || 'user',
               profilePicture: data.user.profile_picture,
             }
           : null;
 
         console.log('🔐 User Auth Store Updated:', {
           user: userData,
-          cartCount: data?.cart_count || 0,
-          followedStoreIds: data?.followed_store_ids || [],
+          cartCount: data?.cart_count,
+          followedStoreIds: data?.followed_store_ids,
         });
 
-        return set({
+        return set((state) => ({
           user: userData,
-          cartCount: data?.cart_count || 0,
-          followedStoreIds: data?.followed_store_ids || [],
-        });
+          cartCount: data?.cart_count !== undefined ? data.cart_count : state.cartCount,
+          followedStoreIds: data?.followed_store_ids !== undefined ? data.followed_store_ids : state.followedStoreIds,
+        }));
       },
 
       setCartCount: (count) =>

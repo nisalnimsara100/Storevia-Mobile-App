@@ -149,6 +149,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               useAuthStore.getState().setUser({
                 ...data,
                 user: {
+                  id: user.uid,
+                  email: user.email || '',
                   ...userData,
                   name: userName, // Ensure name is not 'unknown user'
                 },
@@ -226,6 +228,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           useAuthStore.getState().setUser({
             ...data,
             user: {
+              id: result.user.uid,
+              email: result.user.email || '',
               ...userData,
               name: userName, // Ensure name is not empty or 'unknown user'
             },
@@ -320,6 +324,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           useAuthStore.getState().setUser({
             ...data,
             user: {
+              id: result.user.uid,
+              email: result.user.email || '',
               ...userData,
               name: userName, // Use constructed full name
             },
@@ -396,6 +402,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           useAuthStore.getState().setUser({
             ...data,
             user: {
+              id: result.user.uid,
+              email: result.user.email || '',
               ...userData,
               name: userName, // Ensure name is not 'unknown user'
             },
@@ -482,6 +490,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           useAuthStore.getState().setUser({
             ...data,
             user: {
+              id: result.user.uid,
+              email: result.user.email || '',
               ...userData,
               name: userName, // Ensure name is not 'unknown user'
             },
