@@ -29,6 +29,16 @@ const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 
 const { width } = Dimensions.get('window');
 
+// Soft tinted color pairs cycled across category tiles (clean pastel look)
+const CATEGORY_COLORS: { bg: string; icon: string }[] = [
+  { bg: '#eef2ff', icon: '#6366f1' }, // indigo
+  { bg: '#fdf2f8', icon: '#ec4899' }, // pink
+  { bg: '#fff7ed', icon: '#f97316' }, // orange
+  { bg: '#ecfdf5', icon: '#10b981' }, // emerald
+  { bg: '#eff6ff', icon: '#3b82f6' }, // blue
+  { bg: '#fef2f2', icon: '#ef4444' }, // red
+];
+
 const DEFAULT_CATEGORIES = [
   {
     id: 1,
@@ -248,74 +258,50 @@ const Home = () => {
       case 'content':
         return (
           <View style={styles.content}>
-            <Text className="text-lg font-bold text-gray-700">Shop by Categories</Text>
-            <View className="flex-row justify-between items-center mb-4">
-              
-              <TouchableOpacity
-                style={{ width: scale(140), height: verticalScale(90) }}
-                className="rounded-xl bg-yellow-100 p-3 justify-between"
-              >
-                {/* Top Row */}
-                <View className="flex-row items-center rounded-lg">
-                  <Image
-                    source={require('../../assets/icons/icon1.png')}
-                    style={{ width: scale(40), height: scale(40) }}
-                    className="mr-3 rounded-md"
-                    resizeMode="contain"
-                  />
-                  <View className="flex-col ml-2">
-                    <Text className="text-lg font-bold text-black">60%</Text>
-                    <Text className="text-lg font-bold text-black">OFF</Text>
-                  </View>
-                </View>
-
-                {/* Bottom Row */}
-                <View className="flex-row justify-between items-center bg-yellow-100">
-                  <Text className="text-purple-600 font-semibold">
-                    shop now
-                  </Text>
-                  <Text className="text-purple-600 text-lg">›</Text>
-                </View>
-              </TouchableOpacity>
-
-              <View className="mt-4">
-                <FlatList
-                  data={categories}
-                  renderItem={({ item }) => {
-                    const IconComponent = item.icon;
-                    return (
-                      <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={() => console.log(`${item.name} clicked`)}
-                        className="items-center mx-3"
-                      >
-                        <View
-                          style={{ width: scale(70), height: scale(70) }}
-                          style={{ borderWidth: 1, borderColor: '#e8e8e8' }}
-                        className="bg-white p-4 rounded-2xl flex items-center justify-center"
-                        >
-                          <IconComponent
-                            width={scale(35)}
-                            height={scale(35)}
-                            color="#666"
-                            strokeWidth={1.5}
-                          />
-                        </View>
-                        <Text
-                          style={{ fontSize: moderateScale(11) }}
-                          className="font-semibold text-gray-700 mt-2 text-center"
-                        >
-                          {item.name}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  }}
-                  keyExtractor={(item) => item.id.toString()}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                />
-              </View>
+            <View className="flex-row justify-between items-center mb-3">
+              <Text className="text-lg font-bold text-gray-700">
+                Shop by Categories
+              </Text>
+              <Text className="text-sm text-orange-500">See All ›</Text>
             </View>
+
+            <FlatList
+              data={categories}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item, index }) => {
+                const IconComponent = item.icon;
+                const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
+                return (
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={() => console.log(`${item.name} clicked`)}
+                    style={styles.categoryTile}
+                  >
+                    <View
+                      style={[
+                        styles.categoryIconCircle,
+                        { backgroundColor: color.bg },
+                      ]}
+                    >
+                      <IconComponent
+                        width={scale(22)}
+                        height={scale(22)}
+                        color={color.icon}
+                        strokeWidth={2}
+                      />
+                    </View>
+                    <Text
+                      style={styles.categoryLabel}
+                      numberOfLines={1}
+                    >
+                      {item.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }}
+            />
           </View>
         );
 
@@ -562,6 +548,25 @@ const styles = StyleSheet.create({
     width: scale(80),
     alignItems: 'center',
     marginHorizontal: scale(6),
+  },
+  categoryTile: {
+    alignItems: 'center',
+    width: scale(60),
+    marginRight: scale(4),
+  },
+  categoryIconCircle: {
+    width: scale(48),
+    height: scale(48),
+    borderRadius: moderateScale(14),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  categoryLabel: {
+    fontSize: moderateScale(10),
+    fontWeight: '600',
+    color: '#4b5563',
+    marginTop: verticalScale(5),
+    textAlign: 'center',
   },
   voucherSection: {
     backgroundColor: '#fff',
