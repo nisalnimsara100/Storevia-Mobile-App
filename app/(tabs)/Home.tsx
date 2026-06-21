@@ -314,7 +314,9 @@ const Home = () => {
                 <Text style={styles.voucherHeaderTitle}>
                   Claim Voucher to Save More
                 </Text>
-                <TouchableOpacity onPress={() => console.log('More vouchers')}>
+                <TouchableOpacity
+                  onPress={() => router.push('/screens/voucher_screen' as any)}
+                >
                   <Text style={styles.voucherMore}>More vouchers ›</Text>
                 </TouchableOpacity>
               </View>
@@ -460,8 +462,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: moderateScale(14),
     color: '#aaa',
-    height: '100%',
-    textAlignVertical: 'center',
   },
   searchButton: {
     backgroundColor: '#f97316',
