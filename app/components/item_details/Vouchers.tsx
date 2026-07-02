@@ -9,10 +9,11 @@ import {
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { s, vs} from 'react-native-size-matters';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 
-const USER_EMAIL = process.env.EXPO_PUBLIC_APP_EMAIL;
+
 
 interface Voucher {
   id: string | number;
@@ -64,6 +65,7 @@ interface VoucherCarouselProps {
 }
 
 const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
+  const { user } = useAuthStore();
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [productVouchers, setProductVouchers] = useState<Voucher[]>([]);
   const [freeShippingVouchers, setFreeShippingVouchers] = useState<Voucher[]>(
@@ -72,6 +74,8 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
   const [collectedVoucherIds, setCollectedVoucherIds] = useState<Set<string>>(
     new Set(),
   );
+
+  const USER_EMAIL = user?.email;
 
   const parseVoucher = (
     apiVoucher: VoucherAPIResponse,
