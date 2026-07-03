@@ -55,8 +55,14 @@ interface VoucherAPIResponse {
 interface VouchersResponse {
   message: string;
   data: {
-    product: VoucherAPIResponse[];
-    shipping: VoucherAPIResponse[];
+    seller_vouchers: {
+      product?: VoucherAPIResponse[];
+      shipping?: VoucherAPIResponse[];
+    };
+    admin_vouchers: VoucherAPIResponse[] | {
+      product?: VoucherAPIResponse[];
+      shipping?: VoucherAPIResponse[];
+    };
   };
 }
 
@@ -89,14 +95,14 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
     let amount = '';
     if (apiVoucher.voucherDiscountType === 'flat') {
       if (discountPrice > 0) {
-        amount = `Rs.${Math.floor(discountPrice)}`;
+        amount = `Rs.${Math.floor(discountPrice)} OFF`;
       } else if (discountRate > 0) {
-        amount = `${discountRate}%`;
+        amount = `${discountRate}% OFF`;
       } else {
         amount = 'Free';
       }
     } else {
-      amount = discountRate > 0 ? `${discountRate}%` : 'Discount';
+      amount = discountRate > 0 ? `${discountRate}% OFF` : 'Discount';
     }
 
     // Determine colors based on type
@@ -158,12 +164,26 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
         const result: VouchersResponse = await response.json();
         console.log('Voucher API Data:', result);
 
-        const parsedProductVouchers = (result.data?.product || []).map((v) =>
-          parseVoucher(v, 'product'),
-        );
-        const parsedShippingVouchers = (result.data?.shipping || []).map((v) =>
-          parseVoucher(v, 'shipping'),
-        );
+        const sellerVouchers = result.data?.seller_vouchers || {};
+
+        // Collect admin vouchers (may be an array or object with product/shipping keys)
+        const adminVouchersRaw = result.data?.admin_vouchers;
+        const adminProductVouchers: VoucherAPIResponse[] = Array.isArray(adminVouchersRaw)
+          ? (adminVouchersRaw as VoucherAPIResponse[])
+          : (adminVouchersRaw as { product?: VoucherAPIResponse[] })?.product || [];
+        const adminShippingVouchers: VoucherAPIResponse[] = Array.isArray(adminVouchersRaw)
+          ? []
+          : (adminVouchersRaw as { shipping?: VoucherAPIResponse[] })?.shipping || [];
+
+        const parsedProductVouchers = [
+          ...(sellerVouchers.product || []),
+          ...adminProductVouchers,
+        ].map((v) => parseVoucher(v, 'product'));
+
+        const parsedShippingVouchers = [
+          ...(sellerVouchers.shipping || []),
+          ...adminShippingVouchers,
+        ].map((v) => parseVoucher(v, 'shipping'));
 
         const allVouchers = [
           ...parsedProductVouchers,
@@ -281,8 +301,13 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
                 {/* Left Section */}
                 <View style={styles.leftSection}>
                   <Text style={[styles.amount, { color: item.accentColor }]}>
-                    {item.voucherCode}
+                    {item.amount}
                   </Text>
+                  <View style={[styles.codeBadge, { borderColor: item.accentColor }]}>
+                    <Text style={[styles.codeText, { color: item.accentColor }]}>
+                      {item.voucherCode}
+                    </Text>
+                  </View>
                   <Text style={styles.condition}>{item.condition}</Text>
                   <Text style={styles.dateRange}>
                     Till {item.voucherExpiryDate}
@@ -394,9 +419,24 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   amount: {
-    fontSize: 26,
+    fontSize: 20,
     fontWeight: '900',
-    marginBottom: 2,
+    marginBottom: 4,
+    letterSpacing: -0.5,
+  },
+  codeBadge: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginBottom: 5,
+  },
+  codeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
   },
   condition: {
     fontSize: 11,
