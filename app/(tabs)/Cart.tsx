@@ -11,12 +11,36 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { s, vs } from 'react-native-size-matters';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '../stores/useAuthStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
+const baseUrl2 = BASE_URL;
+
+const storage = {
+  set: (key: string, value: any) => {
+    AsyncStorage.setItem(key, JSON.stringify(value)).catch((err) =>
+      console.error(`Error setting ${key} in storage:`, err)
+    );
+  },
+  get: async (key: string) => {
+    try {
+      const val = await AsyncStorage.getItem(key);
+      return val ? JSON.parse(val) : null;
+    } catch (err) {
+      console.error(`Error getting ${key} from storage:`, err);
+      return null;
+    }
+  }
+};
+
+const confetti = (options?: any) => {
+  console.log('Confetti effect triggered:', options);
+};
 
 interface CartItem {
   id: number;
@@ -39,6 +63,21 @@ interface CartItem {
   selected?: boolean;
 }
 
+interface UserVoucher {
+  voucher_id: number;
+  store_id?: number;
+  user_email?: string;
+  voucher_code: string;
+  voucherDescription: string;
+  voucherDiscountType: 'percentage' | 'flat';
+  voucherDiscountRate: string;
+  voucherDiscountPrice: string;
+  voucherExpiryDate: string;
+  voucher_minimumSpend: string;
+  voucherStoreID?: number;
+  voucher_type: string;
+}
+
 const isMeaningfulFeatureValue = (value: string | null | undefined): boolean => {
   const normalized = String(value || '').trim();
   if (!normalized) return false;
@@ -46,12 +85,20 @@ const isMeaningfulFeatureValue = (value: string | null | undefined): boolean => 
 };
 
 const Cart = () => {
-  const [selectAll, setSelectAll] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartData, setCartData] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const { user } = useAuthStore();
+  const [userVouchers, setUserVouchers] = useState<UserVoucher[]>([]);
+  const [filteredVouchers, setFilteredVouchers] = useState<UserVoucher[]>([]);
+  const [selectedVouchers, setSelectedVouchers] = useState<UserVoucher[]>([]);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteType, setDeleteType] = useState<'single' | 'all' | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<CartItem | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
+  const router = useRouter();
+  const { user, setCartCount } = useAuthStore();
+
+  const getUserEmail = () => user?.email || '';
 
   // Fetch cart from API
   const fetchCart = async () => {
@@ -77,33 +124,46 @@ const Cart = () => {
           ...item,
           selected: true,
         }));
-        setCartItems(items);
+        setCartData(items);
+        setCartCount(items.length);
       } else {
-        setCartItems([]);
+        setCartData([]);
+        setCartCount(0);
       }
     } catch (err) {
       console.error('Error fetching cart:', err);
-      setCartItems([]);
+      setCartData([]);
+      setCartCount(0);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch cart on component mount
-  useEffect(() => {
-    fetchCart();
-  }, []);
+  const fetchUserVouchers = async () => {
+    const email = user?.email;
+    if (!email) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/user/get_voucher/${email}`);
+      const data = await res.json();
+      if (data.status === 'success' && Array.isArray(data.vouchers)) {
+        setUserVouchers(data.vouchers);
+      }
+    } catch (err) {
+      console.error('Error fetching user vouchers:', err);
+    }
+  };
 
   // Refetch cart when screen is focused (real-time update)
   useFocusEffect(
     useCallback(() => {
       fetchCart();
-    }, []),
+      fetchUserVouchers();
+    }, [user?.email]),
   );
 
   /* ---------- GROUP BY STORE ---------- */
   const groupedByStore = useMemo(() => {
-    return cartItems.reduce<Record<string, CartItem[]>>((acc, item) => {
+    return cartData.reduce<Record<string, CartItem[]>>((acc, item) => {
       const storeName = item.product_store_name?.trim() || 'Unknown Store';
 
       if (!acc[storeName]) acc[storeName] = [];
@@ -111,38 +171,274 @@ const Cart = () => {
 
       return acc;
     }, {});
-  }, [cartItems]);
+  }, [cartData]);
 
-  // Calculate totals
-  const { subtotal, selectedCount } = useMemo(() => {
-    const selected = cartItems.filter((item) => item.selected);
-    const total = selected.reduce((sum, item) => {
-      return sum + parseFloat(item.product_price) * item.product_quantity;
-    }, 0);
-    return { subtotal: total.toFixed(2), selectedCount: selected.length };
-  }, [cartItems]);
+  // Update cart item quantity
+  // TODO: Replace with real API when ready: POST /api/update_cart { cart_id, quantity }
+  const handleQuantityChange = async (item: CartItem, change: number) => {
+    const newQty = Math.max(1, Math.min(item.stock_available, item.product_quantity + change));
 
-  // Update selectAll state when cart items change
-  useEffect(() => {
-    if (cartItems.length > 0) {
-      setSelectAll(cartItems.every((item) => item.selected));
-    } else {
-      setSelectAll(false);
+    // Update local state
+    setCartData((prev) => {
+      const updated = prev.map((i) => (i.id === item.id ? { ...i, product_quantity: newQty } : i));
+      storage.set('cartItems', updated);
+      return updated;
+    });
+
+    // TODO: Uncomment when API is ready
+    // try {
+    //   await fetch(`${baseUrl2}/api/update_cart`, {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ cart_id: item.id, quantity: newQty }),
+    //   });
+    // } catch (err) {
+    //   console.error('Error updating quantity:', err);
+    //   fetchCart();
+    // }
+  };
+
+  // Show confirmation for removing single item
+  const confirmRemoveItem = (item: CartItem) => {
+    setItemToDelete(item);
+    setDeleteType('single');
+    setShowDeleteConfirm(true);
+  };
+
+  // Show confirmation for deleting all items
+  const confirmDeleteAll = () => {
+    if (cartData.length === 0) return;
+    setDeleteType('all');
+    setShowDeleteConfirm(true);
+  };
+
+  // Remove cart item
+  const handleRemoveItem = async (item: CartItem) => {
+    // Update local state
+    setCartData((prev) => {
+      const updated = prev.filter((i) => i.id !== item.id);
+      storage.set('cartItems', updated);
+      storage.set('cartCount', updated.length);
+      setCartCount(updated.length); // Update context
+      return updated;
+    });
+
+    try {
+      await fetch(`${baseUrl2}/api/delete_cart_item`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cart_item_id: item.id }),
+      });
+    } catch (err) {
+      console.error('Error removing item:', err);
+      fetchCart();
     }
-  }, [cartItems]);
+  };
 
-  const updateQty = (id: number, change: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              product_quantity: Math.max(1, item.product_quantity + change),
-            }
-          : item,
-      ),
+  // Delete all cart items
+  const handleDeleteAll = async () => {
+    if (cartData.length === 0) return;
+
+    // Clear local state
+    setCartData([]);
+    storage.set('cartItems', []);
+    storage.set('cartCount', 0);
+    storage.set('cartItemsToCheckout', []);
+    setCartCount(0); // Update context
+
+    try {
+      await fetch(`${baseUrl2}/api/delete_cart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_email: getUserEmail() }),
+      });
+    } catch (err) {
+      console.error('Error clearing cart:', err);
+      fetchCart();
+    }
+  };
+
+  // Handle confirm delete
+  const handleConfirmDelete = () => {
+    if (deleteType === 'single' && itemToDelete) {
+      handleRemoveItem(itemToDelete);
+    } else if (deleteType === 'all') {
+      handleDeleteAll();
+    }
+    setShowDeleteConfirm(false);
+    setItemToDelete(null);
+  };
+
+  // Handle cancel delete
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setItemToDelete(null);
+  };
+
+  // Toggle item selection
+  const toggleSelectItem = (id: number) => {
+    setCartData((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, selected: !item.selected } : item))
     );
   };
+
+  // Toggle select all
+  const toggleSelectAll = (checked: boolean) => {
+    setCartData((prev) => prev.map((item) => ({ ...item, selected: checked })));
+  };
+
+  // Calculate totals
+  const selectedItems = useMemo(() => cartData.filter((item) => item.selected), [cartData]);
+
+  const subtotal = useMemo(
+    () =>
+      selectedItems.reduce(
+        (sum, item) => sum + parseFloat(item.product_price) * item.product_quantity,
+        0
+      ),
+    [selectedItems]
+  );
+
+  const shippingFee = useMemo(() => {
+    // Group items by store and find max COD per store
+    const storeMaxCod: Record<number, number> = {};
+    selectedItems.forEach((item) => {
+      const cod = parseFloat(item.product_cod || '0');
+      const storeId = item.product_store_id;
+      if (!storeMaxCod[storeId]) {
+        storeMaxCod[storeId] = cod;
+      } else {
+        storeMaxCod[storeId] = Math.max(storeMaxCod[storeId], cod);
+      }
+    });
+    // Sum the highest COD from each store
+    return Object.values(storeMaxCod).reduce((sum, cod) => sum + cod, 0);
+  }, [selectedItems]);
+
+  const voucherDiscount = useMemo(() => {
+    let discount = 0;
+    for (const voucher of selectedVouchers) {
+      if (voucher.voucher_type === 'shipping') {
+        discount += shippingFee;
+      } else if (voucher.voucherDiscountType === 'percentage') {
+        discount += subtotal * (parseFloat(voucher.voucherDiscountRate) / 100);
+      } else {
+        discount += parseFloat(voucher.voucherDiscountPrice);
+      }
+    }
+    return Math.min(discount, subtotal + shippingFee);
+  }, [selectedVouchers, subtotal, shippingFee]);
+
+  const total = subtotal + shippingFee - voucherDiscount;
+
+  const getVoucherProductIds = (voucher: UserVoucher): number[] => {
+    const rawProductIds = (voucher as UserVoucher & { product_ids?: unknown }).product_ids;
+
+    if (Array.isArray(rawProductIds)) {
+      return rawProductIds.map((id) => Number(id)).filter((id) => Number.isFinite(id));
+    }
+
+    return [];
+  };
+
+  const getVoucherGroup = (voucher: UserVoucher): 'shipping' | 'product' => {
+    return voucher.voucher_type === 'shipping' ? 'shipping' : 'product';
+  };
+
+  const applyVoucher = (voucher: UserVoucher) => {
+    const isAlreadySelected = selectedVouchers.some((v) => v.voucher_id === voucher.voucher_id);
+    if (isAlreadySelected) {
+      // Deselect
+      setSelectedVouchers((prev) => prev.filter((v) => v.voucher_id !== voucher.voucher_id));
+      return;
+    }
+    const minSpend = parseFloat(voucher.voucher_minimumSpend);
+    if (subtotal < minSpend) {
+      alert(`Minimum spend of Rs. ${minSpend.toLocaleString()} is required to use this voucher.`);
+      return;
+    }
+
+    const nextGroup = getVoucherGroup(voucher);
+    // Keep only one voucher per group (shipping or product-like)
+    setSelectedVouchers((prev) => [
+      ...prev.filter((v) => getVoucherGroup(v) !== nextGroup),
+      voucher,
+    ]);
+  };
+
+  // Handle checkout
+  const handleCheckout = async () => {
+    if (selectedItems.length === 0) return;
+
+    setCheckoutLoading(true);
+    storage.set('cartItemsToCheckout', selectedItems);
+    storage.set('finalTotal', total.toFixed(2));
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: ['#FACC15', '#000000', '#FF0000'],
+      });
+      router.push({
+        pathname: '/screens/checkout_screen',
+        params: { cartItems: JSON.stringify(selectedItems) },
+      });
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
+  // Effects
+  useEffect(() => {
+    fetchCart();
+    fetchUserVouchers();
+  }, [user?.email]);
+
+  const storeIds = useMemo(() => {
+    return Array.from(
+      new Set(
+        cartData
+          .map((item) => item.product_store_id)
+          .filter((id): id is number => typeof id === 'number')
+      )
+    );
+  }, [cartData]);
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const cartProductIds = new Set(
+      selectedItems
+        .map((item) => Number(item.product_id || item.id))
+        .filter((id) => Number.isFinite(id))
+    );
+
+    const filtered = userVouchers.filter((v) => {
+      if (v.voucherExpiryDate < today) return false;
+
+      // Admin vouchers are cross-store and use product targeting rules
+      if (v.voucher_type === 'admin_all') {
+        return cartProductIds.size > 0;
+      }
+
+      if (v.voucher_type === 'admin_selected') {
+        const targetProductIds = getVoucherProductIds(v);
+        return targetProductIds.some((id) => cartProductIds.has(id));
+      }
+
+      // Seller vouchers remain store-scoped
+      return typeof v.voucherStoreID === 'number' && storeIds.includes(v.voucherStoreID);
+    });
+
+    setFilteredVouchers(filtered);
+
+    // Remove any selected vouchers no longer in the filtered list
+    setSelectedVouchers((prev) =>
+      prev.filter((sv) => filtered.some((v) => v.voucher_id === sv.voucher_id))
+    );
+  }, [userVouchers, storeIds, selectedItems]);
 
   const CheckBox = ({ checked = false }) => (
     <View
@@ -156,37 +452,6 @@ const Cart = () => {
       }}
     />
   );
-
-  // Toggle select all items
-  const handleSelectAll = () => {
-    const newSelectAll = !selectAll;
-    setSelectAll(newSelectAll);
-    setCartItems((items) =>
-      items.map((item) => ({ ...item, selected: newSelectAll })),
-    );
-  };
-
-  // Toggle select single item
-  const handleSelectItem = (id: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, selected: !item.selected } : item,
-      ),
-    );
-  };
-
-  // Handle checkout navigation
-  const handleCheckout = () => {
-    const selectedItems = cartItems.filter((item) => item.selected);
-    if (selectedItems.length === 0) {
-      alert('Please select at least one item');
-      return;
-    }
-    router.push({
-      pathname: '/screens/checkout_screen',
-      params: { cartItems: JSON.stringify(selectedItems) },
-    });
-  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
@@ -249,7 +514,7 @@ const Cart = () => {
       </View>
 
       {/* ---------- CONTENT ---------- */}
-      {!loading && cartItems.length === 0 ? (
+      {!loading && cartData.length === 0 ? (
         <View
           style={{
             flex: 1,
@@ -321,6 +586,9 @@ const Cart = () => {
             backgroundColor: '#fff',
             paddingHorizontal: s(16),
             paddingVertical: vs(12),
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
           <Text
@@ -328,6 +596,13 @@ const Cart = () => {
           >
             My Cart
           </Text>
+          {cartData.length > 0 && (
+            <TouchableOpacity onPress={confirmDeleteAll}>
+              <Text style={{ color: '#ef4444', fontSize: s(13), fontWeight: '600' }}>
+                Clear All
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* STORES */}
@@ -348,12 +623,12 @@ const Cart = () => {
               }}
               onPress={() => {
                 const allSelected = items.every((item) => item.selected);
-                setCartItems((cartItems) =>
-                  cartItems.map((cartItem) =>
+                setCartData((prev) =>
+                  prev.map((cartItem) =>
                     items.some((i) => i.id === cartItem.id)
                       ? { ...cartItem, selected: !allSelected }
-                      : cartItem,
-                  ),
+                      : cartItem
+                  )
                 );
               }}
             >
@@ -381,7 +656,7 @@ const Cart = () => {
                   alignItems: 'center',
                 }}
               >
-                <TouchableOpacity onPress={() => handleSelectItem(item.id)}>
+                <TouchableOpacity onPress={() => toggleSelectItem(item.id)}>
                   <CheckBox checked={item.selected ?? false} />
                 </TouchableOpacity>
 
@@ -502,7 +777,7 @@ const Cart = () => {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
-                    onPress={() => updateQty(item.id, -1)}
+                    onPress={() => handleQuantityChange(item, -1)}
                   >
                     <Text style={{ fontSize: s(14) }}>−</Text>
                   </TouchableOpacity>
@@ -524,20 +799,67 @@ const Cart = () => {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
-                    onPress={() => updateQty(item.id, 1)}
+                    onPress={() => handleQuantityChange(item, 1)}
                   >
                     <Text style={{ fontSize: s(14) }}>+</Text>
                   </TouchableOpacity>
                 </View>
+
+                {/* Delete button */}
+                <TouchableOpacity
+                  onPress={() => confirmRemoveItem(item)}
+                  style={{ marginLeft: s(10) }}
+                >
+                  <Ionicons name="trash-outline" size={s(20)} color="#ef4444" />
+                </TouchableOpacity>
               </View>
             ))}
           </View>
         ))}
+
+        {/* Vouchers Section */}
+        {filteredVouchers.length > 0 && (
+          <View style={{ backgroundColor: '#fff', marginTop: vs(8), padding: s(16) }}>
+            <Text style={{ fontSize: s(14), fontWeight: 'bold', color: '#1f2937', marginBottom: vs(8) }}>
+              Available Vouchers
+            </Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {filteredVouchers.map((voucher) => {
+                const isSelected = selectedVouchers.some((v) => v.voucher_id === voucher.voucher_id);
+                return (
+                  <TouchableOpacity
+                    key={voucher.voucher_id}
+                    onPress={() => applyVoucher(voucher)}
+                    style={{
+                      backgroundColor: isSelected ? '#ffedd5' : '#f3f4f6',
+                      borderColor: isSelected ? '#f97316' : '#e5e7eb',
+                      borderWidth: 1,
+                      borderRadius: s(8),
+                      padding: s(10),
+                      marginRight: s(10),
+                      minWidth: s(120),
+                    }}
+                  >
+                    <Text style={{ fontSize: s(12), fontWeight: 'bold', color: isSelected ? '#ea580c' : '#374151' }}>
+                      {voucher.voucher_code}
+                    </Text>
+                    <Text style={{ fontSize: s(10), color: '#6b7280', marginTop: vs(2) }} numberOfLines={1}>
+                      {voucher.voucherDescription}
+                    </Text>
+                    <Text style={{ fontSize: s(9), color: '#9ca3af', marginTop: vs(2) }}>
+                      Min: Rs. {voucher.voucher_minimumSpend}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
       </ScrollView>
       )}
 
       {/* ---------- CHECKOUT BAR ---------- */}
-      {cartItems.length === 0 ? null : (
+      {cartData.length === 0 ? null : (
       <View
         style={{
           backgroundColor: '#fff',
@@ -552,22 +874,31 @@ const Cart = () => {
       >
         <TouchableOpacity
           style={{ flexDirection: 'row', alignItems: 'center' }}
-          onPress={handleSelectAll}
+          onPress={() => toggleSelectAll(!selectedItems.length || selectedItems.length < cartData.length)}
         >
-          <CheckBox checked={selectAll} />
+          <CheckBox checked={selectedItems.length === cartData.length} />
           <Text style={{ marginLeft: s(6), fontSize: s(12) }}>All</Text>
         </TouchableOpacity>
 
-        <View>
-          <Text style={{ fontSize: s(13), color: '#1f2937' }}>
-            Subtotal:{' '}
-            <Text style={{ color: '#f97316', fontWeight: 'bold' }}>
-              Rs. {subtotal}
-            </Text>
+        <View style={{ flex: 1, marginRight: s(10), marginLeft: s(12) }}>
+          <Text style={{ fontSize: s(11), color: '#1f2937' }}>
+            Subtotal: <Text style={{ fontWeight: '600' }}>Rs. {subtotal.toFixed(2)}</Text>
           </Text>
-          <Text style={{ fontSize: s(11), color: '#6b7280' }}>
-            Shipping Fee:{' '}
-            <Text style={{ color: '#f97316', fontWeight: 'bold' }}>Rs. 0</Text>
+          {shippingFee > 0 && (
+            <Text style={{ fontSize: s(10), color: '#6b7280' }}>
+              Shipping: <Text style={{ color: '#ef4444' }}>Rs. {shippingFee.toFixed(2)}</Text>
+            </Text>
+          )}
+          {voucherDiscount > 0 && (
+            <Text style={{ fontSize: s(10), color: '#10b981' }}>
+              Discount: <Text>-Rs. {voucherDiscount.toFixed(2)}</Text>
+            </Text>
+          )}
+          <Text style={{ fontSize: s(12), color: '#1f2937', fontWeight: 'bold', marginTop: vs(2) }}>
+            Total:{' '}
+            <Text style={{ color: '#f97316' }}>
+              Rs. {total.toFixed(2)}
+            </Text>
           </Text>
         </View>
 
@@ -579,15 +910,101 @@ const Cart = () => {
             borderRadius: s(6),
           }}
           onPress={handleCheckout}
+          disabled={checkoutLoading}
         >
           <Text style={{ color: '#fff', fontWeight: '600', fontSize: s(12) }}>
-            Checkout ({selectedCount})
+            {checkoutLoading ? '...' : `Checkout (${selectedItems.length})`}
           </Text>
         </TouchableOpacity>
       </View>
       )}
+
+      {/* ---------- DELETE CONFIRMATION MODAL ---------- */}
+      <Modal
+        visible={showDeleteConfirm}
+        transparent
+        animationType="fade"
+        onRequestClose={handleCancelDelete}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: s(20),
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: s(12),
+              padding: s(20),
+              width: '100%',
+              maxHeight: vs(200),
+              alignItems: 'center',
+            }}
+          >
+            <Ionicons name="warning-outline" size={s(40)} color="#ef4444" />
+            <Text
+              style={{
+                fontSize: s(16),
+                fontWeight: 'bold',
+                color: '#1f2937',
+                marginTop: vs(10),
+                textAlign: 'center',
+              }}
+            >
+              {deleteType === 'all'
+                ? 'Clear Cart?'
+                : 'Remove Item?'}
+            </Text>
+            <Text
+              style={{
+                fontSize: s(13),
+                color: '#6b7280',
+                marginTop: vs(6),
+                textAlign: 'center',
+                marginBottom: vs(20),
+              }}
+            >
+              {deleteType === 'all'
+                ? 'Are you sure you want to remove all items from your cart?'
+                : 'Are you sure you want to remove this item from your cart?'}
+            </Text>
+            <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
+              <TouchableOpacity
+                onPress={handleCancelDelete}
+                style={{
+                  flex: 1,
+                  paddingVertical: vs(10),
+                  marginRight: s(10),
+                  borderRadius: s(8),
+                  backgroundColor: '#f3f4f6',
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ color: '#374151', fontWeight: '600' }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleConfirmDelete}
+                style={{
+                  flex: 1,
+                  paddingVertical: vs(10),
+                  borderRadius: s(8),
+                  backgroundColor: '#ef4444',
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ color: '#fff', fontWeight: '600' }}>Remove</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
 
 export default Cart;
+

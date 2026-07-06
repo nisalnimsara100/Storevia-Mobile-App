@@ -26,6 +26,7 @@ interface CartItem {
   product_image: string;
   product_discount: string;
   product_store_id?: number;
+  product_cod?: string;
 }
 
 interface Address {
@@ -247,23 +248,27 @@ const CheckoutScreen = () => {
       .toFixed(2);
   };
 
-  const calculateDiscount = () => {
-    return items
-      .reduce((total, item) => {
-        const discount = parseFloat(item.product_discount || '0');
-        const itemPrice =
-          parseFloat(item.product_price) * item.product_quantity;
-        return total + (itemPrice * discount) / 100;
-      }, 0)
-      .toFixed(2);
-  };
+  const shippingCost = React.useMemo(() => {
+    // Group items by store and find max COD per store
+    const storeMaxCod: Record<number, number> = {};
+    items.forEach((item) => {
+      const cod = parseFloat(item.product_cod || '0');
+      const storeId = item.product_store_id || 0;
+      if (!storeMaxCod[storeId]) {
+        storeMaxCod[storeId] = cod;
+      } else {
+        storeMaxCod[storeId] = Math.max(storeMaxCod[storeId], cod);
+      }
+    });
+    // Sum the highest COD from each store
+    return Object.values(storeMaxCod).reduce((sum, cod) => sum + cod, 0);
+  }, [items]);
 
   const calculateVoucherDiscount = () => {
     if (appliedVouchers.length === 0) return 0;
 
     const subtotal = parseFloat(calculateSubtotal());
-    const productDiscount = parseFloat(calculateDiscount());
-    const netAmount = subtotal - productDiscount;
+    const netAmount = subtotal;
 
     let totalVoucherDiscount = 0;
     let remainingAmount = netAmount;
@@ -274,7 +279,9 @@ const CheckoutScreen = () => {
 
       // Calculate discount based on type
       let voucherAmount = 0;
-      if (voucher.discountType === 'percentage') {
+      if (voucher.voucherType === 'shipping') {
+        voucherAmount = shippingCost;
+      } else if (voucher.discountType === 'percentage') {
         voucherAmount = (remainingAmount * voucher.discount) / 100;
       } else {
         voucherAmount = Math.min(voucher.discount, remainingAmount);
@@ -299,11 +306,9 @@ const CheckoutScreen = () => {
     return `${year}-${month}-${day}`;
   }, []);
 
-  const shippingCost = 0;
   const subtotal = parseFloat(calculateSubtotal());
-  const discount = parseFloat(calculateDiscount());
   const voucherDiscount = calculateVoucherDiscount();
-  const total = (subtotal - discount - voucherDiscount + shippingCost).toFixed(
+  const total = (subtotal - voucherDiscount + shippingCost).toFixed(
     2,
   );
 
@@ -356,16 +361,13 @@ const CheckoutScreen = () => {
 
       const orderItemsPayload = items.map((item) => {
         const price = parseFloat(item.product_price);
-        const discount = parseFloat(item.product_discount || '0');
-        const discountedPrice = price * (1 - discount / 100);
 
         return {
           product_id: item.id,
           product_name: item.product_name,
           product_image: item.product_image,
           product_quantity: item.product_quantity,
-          // Send discounted unit price to backend instead of original price
-          product_price: discountedPrice.toFixed(2),
+          product_price: price.toFixed(2),
           product_discount: item.product_discount,
           product_store_id: item.product_store_id,
         };
@@ -582,13 +584,6 @@ const CheckoutScreen = () => {
                     </Text>
                   </View>
 
-                  {discount > 0 && (
-                    <View style={styles.priceRow}>
-                      <Text style={styles.discountLabel}>Discount</Text>
-                      <Text style={styles.discountValue}>- Rs. {discount}</Text>
-                    </View>
-                  )}
-
                   {appliedVouchers.length > 0 && (
                     <>
                       {appliedVouchers.map((voucher) => (
@@ -600,8 +595,7 @@ const CheckoutScreen = () => {
                             - Rs.{' '}
                             {voucher.discountType === 'percentage'
                               ? (
-                                  ((parseFloat(calculateSubtotal()) -
-                                    parseFloat(calculateDiscount())) *
+                                  (parseFloat(calculateSubtotal()) *
                                     voucher.discount) /
                                   100
                                 ).toFixed(2)
@@ -614,8 +608,8 @@ const CheckoutScreen = () => {
 
                   <View style={styles.priceRow}>
                     <Text style={styles.priceLabel}>Shipping</Text>
-                    <Text style={[styles.priceValue, { color: '#27AE60' }]}>
-                      Free
+                    <Text style={styles.priceValue}>
+                      Rs. {shippingCost.toFixed(2)}
                     </Text>
                   </View>
 
@@ -626,19 +620,18 @@ const CheckoutScreen = () => {
                     <Text style={styles.totalValue}>Rs. {total}</Text>
                   </View>
 
-                  <View style={styles.savingsContainer}>
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={16}
-                      color="#27AE60"
-                    />
-                    <Text style={styles.savingsText}>
-                      You saved Rs.{' '}
-                      {(
-                        parseFloat(discount) + calculateVoucherDiscount()
-                      ).toFixed(2)}
-                    </Text>
-                  </View>
+                  {calculateVoucherDiscount() > 0 && (
+                    <View style={styles.savingsContainer}>
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={16}
+                        color="#27AE60"
+                      />
+                      <Text style={styles.savingsText}>
+                        You saved Rs. {calculateVoucherDiscount().toFixed(2)}
+                      </Text>
+                    </View>
+                  )}
                 </View>
               </View>
 
