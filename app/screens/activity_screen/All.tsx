@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
   Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
+
+const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -17,62 +21,125 @@ const responsiveFontSize = (size: number): number => {
   return Math.max(newSize, size * 0.85);
 };
 
-const activities = [
-  {
-    id: '1',
-    title: 'Turn Gems Into Discounts💎',
-    date: 'Yesterday',
-    desc: 'Toggle ON & enjoy up to 20% OFF now!🔥',
-    banner: require('../../../assets/banners/banner1.jpg'),
-  },
-  {
-    id: '2',
-    title: 'Level Up Savings With Gems!💎',
-    date: '29/09/2025',
-    desc: 'Payday Alert: Collect Gems💎 Save Up to 40%! 🔥',
-    banner: require('../../../assets/banners/banner2.jpg'),
-  },
-  {
-    id: '3',
-    title: 'Level Up Savings With Gems!💎',
-    date: '28/09/2025',
-    desc: 'Payday Alert: Collect Gems💎 Save Up to 40%! 🔥',
-    banner: require('../../../assets/banners/banner1.jpg'),
-  },
-  {
-    id: '4',
-    title: 'Level Up Savings With Gems!💎',
-    date: '28/09/2025',
-    desc: 'Payday Alert: Collect Gems💎 Save Up to 40%! 🔥',
-    banner: require('../../../assets/banners/banner2.jpg'),
-  },
-];
+interface ActivityBanner {
+  id: number;
+  title: string;
+  description: string;
+  banner: string;
+  created_at: string;
+  updated_at: string;
+}
 
-const ActivityCard = ({ item }: { item: any }) => (
+const formatDate = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  } catch {
+    return dateString;
+  }
+};
+
+const ActivityCard = ({ item }: { item: ActivityBanner }) => (
   <View style={styles.card}>
     <View style={styles.cardHeader}>
       <View style={styles.iconWrapper}>
         <Ionicons name="notifications" size={18} color="#f39c12" />
-        {item.id === '1' && <View style={styles.redDot} />}
       </View>
 
       <View style={{ flex: 1, marginLeft: scale(8) }}>
         <Text style={styles.cardTitle}>{item.title}</Text>
-        <Text style={styles.cardDate}>{item.date}</Text>
+        <Text style={styles.cardDate}>{formatDate(item.created_at)}</Text>
       </View>
     </View>
 
-    <Image source={item.banner} style={styles.cardImage} resizeMode="cover" />
-    <Text style={styles.cardDesc}>{item.desc}</Text>
+    <Image
+      source={{ uri: item.banner }}
+      style={styles.cardImage}
+      resizeMode="cover"
+    />
+    <Text style={styles.cardDesc}>{item.description}</Text>
   </View>
 );
 
 const TabScreen = () => {
+  const [banners, setBanners] = useState<ActivityBanner[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchBanners = async () => {
+    if (!BASE_URL) {
+      setError('Base URL not configured.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch(`${BASE_URL}/api/admin/activity-banners`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch activity banners.');
+      }
+
+      const data = await response.json();
+      setBanners(data.banners ?? []);
+    } catch (err) {
+      console.error('Error fetching activity banners:', err);
+      setError('Unable to load activities. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBanners();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.stateContainer}>
+        <ActivityIndicator size="small" color="#f39c12" />
+        <Text style={styles.stateText}>Loading activities...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.stateContainer}>
+        <Text style={styles.stateText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={fetchBanners}>
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (banners.length === 0) {
+    return (
+      <View style={styles.stateContainer}>
+        <Text style={styles.stateText}>No activities available.</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={activities}
-        keyExtractor={(item) => item.id}
+        data={banners}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => <ActivityCard item={item} />}
         contentContainerStyle={{ paddingBottom: scale(40) }}
         showsVerticalScrollIndicator={false}
@@ -86,6 +153,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  stateContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    backgroundColor: '#fff',
+  },
+  stateText: {
+    marginTop: 10,
+    fontSize: responsiveFontSize(13),
+    color: '#555',
+    textAlign: 'center',
+    fontFamily: 'PoppinsRegular',
+  },
+  retryButton: {
+    marginTop: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: 6,
+    backgroundColor: '#f39c12',
+  },
+  retryButtonText: {
+    color: '#FFF',
+    fontWeight: '700',
+    fontSize: responsiveFontSize(13),
+    fontFamily: 'PoppinsBold',
+  },
   card: {
     marginBottom: scale(16),
     backgroundColor: '#fff',
@@ -98,7 +192,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: scale(8),
-
   },
   iconWrapper: {
     width: scale(28),
@@ -107,27 +200,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF5E6',
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
-  },
-  redDot: {
-    position: 'absolute',
-    top: scale(-2),
-    right: scale(-2),
-    width: scale(8),
-    height: scale(8),
-    borderRadius: scale(4),
-    backgroundColor: 'red',
   },
   cardTitle: {
     fontSize: responsiveFontSize(12),
     fontWeight: '400',
     color: '#000',
-    fontFamily: "PoppinsBold",
+    fontFamily: 'PoppinsBold',
   },
   cardDate: {
     fontSize: responsiveFontSize(10),
     color: '#999',
-    fontFamily: "PoppinsRegular",
+    fontFamily: 'PoppinsRegular',
   },
   cardImage: {
     width: '100%',
@@ -138,8 +221,7 @@ const styles = StyleSheet.create({
   cardDesc: {
     fontSize: responsiveFontSize(10),
     color: '#333',
-    fontFamily: "PoppinsRegular",
-    
+    fontFamily: 'PoppinsRegular',
   },
 });
 
