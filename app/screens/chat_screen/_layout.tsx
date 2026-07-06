@@ -43,12 +43,6 @@ export default function ChatLayout() {
                   <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333333' }}>
                     {resolvedStoreName}
                   </Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
-                    <Ionicons name="pricetag-outline" size={12} color="#666666" />
-                    <Text style={{ fontSize: 12, color: '#666666', marginLeft: 4 }}>
-                      {resolvedProductName}
-                    </Text>
-                  </View>
                 </View>
               </View>
             ),
