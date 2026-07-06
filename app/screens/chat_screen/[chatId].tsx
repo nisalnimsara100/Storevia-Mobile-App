@@ -110,6 +110,7 @@ const ChatConversation = () => {
   const [showAttachments, setShowAttachments] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const flatListRef = useRef<FlatList>(null);
 
   const normalizeChatMessage = (msg: ChatMessageApi): ChatMessage => {
     const rawTime = msg.created_at ?? new Date().toISOString();
@@ -208,6 +209,12 @@ const ChatConversation = () => {
 
   useEffect(() => {
     fetchChatMessages(chatMeta.productId, chatMeta.storeId);
+
+    const intervalId = setInterval(() => {
+      fetchChatMessages(chatMeta.productId, chatMeta.storeId);
+    }, 4000);
+
+    return () => clearInterval(intervalId);
   }, [chatMeta.productId, chatMeta.storeId]);
 
 
@@ -370,38 +377,40 @@ const ChatConversation = () => {
         enabled={true}
       >
         {/* Messages List */}
-        <TouchableWithoutFeedback onPress={dismissKeyboardAndMenus}>
-          <View style={styles.chatArea}>
-            {chatMeta.productImage ? (
-              <View style={styles.productPreview}>
-                <Image
-                  source={{ uri: chatMeta.productImage }}
-                  style={styles.productImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.productPreviewText}>
-                  <Text style={styles.productPreviewTitle} numberOfLines={1}>
-                    {chatMeta.product}
-                  </Text>
-                  <Text style={styles.productPreviewStore} numberOfLines={1}>
-                    {chatMeta.store}
-                  </Text>
-                </View>
+        <View style={styles.chatArea}>
+          {chatMeta.productImage ? (
+            <View style={styles.productPreview}>
+              <Image
+                source={{ uri: chatMeta.productImage }}
+                style={styles.productImage}
+                resizeMode="cover"
+              />
+              <View style={styles.productPreviewText}>
+                <Text style={styles.productPreviewTitle} numberOfLines={1}>
+                  {chatMeta.product}
+                </Text>
+                <Text style={styles.productPreviewStore} numberOfLines={1}>
+                  {chatMeta.store}
+                </Text>
               </View>
-            ) : null}
-            <FlatList
-              data={messages}
-              renderItem={renderMessage}
-              keyExtractor={(item) => item.id}
-              style={styles.messagesList}
-              contentContainerStyle={styles.messagesContent}
-              onScrollBeginDrag={() => {
-                setShowAttachments(false)
-                setShowEmojis(false)
-              }}
-            />
-          </View>
-        </TouchableWithoutFeedback>
+            </View>
+          ) : null}
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            renderItem={renderMessage}
+            keyExtractor={(item) => item.id}
+            style={styles.messagesList}
+            contentContainerStyle={styles.messagesContent}
+            keyboardShouldPersistTaps="handled"
+            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+            onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
+            onScrollBeginDrag={() => {
+              setShowAttachments(false);
+              setShowEmojis(false);
+            }}
+          />
+        </View>
 
         {/* Bottom Section - Contains Rate Service and Input */}
         <View style={styles.bottomFixedSection}>
@@ -413,37 +422,37 @@ const ChatConversation = () => {
 
           {/* Input Area - This stays on top of menus */}
           <View style={styles.inputContainer}>
-          <TouchableOpacity
-            style={[styles.inputButton, showAttachments && styles.inputButtonActive]}
-            onPress={toggleAttachments}
-          >
-            {showAttachments ? (
-              <Ionicons name="close" size={20} color="#FFFFFF" />
-            ) : (
-              <Ionicons name="add" size={20} color="#FFFFFF" />
-            )}
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.inputButton, showAttachments && styles.inputButtonActive]}
+              onPress={toggleAttachments}
+            >
+              {showAttachments ? (
+                <Ionicons name="close" size={20} color="#FFFFFF" />
+              ) : (
+                <Ionicons name="add" size={20} color="#FFFFFF" />
+              )}
+            </TouchableOpacity>
 
-          <TextInput
-            style={styles.textInput}
-            placeholder="Type your message..."
-            value={chatInput}
-            onChangeText={setChatInput}
-            multiline
-            maxLength={500}
-          />
+            <TextInput
+              style={styles.textInput}
+              placeholder="Type your message..."
+              value={chatInput}
+              onChangeText={setChatInput}
+              multiline
+              maxLength={500}
+            />
 
-          <TouchableOpacity
-            style={[styles.inputButton, showEmojis && styles.inputButtonActive]}
-            onPress={toggleEmojis}
-          >
-            <Text style={styles.emojiButtonText}>😊</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              style={[styles.inputButton, showEmojis && styles.inputButtonActive]}
+              onPress={toggleEmojis}
+            >
+              <Text style={styles.emojiButtonText}>😊</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity style={styles.sendButton} onPress={handleSendChat}>
-          <Ionicons name="send" size={18} color="#FFFFFF" />
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.sendButton} onPress={handleSendChat}>
+              <Ionicons name="send" size={18} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
 
           {/* Menus render AFTER input so input stays on top */}
           {showAttachments && renderAttachmentMenu()}
@@ -609,15 +618,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   sendButton: {
-    alignSelf: 'flex-end',
-    marginRight: 16,
-    marginBottom: 12,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#FF5722',
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 4,
   },
   attachmentMenu: {
     backgroundColor: '#FFFFFF',
