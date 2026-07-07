@@ -209,18 +209,6 @@ const Account = () => {
           </ScrollView>
         </View>
 
-        {/* --- TOOLS GRID --- */}
-        <View style={styles.gridContainer}>
-          <GridTool img="https://img.icons8.com/fluency/96/mail.png" label="My Messages" />
-          <GridTool img="https://img.icons8.com/color/96/low-price.png" label="Everyday Low Price" />
-          <GridTool img="https://img.icons8.com/fluency/48/box.png" label="Pickup Points" />
-          <GridTool img="https://img.icons8.com/color/96/wallet.png" label="PayLater" />
-          <GridTool img="https://img.icons8.com/fluency/96/help.png" label="Help Center" />
-          <GridTool img="https://img.icons8.com/fluency/96/customer-support.png" label="Contact Care" />
-          <GridTool img="https://img.icons8.com/fluency/96/star.png" label="My Reviews" />
-          <GridTool img="https://img.icons8.com/fluency/96/groups.png" label="My Affiliates" />
-        </View>
-
         <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
@@ -245,13 +233,6 @@ const ProductCard = ({ img, price, oldPrice, discount }: any) => (
     <Text style={styles.priceText}>Rs {price}</Text>
     <Text style={styles.oldPriceText}>Rs {oldPrice}</Text>
   </View>
-);
-
-const GridTool = ({ img, label }: any) => (
-  <TouchableOpacity style={styles.gridItem}>
-    <Image source={{ uri: img }} style={styles.gridImg} />
-    <Text style={styles.gridLabel}>{label}</Text>
-  </TouchableOpacity>
 );
 
 // --- STYLES ---
@@ -302,10 +283,6 @@ const styles = StyleSheet.create({
   discountText: { color: '#fff', fontSize: 8, fontWeight: 'bold' },
   priceText: { fontSize: 11, fontWeight: 'bold', color: '#ff4d4f', marginTop: 5 },
   oldPriceText: { fontSize: 9, color: '#999', textDecorationLine: 'line-through' },
-  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', backgroundColor: '#fff', marginHorizontal: scale(10), borderRadius: scale(10), borderWidth: 1, borderColor: '#e8e8e8', paddingVertical: scale(12) },
-  gridItem: { width: '25%', alignItems: 'center', paddingVertical: scale(10) },
-  gridImg: { width: scale(26), height: scale(26), marginBottom: scale(8) },
-  gridLabel: { fontSize: responsiveFontSize(8.5), textAlign: 'center', color: '#333' },
 });
 
 export default Account;
