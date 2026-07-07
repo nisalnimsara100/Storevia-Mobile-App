@@ -2,6 +2,7 @@ import { AntDesign, Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
+import { useAuthStore } from '../../stores/useAuthStore';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -14,10 +15,12 @@ import {
 } from 'react-native';
 
 const AccountInformaton = () => {
+  const user = useAuthStore((state) => state.user);
+
   const [birthdayModelOpen, setBirthdayModelOpen] = useState(false);
   const [birthday, setBirthday] = useState(new Date('2000-01-01'));
   const [nameModelOpen, setNameModelOpen] = useState(false);
-  const [fullName, setFullName] = useState('Guest User');
+  const [fullName, setFullName] = useState(user?.name || 'Guest User');
   const [keepUpdatedName, setKeepUpdatedName] = useState('');
 
   
@@ -73,9 +76,9 @@ const AccountInformaton = () => {
           </TouchableOpacity>
 
           <TouchableOpacity className="bg-white flex-row justify-between items-center px-4 py-4 border-b border-gray-200" onPress={toggleDatePicker}>
-            <Text className="text-md text-gray-800">Birthday</Text>
+            <Text className="text-md text-gray-800">Email</Text>
             <View className="flex-row items-center">
-              <Text className="text-md text-gray-400 mr-2">{birthday.toISOString().split('T')[0]}</Text>
+              <Text className="text-md text-gray-400 mr-2">{user?.email || 'No email'}</Text>
               <Ionicons name="chevron-forward" size={20} color="#999" />
             </View>
           </TouchableOpacity>
