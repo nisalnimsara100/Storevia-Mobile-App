@@ -66,7 +66,7 @@ const ItemDetailsScreen = () => {
       </View>
 
       <View style={styles.sectionContainer}>
-        <Ratings />
+        <Ratings productId={productId} />
       </View>
 
       <View style={styles.sectionContainer}>

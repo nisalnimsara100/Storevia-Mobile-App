@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Dimensions,
   FlatList,
@@ -15,17 +16,26 @@ import {
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const TOTAL_REVIEWS = 66;
-const AVG_RATING = 4.9;
-const TOTAL_WITH_IMAGES = 19;
-const AI_SUMMARY_TEXT =
-  'High-capacity power bank with fast charging, durable build, and reliable battery life. Ideal for everyday use and multiple device charges. Highly recommended by users for authenticity and packaging quality.';
+const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL ?? '';
 
 const AVATAR_COLORS = ['#FF7043', '#26A69A', '#5C6BC0', '#EC407A', '#8D6E63', '#7CB342', '#42A5F5'];
 
+// Shape returned by the API
+interface ApiReview {
+  review_id: number;
+  rating: number;
+  comment: string;
+  created_at: string;
+  user_name: string;
+  user_image: string;
+  images: string[];
+}
+
+// Internal review shape used by the UI
 interface Review {
   id: string;
   name: string;
+  userImage: string;
   rating: number;
   date: string;
   recency: number;
@@ -44,127 +54,30 @@ interface ImageEntry {
   imageIndexInReview: number;
 }
 
-interface ReviewSeed {
-  id: string;
-  name: string;
-  rating: number;
-  date: string;
-  recency: number;
-  variant: string;
-  text: string;
-  imageCount: number;
-  likes: number;
-  comments: number;
-}
+const formatDate = (dateStr: string): string => {
+  try {
+    const d = new Date(dateStr.replace(' ', 'T'));
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+};
 
-const REVIEW_SEED: ReviewSeed[] = [
-  {
-    id: 'r1',
-    name: 'S.Nithyanantharajah',
-    rating: 5,
-    date: '12 May 2026',
-    recency: 8,
-    variant: 'Color: Black',
-    text: "Good authentic product & supports fast charging, I think it has 2 lithium polymer cells that's good and compact. Worth it for the cost and the packaging was very secure.",
-    imageCount: 2,
-    likes: 4,
-    comments: 0,
-  },
-  {
-    id: 'r2',
-    name: 'Isuru Fonseka',
-    rating: 5,
-    date: '6 May 2026',
-    recency: 7,
-    variant: 'Color: Blue',
-    text: 'Order eka dawas 6kin awa, fast charging widiyata wada karanawa, quality eka hodai, godak sathutui.',
-    imageCount: 4,
-    likes: 6,
-    comments: 1,
-  },
-  {
-    id: 'r3',
-    name: 'Dhivyandheer R',
-    rating: 5,
-    date: '2 May 2026',
-    recency: 6,
-    variant: 'Color: White',
-    text: 'Power bank eka supiri, mage phone eka fast charging venawa, packaging eka safe widiyata thibbe.',
-    imageCount: 5,
-    likes: 9,
-    comments: 2,
-  },
-  {
-    id: 'r4',
-    name: 'Praveen Kumar',
-    rating: 4,
-    date: '28 Apr 2026',
-    recency: 5,
-    variant: 'Color: Black',
-    text: 'Good value for money. Delivery was quick and packaging was solid. Heats up a little during fast charging but otherwise reliable.',
-    imageCount: 3,
-    likes: 2,
-    comments: 0,
-  },
-  {
-    id: 'r5',
-    name: 'Amanda Silva',
-    rating: 5,
-    date: '20 Apr 2026',
-    recency: 4,
-    variant: 'Color: Black',
-    text: 'Excellent product exactly as described. Battery lasts long and the LED indicator is a nice touch for checking charge level.',
-    imageCount: 0,
-    likes: 1,
-    comments: 0,
-  },
-  {
-    id: 'r6',
-    name: 'Ruwan Perera',
-    rating: 5,
-    date: '15 Apr 2026',
-    recency: 3,
-    variant: 'Color: Grey',
-    text: 'Superb quality, fast delivery, and great customer service from the seller. Highly recommend to anyone looking for a reliable power bank.',
-    imageCount: 5,
-    likes: 7,
-    comments: 1,
-  },
-  {
-    id: 'r7',
-    name: 'Nadeesha Jayasuriya',
-    rating: 5,
-    date: '10 Apr 2026',
-    recency: 2,
-    variant: 'Color: Blue',
-    text: 'Very compact and lightweight. Charges two devices at once without any issues. Will buy again for my family.',
-    imageCount: 3,
-    likes: 3,
-    comments: 0,
-  },
-  {
-    id: 'r8',
-    name: 'Tharindu Madushan',
-    rating: 4,
-    date: '2 Apr 2026',
-    recency: 1,
-    variant: 'Color: White',
-    text: 'Does the job well. Packaging could be better but the product itself works great and arrived earlier than expected.',
-    imageCount: 2,
-    likes: 0,
-    comments: 0,
-  },
-];
-
-const createInitialReviews = (): Review[] =>
-  REVIEW_SEED.map(({ imageCount, ...seed }) => ({
-    ...seed,
-    liked: false,
-    disliked: false,
-    images: Array.from({ length: imageCount }).map(
-      (_, i) => `https://picsum.photos/seed/${seed.id}-${i}/600/600`
-    ),
-  }));
+const mapApiReview = (apiReview: ApiReview, index: number): Review => ({
+  id: String(apiReview.review_id),
+  name: apiReview.user_name,
+  userImage: apiReview.user_image,
+  rating: apiReview.rating,
+  date: formatDate(apiReview.created_at),
+  recency: index,
+  variant: '',
+  text: apiReview.comment,
+  images: apiReview.images ?? [],
+  likes: 0,
+  liked: false,
+  disliked: false,
+  comments: 0,
+});
 
 const getAvatarColor = (name: string) => {
   const code = name.charCodeAt(0) || 0;
@@ -173,6 +86,10 @@ const getAvatarColor = (name: string) => {
 
 type FilterKey = 'all' | 'images' | 'low';
 type SortKey = 'relevance' | 'newest' | 'highest' | 'lowest';
+
+interface RatingsProps {
+  productId?: number | string;
+}
 
 const SORT_LABELS: Record<SortKey, string> = {
   relevance: 'Relevance',
@@ -277,15 +194,19 @@ const FullReviewItem = ({
   return (
     <View style={styles.fullReviewCard}>
       <View style={styles.fullReviewHeader}>
-        <View style={[styles.avatar, { backgroundColor: getAvatarColor(review.name) }]}>
-          <Text style={styles.avatarText}>{review.name.charAt(0).toUpperCase()}</Text>
-        </View>
+        {review.userImage ? (
+          <Image source={{ uri: review.userImage }} style={styles.avatarImage} />
+        ) : (
+          <View style={[styles.avatar, { backgroundColor: getAvatarColor(review.name) }]}>
+            <Text style={styles.avatarText}>{review.name.charAt(0).toUpperCase()}</Text>
+          </View>
+        )}
         <View style={styles.fullReviewHeaderInfo}>
           <Text style={styles.fullReviewName} numberOfLines={1}>
             {review.name}
           </Text>
           <Text style={styles.fullReviewMeta} numberOfLines={1}>
-            {review.date} | {review.variant}
+            {review.date}{review.variant ? ` | ${review.variant}` : ''}
           </Text>
         </View>
         <StarRow rating={review.rating} size={14} />
@@ -344,8 +265,10 @@ const FullReviewItem = ({
   );
 };
 
-const Ratings = () => {
-  const [reviews, setReviews] = useState<Review[]>(createInitialReviews);
+const Ratings = ({ productId }: RatingsProps) => {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [reviewsModalVisible, setReviewsModalVisible] = useState(false);
   const [imageViewerVisible, setImageViewerVisible] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
@@ -358,13 +281,48 @@ const Ratings = () => {
   const [captionExpanded, setCaptionExpanded] = useState(false);
   const viewerListRef = useRef<FlatList<ImageEntry>>(null);
 
+  const fetchReviews = useCallback(async () => {
+    if (!productId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${BASE_URL}/api/products/reviews/fetch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: productId }),
+      });
+      const data = await response.json();
+      if (data.success && Array.isArray(data.reviews)) {
+        setReviews(data.reviews.map(mapApiReview));
+      } else {
+        setError('Failed to load reviews.');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [productId]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  // Derived stats from fetched reviews
+  const totalReviews = reviews.length;
+  const avgRating = useMemo(() => {
+    if (reviews.length === 0) return 0;
+    const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+    return sum / reviews.length;
+  }, [reviews]);
+
   const withImagesActualCount = useMemo(
     () => reviews.filter((r) => r.images.length > 0).length,
     [reviews]
   );
 
   const uniqueVariants = useMemo(
-    () => Array.from(new Set(reviews.map((r) => r.variant))),
+    () => Array.from(new Set(reviews.map((r) => r.variant).filter(Boolean))),
     [reviews]
   );
 
@@ -471,10 +429,10 @@ const Ratings = () => {
     <View style={styles.container}>
       {/* Summary header */}
       <TouchableOpacity style={styles.headerRow} activeOpacity={0.7} onPress={() => openReviewsModal()}>
-        <Text style={styles.headerTitle}>Ratings & Reviews ({TOTAL_REVIEWS})</Text>
+        <Text style={styles.headerTitle}>Ratings & Reviews ({totalReviews})</Text>
         <View style={styles.headerRight}>
-          <Text style={styles.headerRating}>{AVG_RATING.toFixed(1)}</Text>
-          <StarRow rating={AVG_RATING} size={14} />
+          <Text style={styles.headerRating}>{avgRating > 0 ? avgRating.toFixed(1) : '—'}</Text>
+          <StarRow rating={avgRating} size={14} />
           <Ionicons name="chevron-forward" size={18} color="#B0B0B0" />
         </View>
       </TouchableOpacity>
@@ -485,10 +443,27 @@ const Ratings = () => {
         onPress={() => openReviewsModal('images')}
       >
         <Ionicons name="image-outline" size={14} color="#FF5722" />
-        <Text style={styles.imagesChipText}>With images/videos ({TOTAL_WITH_IMAGES})</Text>
+        <Text style={styles.imagesChipText}>With images/videos ({withImagesActualCount})</Text>
       </TouchableOpacity>
 
-      {previewReviews.map((review) => (
+      {/* Loading / error / preview states */}
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="small" color="#FF5722" />
+          <Text style={styles.loadingText}>Loading reviews…</Text>
+        </View>
+      )}
+
+      {!loading && error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity onPress={fetchReviews} style={styles.retryBtn}>
+            <Text style={styles.retryBtnText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {!loading && !error && previewReviews.map((review) => (
         <ReviewPreviewCard
           key={review.id}
           review={review}
@@ -497,8 +472,12 @@ const Ratings = () => {
         />
       ))}
 
+      {!loading && !error && totalReviews === 0 && (
+        <Text style={styles.emptyText}>No reviews yet for this product.</Text>
+      )}
+
       <TouchableOpacity style={styles.seeAllBtn} activeOpacity={0.7} onPress={() => openReviewsModal()}>
-        <Text style={styles.seeAllText}>See all {TOTAL_REVIEWS} reviews</Text>
+        <Text style={styles.seeAllText}>See all {totalReviews} reviews</Text>
         <Ionicons name="chevron-forward" size={15} color="#FF5722" />
       </TouchableOpacity>
 
@@ -522,9 +501,9 @@ const Ratings = () => {
             ListHeaderComponent={
               <View>
                 <View style={styles.summaryBox}>
-                  <Text style={styles.summaryRatingNum}>{AVG_RATING.toFixed(1)}</Text>
-                  <StarRow rating={AVG_RATING} size={16} />
-                  <Text style={styles.summaryReviewsCount}>{TOTAL_REVIEWS} Reviews</Text>
+                  <Text style={styles.summaryRatingNum}>{avgRating > 0 ? avgRating.toFixed(1) : '—'}</Text>
+                  <StarRow rating={avgRating} size={16} />
+                  <Text style={styles.summaryReviewsCount}>{totalReviews} Reviews</Text>
                 </View>
 
                 <View style={styles.aiSummaryBox}>
@@ -535,7 +514,7 @@ const Ratings = () => {
                     </View>
                     <Text style={styles.aiSummaryBadge}>Powered by AI from genuine reviews</Text>
                   </View>
-                  <Text style={styles.aiSummaryText}>{AI_SUMMARY_TEXT}</Text>
+                  <Text style={styles.aiSummaryText}>{'Reviews are summarised based on verified purchases from customers on Storevia.'}</Text>
                 </View>
 
                 <ScrollView
@@ -1089,8 +1068,38 @@ const styles = StyleSheet.create({
     fontSize: 13,
     paddingVertical: 40,
   },
-
-  /* --- Full review item --- */
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+  },
+  loadingText: {
+    marginLeft: 8,
+    fontSize: 13,
+    color: '#999',
+  },
+  errorContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  errorText: {
+    fontSize: 13,
+    color: '#d32f2f',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  retryBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 6,
+    backgroundColor: '#FF5722',
+  },
+  retryBtnText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
+  },
   fullReviewCard: {
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -1112,6 +1121,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '700',
     fontSize: 14,
+  },
+  avatarImage: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 10,
   },
   fullReviewHeaderInfo: {
     flex: 1,
