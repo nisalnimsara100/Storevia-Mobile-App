@@ -156,8 +156,7 @@ const Account = () => {
           </View>
         </View>
 
-        {/* --- ORDERS SECTION (hidden for now) --- */}
-        {/*
+        {/* --- ORDERS SECTION --- */}
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>My Orders</Text>
@@ -166,15 +165,39 @@ const Account = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.orderIconsRow}>
-            <OrderItem icon="wallet-outline" label="To Pay" />
-            <OrderItem icon="archive-outline" label="To Ship" />
-            <OrderItem icon="bus-outline" label="To Receive" />
-            <OrderItem icon="chatbox-ellipses-outline" label="To Review" badge={1} />
-            <OrderItem icon="refresh-circle-outline" label="Returns" />
+            <OrderItem
+              icon="wallet-outline"
+              label="To Pay"
+              onPress={() => router.push('/screens/my_orders_screen')}
+            />
+            <OrderItem
+              icon="archive-outline"
+              label="To Ship"
+              onPress={() => router.push('/screens/my_orders_screen')}
+            />
+            <OrderItem
+              icon="bus-outline"
+              label="To Receive"
+              onPress={() => router.push('/screens/my_orders_screen')}
+            />
+            <OrderItem
+              icon="chatbox-ellipses-outline"
+              label="To Review"
+              badge={1}
+              onPress={() => router.push('/screens/my_reviews_screen')}
+            />
+            <OrderItem
+              icon="refresh-circle-outline"
+              label="Returns"
+              onPress={() => router.push('/screens/my_orders_screen')}
+            />
           </View>
 
-          {/* Review Banner *_/}
-          <TouchableOpacity style={styles.reviewBanner}>
+          {/* Review Banner */}
+          <TouchableOpacity
+            style={styles.reviewBanner}
+            onPress={() => router.push('/screens/my_reviews_screen')}
+          >
             <Image source={{ uri: 'https://img.icons8.com/fluency/96/box.png' }} style={styles.reviewThumb} />
             <View style={{ flex: 1 }}>
               <Text style={styles.reviewText}>Review your purchase today!</Text>
@@ -185,7 +208,6 @@ const Account = () => {
             </View>
           </TouchableOpacity>
         </View>
-        */}
 
         {/* --- AD BANNER --- */}
         <View style={styles.bannerWrapper}>
@@ -216,8 +238,8 @@ const Account = () => {
 };
 
 // --- SUB-COMPONENTS ---
-const OrderItem = ({ icon, label, badge }: any) => (
-  <TouchableOpacity style={styles.orderItem}>
+const OrderItem = ({ icon, label, badge, onPress }: any) => (
+  <TouchableOpacity style={styles.orderItem} onPress={onPress}>
     <View>
       <Ionicons name={icon} size={scale(24)} color="#f97316" />
       {badge && <View style={styles.badge}><Text style={styles.badgeText}>{badge}</Text></View>}
