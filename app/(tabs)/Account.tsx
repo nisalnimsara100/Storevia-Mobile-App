@@ -8,7 +8,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-TouchableOpacity,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -33,27 +33,32 @@ const Account = () => {
   const [collectedVoucherCount, setCollectedVoucherCount] = useState(0);
   const profilePicture = useAuthStore((state) => state.user?.profilePicture);
 
-
   //GET STATS OF USER
   const getStats = async (email: string) => {
-    console.log("email for stats: ", email);
-    console.log("profile image:",profilePicture)
+    console.log('email for stats: ', email);
+    console.log('profile image:', profilePicture);
     try {
-      const res1 = await fetch(`${BASEURL}/api/user/followed_stores/${encodeURIComponent(email)}`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
+      const res1 = await fetch(
+        `${BASEURL}/api/user/followed_stores/${encodeURIComponent(email)}`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+          },
         },
-      });
-      const res2 = await fetch(`${BASEURL}/api/user/get_voucher/${encodeURIComponent(email)}`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
+      );
+      const res2 = await fetch(
+        `${BASEURL}/api/user/get_voucher/${encodeURIComponent(email)}`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+          },
         },
-      });
+      );
       const data1 = await res1.json();
       const data2 = await res2.json();
-      // console.log("User Stats: ", data); 
+      // console.log("User Stats: ", data);
       // console.log("User Stats: ", data2.vouchers.length);
       setFollowedStoresCount(data1.followedStores.length);
       setCollectedVoucherCount(data2.vouchers.length);
@@ -79,34 +84,43 @@ const Account = () => {
     signOut(auth).catch((error) => console.log('Error logging out: ', error));
   };
 
-
-
   // IF NOT LOGGED IN, SHOW THE LOGIN PAGE
   if (!user && !loading) {
-    return <LoginSignup onLogin={() => { }} />;
+    return <LoginSignup onLogin={() => {}} />;
   }
 
   // IF LOGGED IN, SHOW THE FULL PROFILE
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-
         {/* --- HEADER SECTION --- */}
         <View style={styles.headerContainer}>
           <View style={styles.topIcons}>
-            <TouchableOpacity onPress={() => router.push('/screens/settings_screen')}>
+            <TouchableOpacity
+              onPress={() => router.push('/screens/settings_screen')}
+            >
               <Ionicons name="settings-outline" size={scale(22)} color="#333" />
             </TouchableOpacity>
             {/* Logout button */}
             <TouchableOpacity onPress={handleLogout} style={{ marginLeft: 15 }}>
-              <Ionicons name="log-out-outline" size={scale(22)} color="#ff4d4f" />
+              <Ionicons
+                name="log-out-outline"
+                size={scale(22)}
+                color="#ff4d4f"
+              />
             </TouchableOpacity>
           </View>
 
           <View style={styles.profileRow}>
             <View style={styles.avatarContainer}>
               <Image
-                source={profilePicture ? { uri: user?.photoURL } : require('../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg')}
+                source={
+                  profilePicture
+                    ? { uri: profilePicture }
+                    : user?.photoURL
+                      ? { uri: user.photoURL }
+                      : require('../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg')
+                }
                 style={styles.profilePic}
               />
               <View style={styles.cameraIcon}>
@@ -115,10 +129,13 @@ const Account = () => {
             </View>
 
             <View style={styles.profileInfo}>
-              <Text style={styles.usernameText}>{user?.displayName || user?.email || 'Storevia User'}</Text>
+              <Text style={styles.usernameText}>
+                {user?.displayName || user?.email || 'Storevia User'}
+              </Text>
               <Text style={styles.statsText}>
                 Followed Stores ·{' '}
-                <Text style={styles.boldStat}>{followedStoresCount}</Text> Vouchers ·{' '}
+                <Text style={styles.boldStat}>{followedStoresCount}</Text>{' '}
+                Vouchers ·{' '}
                 <Text style={styles.boldStat}>{collectedVoucherCount}</Text>
               </Text>
             </View>
@@ -129,29 +146,58 @@ const Account = () => {
         <View style={styles.promoRow}>
           <View style={styles.promoCard}>
             <View style={styles.promoHeader}>
-              <Image source={{ uri: 'https://img.icons8.com/color/48/ruby.png' }} style={styles.smallIcon} />
+              <Image
+                source={{ uri: 'https://img.icons8.com/color/48/ruby.png' }}
+                style={styles.smallIcon}
+              />
               <Text style={styles.promoTitle}> Storevia Gems</Text>
             </View>
             <View style={styles.promoContentRow}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.promoSubText}>Enjoy <Text style={{ color: '#f97316', fontWeight: 'bold' }}>60% OFF</Text>{'\n'}with Gems</Text>
-                <TouchableOpacity style={styles.collectBtn}><Text style={styles.btnText}>Collect</Text></TouchableOpacity>
+                <Text style={styles.promoSubText}>
+                  Enjoy{' '}
+                  <Text style={{ color: '#f97316', fontWeight: 'bold' }}>
+                    60% OFF
+                  </Text>
+                  {'\n'}with Gems
+                </Text>
+                <TouchableOpacity style={styles.collectBtn}>
+                  <Text style={styles.btnText}>Collect</Text>
+                </TouchableOpacity>
               </View>
-              <Image source={{ uri: 'https://img.icons8.com/fluency/96/diamond.png' }} style={styles.promoImage} />
+              <Image
+                source={{
+                  uri: 'https://img.icons8.com/fluency/96/diamond.png',
+                }}
+                style={styles.promoImage}
+              />
             </View>
           </View>
 
           <View style={styles.promoCard}>
             <View style={styles.promoHeader}>
-              <Image source={{ uri: 'https://img.icons8.com/color/48/gift--v1.png' }} style={styles.smallIcon} />
+              <Image
+                source={{ uri: 'https://img.icons8.com/color/48/gift--v1.png' }}
+                style={styles.smallIcon}
+              />
               <Text style={styles.promoTitle}> Storevia Freebie</Text>
             </View>
             <View style={styles.promoContentRow}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.promoSubText}>Share, Invite &{'\n'}Win <Text style={{ color: '#f97316', fontWeight: 'bold' }}>Free Prizes!</Text></Text>
-                <TouchableOpacity style={styles.playBtn}><Text style={styles.btnText}>Play</Text></TouchableOpacity>
+                <Text style={styles.promoSubText}>
+                  Share, Invite &{'\n'}Win{' '}
+                  <Text style={{ color: '#f97316', fontWeight: 'bold' }}>
+                    Free Prizes!
+                  </Text>
+                </Text>
+                <TouchableOpacity style={styles.playBtn}>
+                  <Text style={styles.btnText}>Play</Text>
+                </TouchableOpacity>
               </View>
-              <Image source={{ uri: 'https://img.icons8.com/fluency/96/gift.png' }} style={styles.promoImage} />
+              <Image
+                source={{ uri: 'https://img.icons8.com/fluency/96/gift.png' }}
+                style={styles.promoImage}
+              />
             </View>
           </View>
         </View>
@@ -160,7 +206,9 @@ const Account = () => {
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>My Orders</Text>
-            <TouchableOpacity onPress={() => router.push('/screens/my_orders_screen')}>
+            <TouchableOpacity
+              onPress={() => router.push('/screens/my_orders_screen')}
+            >
               <Text style={styles.viewAll}>View All Orders {'>'}</Text>
             </TouchableOpacity>
           </View>
@@ -198,10 +246,15 @@ const Account = () => {
             style={styles.reviewBanner}
             onPress={() => router.push('/screens/my_reviews_screen')}
           >
-            <Image source={{ uri: 'https://img.icons8.com/fluency/96/box.png' }} style={styles.reviewThumb} />
+            <Image
+              source={{ uri: 'https://img.icons8.com/fluency/96/box.png' }}
+              style={styles.reviewThumb}
+            />
             <View style={{ flex: 1 }}>
               <Text style={styles.reviewText}>Review your purchase today!</Text>
-              <Text style={styles.reviewSubText}>Share your review with others...</Text>
+              <Text style={styles.reviewSubText}>
+                Share your review with others...
+              </Text>
             </View>
             <View style={styles.reviewBtn}>
               <Text style={styles.reviewBtnText}>Review Now</Text>
@@ -222,12 +275,29 @@ const Account = () => {
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Recently Viewed</Text>
-            <TouchableOpacity><Text style={styles.viewAll}>View More {'>'}</Text></TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.viewAll}>View More {'>'}</Text>
+            </TouchableOpacity>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <ProductCard img={require('../../assets/products/watch.jpg')} price="4,274" oldPrice="17,096" discount="75%" />
-            <ProductCard img={require('../../assets/products/wallet.png')} price="1,650" oldPrice="3,000" discount="30%" />
-            <ProductCard img={require('../../assets/products/laptop.jpg')} price="145,455" oldPrice="180,000" discount="5%" />
+            <ProductCard
+              img={require('../../assets/products/watch.jpg')}
+              price="4,274"
+              oldPrice="17,096"
+              discount="75%"
+            />
+            <ProductCard
+              img={require('../../assets/products/wallet.png')}
+              price="1,650"
+              oldPrice="3,000"
+              discount="30%"
+            />
+            <ProductCard
+              img={require('../../assets/products/laptop.jpg')}
+              price="145,455"
+              oldPrice="180,000"
+              discount="5%"
+            />
           </ScrollView>
         </View>
 
@@ -242,7 +312,11 @@ const OrderItem = ({ icon, label, badge, onPress }: any) => (
   <TouchableOpacity style={styles.orderItem} onPress={onPress}>
     <View>
       <Ionicons name={icon} size={scale(24)} color="#f97316" />
-      {badge && <View style={styles.badge}><Text style={styles.badgeText}>{badge}</Text></View>}
+      {badge && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{badge}</Text>
+        </View>
+      )}
     </View>
     <Text style={styles.orderLabel}>{label}</Text>
   </TouchableOpacity>
@@ -250,7 +324,9 @@ const OrderItem = ({ icon, label, badge, onPress }: any) => (
 
 const ProductCard = ({ img, price, oldPrice, discount }: any) => (
   <View style={styles.productCard}>
-    <View style={styles.discountBadge}><Text style={styles.discountText}>↓ {discount}</Text></View>
+    <View style={styles.discountBadge}>
+      <Text style={styles.discountText}>↓ {discount}</Text>
+    </View>
     <Image source={img} style={styles.productImg} />
     <Text style={styles.priceText}>Rs {price}</Text>
     <Text style={styles.oldPriceText}>Rs {oldPrice}</Text>
@@ -263,48 +339,186 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F1F2F4' },
   headerContainer: { backgroundColor: '#fff', padding: scale(15) },
   topIcons: { flexDirection: 'row', justifyContent: 'flex-end' },
-  profileRow: { flexDirection: 'row', alignItems: 'center', marginTop: scale(10) },
+  profileRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: scale(10),
+  },
   avatarContainer: { position: 'relative' },
-  profilePic: { width: scale(55), height: scale(55), borderRadius: scale(30), backgroundColor: '#eee' },
-  cameraIcon: { position: 'absolute', bottom: 0, right: 0, backgroundColor: '#555', borderRadius: scale(10), padding: scale(2) },
+  profilePic: {
+    width: scale(55),
+    height: scale(55),
+    borderRadius: scale(30),
+    backgroundColor: '#eee',
+  },
+  cameraIcon: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#555',
+    borderRadius: scale(10),
+    padding: scale(2),
+  },
   profileInfo: { marginLeft: scale(12) },
-  usernameText: { fontSize: responsiveFontSize(18), fontWeight: 'bold', color: '#1a1c1e' },
-  statsText: { fontSize: responsiveFontSize(10), color: '#888', marginTop: scale(2) },
+  usernameText: {
+    fontSize: responsiveFontSize(18),
+    fontWeight: 'bold',
+    color: '#1a1c1e',
+  },
+  statsText: {
+    fontSize: responsiveFontSize(10),
+    color: '#888',
+    marginTop: scale(2),
+  },
   boldStat: { color: '#333', fontWeight: 'bold' },
-  promoRow: { flexDirection: 'row', justifyContent: 'space-between', padding: scale(10) },
-  promoCard: { backgroundColor: '#fff', width: '49%', borderRadius: scale(10), borderWidth: 1, borderColor: '#e8e8e8', padding: scale(10) },
-  promoHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: scale(8) },
+  promoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: scale(10),
+  },
+  promoCard: {
+    backgroundColor: '#fff',
+    width: '49%',
+    borderRadius: scale(10),
+    borderWidth: 1,
+    borderColor: '#e8e8e8',
+    padding: scale(10),
+  },
+  promoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: scale(8),
+  },
   smallIcon: { width: scale(14), height: scale(14) },
   promoTitle: { fontWeight: 'bold', fontSize: responsiveFontSize(11) },
-  promoContentRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  promoSubText: { fontSize: responsiveFontSize(9), color: '#333', marginBottom: scale(8) },
+  promoContentRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  promoSubText: {
+    fontSize: responsiveFontSize(9),
+    color: '#333',
+    marginBottom: scale(8),
+  },
   promoImage: { width: scale(45), height: scale(45), marginLeft: 5 },
-  collectBtn: { backgroundColor: '#f97316', paddingHorizontal: scale(10), paddingVertical: scale(3), borderRadius: scale(15), alignSelf: 'flex-start' },
-  playBtn: { backgroundColor: '#f97316', paddingHorizontal: scale(12), paddingVertical: scale(3), borderRadius: scale(15), alignSelf: 'flex-start' },
-  btnText: { color: '#fff', fontSize: responsiveFontSize(9), fontWeight: 'bold' },
-  sectionCard: { backgroundColor: '#fff', marginHorizontal: scale(10), borderRadius: scale(10), borderWidth: 1, borderColor: '#e8e8e8', padding: scale(12), marginBottom: scale(10) },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: scale(12) },
+  collectBtn: {
+    backgroundColor: '#f97316',
+    paddingHorizontal: scale(10),
+    paddingVertical: scale(3),
+    borderRadius: scale(15),
+    alignSelf: 'flex-start',
+  },
+  playBtn: {
+    backgroundColor: '#f97316',
+    paddingHorizontal: scale(12),
+    paddingVertical: scale(3),
+    borderRadius: scale(15),
+    alignSelf: 'flex-start',
+  },
+  btnText: {
+    color: '#fff',
+    fontSize: responsiveFontSize(9),
+    fontWeight: 'bold',
+  },
+  sectionCard: {
+    backgroundColor: '#fff',
+    marginHorizontal: scale(10),
+    borderRadius: scale(10),
+    borderWidth: 1,
+    borderColor: '#e8e8e8',
+    padding: scale(12),
+    marginBottom: scale(10),
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: scale(12),
+  },
   sectionTitle: { fontWeight: 'bold', fontSize: responsiveFontSize(13) },
   viewAll: { fontSize: responsiveFontSize(10), color: '#999' },
   orderIconsRow: { flexDirection: 'row', justifyContent: 'space-between' },
   orderItem: { alignItems: 'center', width: '19%' },
-  orderLabel: { fontSize: responsiveFontSize(8.5), textAlign: 'center', marginTop: scale(5), color: '#333' },
-  badge: { position: 'absolute', right: scale(-4), top: scale(-4), backgroundColor: '#ff4d4f', borderRadius: scale(8), width: scale(14), height: scale(14), justifyContent: 'center', alignItems: 'center' },
+  orderLabel: {
+    fontSize: responsiveFontSize(8.5),
+    textAlign: 'center',
+    marginTop: scale(5),
+    color: '#333',
+  },
+  badge: {
+    position: 'absolute',
+    right: scale(-4),
+    top: scale(-4),
+    backgroundColor: '#ff4d4f',
+    borderRadius: scale(8),
+    width: scale(14),
+    height: scale(14),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   badgeText: { color: 'white', fontSize: scale(8), fontWeight: 'bold' },
-  reviewBanner: { flexDirection: 'row', alignItems: 'center', marginTop: scale(15), paddingTop: scale(10), borderTopWidth: 0.5, borderTopColor: '#eee' },
-  reviewThumb: { width: scale(35), height: scale(35), marginRight: scale(10), borderRadius: 4 },
-  reviewText: { fontSize: responsiveFontSize(11), fontWeight: 'bold', color: '#333' },
+  reviewBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: scale(15),
+    paddingTop: scale(10),
+    borderTopWidth: 0.5,
+    borderTopColor: '#eee',
+  },
+  reviewThumb: {
+    width: scale(35),
+    height: scale(35),
+    marginRight: scale(10),
+    borderRadius: 4,
+  },
+  reviewText: {
+    fontSize: responsiveFontSize(11),
+    fontWeight: 'bold',
+    color: '#333',
+  },
   reviewSubText: { color: '#999', fontSize: responsiveFontSize(9) },
-  reviewBtn: { borderWidth: 1, borderColor: '#f97316', paddingHorizontal: scale(8), paddingVertical: scale(4), borderRadius: scale(4) },
-  reviewBtnText: { color: '#f97316', fontSize: responsiveFontSize(9), fontWeight: 'bold' },
+  reviewBtn: {
+    borderWidth: 1,
+    borderColor: '#f97316',
+    paddingHorizontal: scale(8),
+    paddingVertical: scale(4),
+    borderRadius: scale(4),
+  },
+  reviewBtnText: {
+    color: '#f97316',
+    fontSize: responsiveFontSize(9),
+    fontWeight: 'bold',
+  },
   bannerWrapper: { marginHorizontal: scale(10), marginBottom: scale(10) },
   adBanner: { width: '100%', height: scale(150), borderRadius: scale(8) },
   productCard: { width: scale(95), marginRight: scale(15) },
-  productImg: { width: scale(95), height: scale(95), borderRadius: 4, backgroundColor: '#f9f9f9' },
-  discountBadge: { position: 'absolute', top: 5, left: 5, backgroundColor: '#ff4d4f', paddingHorizontal: 4, borderRadius: 2, zIndex: 1 },
+  productImg: {
+    width: scale(95),
+    height: scale(95),
+    borderRadius: 4,
+    backgroundColor: '#f9f9f9',
+  },
+  discountBadge: {
+    position: 'absolute',
+    top: 5,
+    left: 5,
+    backgroundColor: '#ff4d4f',
+    paddingHorizontal: 4,
+    borderRadius: 2,
+    zIndex: 1,
+  },
   discountText: { color: '#fff', fontSize: 8, fontWeight: 'bold' },
-  priceText: { fontSize: 11, fontWeight: 'bold', color: '#ff4d4f', marginTop: 5 },
-  oldPriceText: { fontSize: 9, color: '#999', textDecorationLine: 'line-through' },
+  priceText: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#ff4d4f',
+    marginTop: 5,
+  },
+  oldPriceText: {
+    fontSize: 9,
+    color: '#999',
+    textDecorationLine: 'line-through',
+  },
 });
 
 export default Account;
