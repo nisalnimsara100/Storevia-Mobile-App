@@ -32,6 +32,7 @@ const Account = () => {
   const [followedStoresCount, setFollowedStoresCount] = useState(0);
   const [collectedVoucherCount, setCollectedVoucherCount] = useState(0);
   const profilePicture = useAuthStore((state) => state.user?.profilePicture);
+  const [personalizedProducts, setPersonalizedProducts] = useState<any[]>([]);
 
   //GET STATS OF USER
   const getStats = async (email: string) => {
@@ -80,6 +81,56 @@ const Account = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const email = user?.email;
+    if (!email) {
+      setPersonalizedProducts([]);
+      return;
+    }
+
+    const fetchPersonalizedProducts = async () => {
+      try {
+        const response = await fetch(`${BASEURL}/api/products/personalized`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        });
+
+        const data = await response.json();
+        const raw = data?.products || data?.data?.products || data?.data || [];
+
+        if (Array.isArray(raw)) {
+          // Just grab the first 6 products, adapting your transformation lightly 
+          // without relying on undefined external helpers.
+          const transformed = raw.map((p: any) => {
+            const price = parseFloat(p.product_price ?? p.price ?? '0');
+            const originalPrice = parseFloat(p.originalPrice ?? p.product_originalPrice ?? '0');
+            return {
+              ...p,
+              product_image: p.product_image || p.image,
+              price: price,
+              originalPrice: originalPrice > price ? originalPrice : undefined,
+            };
+          });
+          const inStockProducts = transformed.filter((p: any) => 
+            p.product_stock === undefined || Number(p.product_stock) > 0
+          );
+          setPersonalizedProducts(inStockProducts.slice(0, 6));
+        } else {
+          setPersonalizedProducts([]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch personalized products:', error);
+        setPersonalizedProducts([]);
+      }
+    };
+
+    fetchPersonalizedProducts();
+  }, [user?.email]);
+
   const handleLogout = () => {
     signOut(auth).catch((error) => console.log('Error logging out: ', error));
   };
@@ -120,7 +171,7 @@ const Account = () => {
                     : user?.photoURL
                       ? { uri: user.photoURL }
                       : require('../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg')
-                }
+                }   
                 style={styles.profilePic}
               />
               <View style={styles.cameraIcon}>
@@ -272,34 +323,59 @@ const Account = () => {
         </View>
 
         {/* --- RECENTLY VIEWED --- */}
-        <View style={styles.sectionCard}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recently Viewed</Text>
-            <TouchableOpacity>
-              <Text style={styles.viewAll}>View More {'>'}</Text>
-            </TouchableOpacity>
+        {user && (
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Recently Viewed</Text>
+              <TouchableOpacity>
+                <Text style={styles.viewAll}>View More {'>'}</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {personalizedProducts.length > 0 ? (
+                personalizedProducts.map((p, index) => {
+                  const discount = p.originalPrice 
+                    ? `${Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}%` 
+                    : undefined;
+                  return (
+                    <ProductCard
+                      key={index}
+                      title={p.product_name || p.name}
+                      img={{ uri: p.product_image || 'https://via.placeholder.com/150' }}
+                      price={p.price.toLocaleString()}
+                      oldPrice={p.originalPrice ? p.originalPrice.toLocaleString() : undefined}
+                      discount={discount}
+                    />
+                  );
+                })
+              ) : (
+                <>
+                  <ProductCard
+                    title="Luxury Watch"
+                    img={require('../../assets/products/watch.jpg')}
+                    price="4,274"
+                    oldPrice="17,096"
+                    discount="75%"
+                  />
+                  <ProductCard
+                    title="Leather Wallet"
+                    img={require('../../assets/products/wallet.png')}
+                    price="1,650"
+                    oldPrice="3,000"
+                    discount="30%"
+                  />
+                  <ProductCard
+                    title="Gaming Laptop"
+                    img={require('../../assets/products/laptop.jpg')}
+                    price="145,455"
+                    oldPrice="180,000"
+                    discount="5%"
+                  />
+                </>
+              )}
+            </ScrollView>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <ProductCard
-              img={require('../../assets/products/watch.jpg')}
-              price="4,274"
-              oldPrice="17,096"
-              discount="75%"
-            />
-            <ProductCard
-              img={require('../../assets/products/wallet.png')}
-              price="1,650"
-              oldPrice="3,000"
-              discount="30%"
-            />
-            <ProductCard
-              img={require('../../assets/products/laptop.jpg')}
-              price="145,455"
-              oldPrice="180,000"
-              discount="5%"
-            />
-          </ScrollView>
-        </View>
+        )}
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -322,14 +398,27 @@ const OrderItem = ({ icon, label, badge, onPress }: any) => (
   </TouchableOpacity>
 );
 
-const ProductCard = ({ img, price, oldPrice, discount }: any) => (
+const ProductCard = ({ img, title, price, oldPrice, discount }: any) => (
   <View style={styles.productCard}>
-    <View style={styles.discountBadge}>
-      <Text style={styles.discountText}>↓ {discount}</Text>
+    <View style={styles.imageContainer}>
+      {discount ? (
+        <View style={styles.discountBadge}>
+          <Text style={styles.discountText}>-{discount}</Text>
+        </View>
+      ) : null}
+      <Image source={img} style={styles.productImg} resizeMode="cover" />
     </View>
-    <Image source={img} style={styles.productImg} />
-    <Text style={styles.priceText}>Rs {price}</Text>
-    <Text style={styles.oldPriceText}>Rs {oldPrice}</Text>
+    <View style={styles.productInfo}>
+      {title ? (
+        <Text style={styles.productTitle} numberOfLines={2}>
+          {title}
+        </Text>
+      ) : null}
+      <View style={styles.priceRow}>
+        <Text style={styles.priceText}>Rs {price}</Text>
+        {oldPrice ? <Text style={styles.oldPriceText}>Rs {oldPrice}</Text> : null}
+      </View>
+    </View>
   </View>
 );
 
@@ -491,31 +580,58 @@ const styles = StyleSheet.create({
   },
   bannerWrapper: { marginHorizontal: scale(10), marginBottom: scale(10) },
   adBanner: { width: '100%', height: scale(150), borderRadius: scale(8) },
-  productCard: { width: scale(95), marginRight: scale(15) },
-  productImg: {
-    width: scale(95),
-    height: scale(95),
-    borderRadius: 4,
+  productCard: {
+    width: scale(120),
+    marginRight: scale(12),
+    backgroundColor: '#fff',
+    borderRadius: scale(8),
+    borderWidth: 1,
+    borderColor: '#f0f0f0',
+    overflow: 'hidden',
+  },
+  imageContainer: {
+    width: '100%',
+    height: scale(110),
     backgroundColor: '#f9f9f9',
+    position: 'relative',
+  },
+  productImg: {
+    width: '100%',
+    height: '100%',
   },
   discountBadge: {
     position: 'absolute',
-    top: 5,
-    left: 5,
-    backgroundColor: '#ff4d4f',
-    paddingHorizontal: 4,
-    borderRadius: 2,
+    top: scale(6),
+    left: scale(6),
+    backgroundColor: '#f97316',
+    paddingHorizontal: scale(6),
+    paddingVertical: scale(2),
+    borderRadius: scale(4),
     zIndex: 1,
   },
-  discountText: { color: '#fff', fontSize: 8, fontWeight: 'bold' },
+  discountText: { color: '#fff', fontSize: responsiveFontSize(8), fontWeight: 'bold' },
+  productInfo: {
+    padding: scale(8),
+  },
+  productTitle: {
+    fontSize: responsiveFontSize(10),
+    color: '#333',
+    marginBottom: scale(4),
+    lineHeight: scale(14),
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
   priceText: {
-    fontSize: 11,
+    fontSize: responsiveFontSize(11),
     fontWeight: 'bold',
-    color: '#ff4d4f',
-    marginTop: 5,
+    color: '#f97316',
+    marginRight: scale(4),
   },
   oldPriceText: {
-    fontSize: 9,
+    fontSize: responsiveFontSize(9),
     color: '#999',
     textDecorationLine: 'line-through',
   },
