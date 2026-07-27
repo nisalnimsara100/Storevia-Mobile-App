@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Import JSON data directly
 import messagesData from '../../data/messagesData.json';
@@ -66,6 +66,7 @@ const Messages: React.FC = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   
   const autoUpdateInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const insets = useSafeAreaInsets();
 
   
   const formatDate = (dateString: string | Date): string => {
@@ -356,9 +357,9 @@ const Messages: React.FC = () => {
   const hasMessages = promotionMessages.length > 0 || orderMessages.length > 0 || deliveryMessages.length > 0;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={[]}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.headerTitle}>Messages</Text>
         {hasMessages && (
           <TouchableOpacity onPress={handleMarkAllAsRead}>
@@ -417,7 +418,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingBottom: 12,
     backgroundColor: '#f97316',
   },
   headerTitle: {

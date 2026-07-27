@@ -219,7 +219,7 @@ const Home = () => {
                 <Text style={styles.searchButtonText}>Search</Text>
               </View>
             </TouchableOpacity>
-            <Link href={'/screen_navigation' as any} asChild>
+            <Link href={'/(tabs)/Messages' as any} asChild>
               <TouchableOpacity style={styles.payButton}>
                 <Text style={styles.payText}>Pay</Text>
               </TouchableOpacity>
