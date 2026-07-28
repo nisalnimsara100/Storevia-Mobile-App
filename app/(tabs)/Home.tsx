@@ -275,7 +275,7 @@ const Home = () => {
                 return (
                   <TouchableOpacity
                     activeOpacity={0.85}
-                    onPress={() => console.log(`${item.name} clicked`)}
+                    onPress={() => router.push(`/search?param=${encodeURIComponent(item.name)}`)}
                     style={styles.categoryTile}
                   >
                     <View
