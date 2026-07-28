@@ -69,7 +69,7 @@ const Home = () => {
   const [products, setProducts] = useState<any[]>([]);
   useEffect(() => {
     const fetchProducts = async () => {
-      console.log('Base URL:', BASE_URL);
+      // console.log('Base URL:', BASE_URL);
       const API_URL = `${BASE_URL}/api/products`;
       const res = await fetch(API_URL);
       const data = await res.json();

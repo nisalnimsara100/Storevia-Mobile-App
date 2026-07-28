@@ -40,7 +40,7 @@ export default function SearchResultsScreen() {
   }, [param]);
 
   const fetchResults = async (keyword: string) => {
-    console.log("Keyword: ", keyword);
+    // console.log("Keyword: ", keyword);
     setLoading(true);
     try {
       const res = await fetch(`${baseUrl}/api/searched_products/${encodeURIComponent(keyword)}`, {
