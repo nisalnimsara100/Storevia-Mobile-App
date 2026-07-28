@@ -13,6 +13,7 @@ interface ProductItem {
   rating?: number;
   reviews?: number;
   sold?: number;
+  cod?: number;
 }
 
 export default function ProductCard({ item }: { item: ProductItem }) {
@@ -24,6 +25,8 @@ export default function ProductCard({ item }: { item: ProductItem }) {
       params: { itemId: item.id.toString() },
     });
   };
+
+  console.log(item);
 
   return (
     <TouchableOpacity
@@ -43,20 +46,22 @@ export default function ProductCard({ item }: { item: ProductItem }) {
           style={{ width: '100%', height: 112, borderRadius: 6 }}
           resizeMode="contain"
         />
-        <View style={{ position: 'absolute', bottom: 4, left: 4 }}>
-          <Text
-            style={{
-              fontSize: 10,
-              backgroundColor: '#fff7ed',
-              color: '#f97316',
-              paddingHorizontal: 4,
-              paddingVertical: 2,
-              borderRadius: 4,
-            }}
-          >
-            FREE DELIVERY
-          </Text>
-        </View>
+        {Number(item.cod) === 0 && (
+          <View style={{ position: 'absolute', bottom: 4, left: 4 }}>
+            <Text
+              style={{
+                fontSize: 10,
+                backgroundColor: '#fff7ed',
+                color: '#f97316',
+                paddingHorizontal: 4,
+                paddingVertical: 2,
+                borderRadius: 4,
+              }}
+            >
+              FREE DELIVERY
+            </Text>
+          </View>
+        )}
       </View>
 
       <Text

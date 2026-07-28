@@ -20,9 +20,9 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ProductCard from '../components/ProductCard';
 import { useAuth } from '../context/authContext';
 import { useAuthStore } from '../stores/useAuthStore';
-import ProductCard from '../components/ProductCard';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -64,6 +64,44 @@ const LoginSignup = ({ onLogin }: Props) => {
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const baseUrl = process.env.EXPO_PUBLIC_APP_BASE_URL;
+
+  const [topRatedProducts, setTopRatedProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchTopRatedProducts = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/api/top-rated`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        });
+        const data = await response.json();
+        const raw = data?.products || data?.data?.products || data?.data || data || [];
+        if (Array.isArray(raw)) {
+          const transformed = raw.map((p: any) => {
+            const price = parseFloat(p.product_price ?? p.price ?? '0');
+            const originalPrice = parseFloat(p.originalPrice ?? p.product_originalPrice ?? '0');
+            return {
+              ...p,
+              product_image: p.product_image || p.image,
+              price: price,
+              originalPrice: originalPrice > price ? originalPrice : undefined,
+            };
+          });
+          const inStockProducts = transformed.filter((p: any) =>
+            p.product_stock === undefined || Number(p.product_stock) > 0
+          );
+          setTopRatedProducts(inStockProducts.slice(0, 6));
+        }
+      } catch (error) {
+        console.error('Failed to fetch top-rated products:', error);
+      }
+    };
+
+    fetchTopRatedProducts();
+  }, [baseUrl]);
 
   // 🔐 Handle Email/Password Login
   const handleLogin = async () => {
@@ -330,7 +368,7 @@ const LoginSignup = ({ onLogin }: Props) => {
           </View>
         </View>
 
-       {/* --- PROMO SECTION (Updated UI) --- */}
+        {/* --- PROMO SECTION (Updated UI) --- */}
         <View style={styles.promoRow}>
           <View style={styles.promoCard}>
             <View style={styles.promoHeader}>
@@ -381,40 +419,75 @@ const LoginSignup = ({ onLogin }: Props) => {
         */}
 
         {/* --- RECENTLY VIEWED --- */}
-<View style={styles.sectionCard}>
-  <View style={styles.sectionHeader}>
-    <Text style={styles.sectionTitle}>Recently Viewed</Text>
-    <TouchableOpacity>
-      <Text style={styles.viewAllText}>View More {'>'}</Text>
-    </TouchableOpacity>
-  </View>
-  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-    <ProductCard 
-      item={{
-        image: require('../../assets/products/watch.jpg'),
-        price: 4274,
-        oldPrice: 17096,
-        discount: 75
-      }}
-    />
-    <ProductCard 
-      item={{
-        image: require('../../assets/products/wallet.png'),
-        price: 1650,
-        oldPrice: 3000,
-        discount: 30
-      }}
-    />
-    <ProductCard 
-      item={{
-        image: require('../../assets/products/laptop.jpg'),
-        price: 145455,
-        oldPrice: 180000,
-        discount: 5
-      }}
-    />
-  </ScrollView>
-</View>
+        <View style={styles.sectionCard}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Top Rated Products</Text>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {topRatedProducts.length > 0 ? (
+              topRatedProducts.map((p, index) => {
+                const discount = p.originalPrice
+                  ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)
+                  : undefined;
+                  console.log(p)
+                return (
+                  <View key={index} style={{ width: 150 }}>
+                    <ProductCard
+                      item={{
+                        id: p.id || p.product_id || index,
+                        image: p.product_image ? { uri: p.product_image } : require('../../assets/products/watch.jpg'),
+                        name: p.product_name || p.name || 'Product',
+                        price: p.price,
+                        oldPrice: p.originalPrice,
+                        discount: p.product_discount,
+                        cod:p.product_cod
+                      }}
+                    />
+                  </View>
+                );
+              })
+            ) : (
+              <>
+                <View style={{ width: 150 }}>
+                  <ProductCard
+                    item={{
+                      id: 1,
+                      image: require('../../assets/products/watch.jpg'),
+                      name: 'Luxury Watch',
+                      price: 4274,
+                      oldPrice: 17096,
+                      discount: 75
+                    }}
+                  />
+                </View>
+                <View style={{ width: 150 }}>
+                  <ProductCard
+                    item={{
+                      id: 2,
+                      image: require('../../assets/products/wallet.png'),
+                      name: 'Leather Wallet',
+                      price: 1650,
+                      oldPrice: 3000,
+                      discount: 30
+                    }}
+                  />
+                </View>
+                <View style={{ width: 150 }}>
+                  <ProductCard
+                    item={{
+                      id: 3,
+                      image: require('../../assets/products/laptop.jpg'),
+                      name: 'Gaming Laptop',
+                      price: 145455,
+                      oldPrice: 180000,
+                      discount: 5
+                    }}
+                  />
+                </View>
+              </>
+            )}
+          </ScrollView>
+        </View>
 
         {/* --- TOOLS GRID (Updated UI) --- */}
         <View style={styles.gridContainer}>
