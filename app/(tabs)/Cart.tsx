@@ -105,6 +105,9 @@ const Cart = () => {
     console.log('Fetching cart for user from zustand:', user?.email);
     const email = user?.email;
     if (!email) {
+      setLoading(false);
+      setCartData([]);
+      setCartCount(0);
       return;
     }
     console.log('Fetching cart for email:', email);
@@ -544,7 +547,7 @@ const Cart = () => {
               marginBottom: vs(8),
             }}
           >
-            Your cart is empty
+            {user ? 'Your cart is empty' : 'Login to view your cart'}
           </Text>
           <Text
             style={{
@@ -555,8 +558,9 @@ const Cart = () => {
               lineHeight: s(20),
             }}
           >
-            Looks like you haven't added anything yet. Start exploring and find
-            something you love!
+            {user 
+              ? "Looks like you haven't added anything yet. Start exploring and find something you love!"
+              : "Please login first to view your cart and start shopping with Storevia!"}
           </Text>
           <TouchableOpacity
             style={{
@@ -565,12 +569,12 @@ const Cart = () => {
               paddingVertical: vs(12),
               borderRadius: s(8),
             }}
-            onPress={() => router.push('/(tabs)/Home')}
+            onPress={() => user ? router.push('/(tabs)/Home') : router.push('/(tabs)/Account')}
           >
             <Text
               style={{ color: '#fff', fontSize: s(15), fontWeight: '700' }}
             >
-              Start Shopping
+              {user ? 'Start Shopping' : 'Login First'}
             </Text>
           </TouchableOpacity>
         </View>

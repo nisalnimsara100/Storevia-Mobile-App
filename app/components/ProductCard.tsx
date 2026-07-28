@@ -26,8 +26,6 @@ export default function ProductCard({ item }: { item: ProductItem }) {
     });
   };
 
-  console.log(item);
-
   return (
     <TouchableOpacity
       style={{

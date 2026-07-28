@@ -4,6 +4,7 @@ import * as Google from 'expo-auth-session/providers/google';
 import Constants, { AppOwnership } from 'expo-constants';
 import * as Crypto from 'expo-crypto';
 import * as WebBrowser from 'expo-web-browser';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -344,9 +345,12 @@ const LoginSignup = ({ onLogin }: Props) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* --- HEADER (Original UI) --- */}
         <View style={styles.header}>
-          <View style={styles.settingsIcon}>
+          <TouchableOpacity 
+            style={styles.settingsIcon}
+            onPress={() => router.push('/screens/settings_screen')}
+          >
             <Ionicons name="settings-outline" size={scale(22)} color="#333" />
-          </View>
+          </TouchableOpacity>
 
           <Text style={styles.welcomeText}>Hello, Welcome to Storevia !</Text>
 
