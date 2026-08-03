@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
 import { useState } from 'react';
@@ -11,6 +10,7 @@ import {
 } from 'react-native';
 import CountryPicker from 'react-native-country-picker-modal';
 import MenuItem from '../../components/MenuItem';
+import { ScreenHeader } from '@/components/ui';
 
 const SettingsScreen = () => {
   const [countryCode, setCountryCode] =
@@ -28,12 +28,8 @@ const SettingsScreen = () => {
   }, []);
   return (
     <View className="flex-1 bg-gray-100 mt-[10%]">
-      <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-200 bg-white">
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
-        <Text className="text-lg font-bold text-center">Settings</Text>
-        <Text className="text-lg font-bold text-center"></Text> {/* don't remove */}
+      <View className="border-b border-gray-200 bg-white">
+        <ScreenHeader title="Settings" onBack={() => router.back()} />
       </View>
 
       <ScrollView
@@ -56,7 +52,9 @@ const SettingsScreen = () => {
         <MenuItem
           title="Messages"
           subtitle="Receive exclusive offers and personal updates"
-          onPress={()=> router.push('/screens/settings_screen/MessageSettings')}
+          onPress={() =>
+            router.push('/screens/settings_screen/MessageSettings')
+          }
         />
         <MenuItem
           title="Country"
@@ -85,8 +83,11 @@ const SettingsScreen = () => {
           title="භාෂාව - Language"
           subtitle="English is your current language"
         />
-        <MenuItem title="Account Security" 
-        onPress={()=> router.push('/screens/settings_screen/AccountSecurity')}
+        <MenuItem
+          title="Account Security"
+          onPress={() =>
+            router.push('/screens/settings_screen/AccountSecurity')
+          }
         />
         <MenuItem
           title="Policies"

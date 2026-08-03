@@ -24,7 +24,9 @@ const History = () => {
     return (
       <View style={styles.stateContainer}>
         <Ionicons name="time-outline" size={40} color="#ccc" />
-        <Text style={styles.stateText}>You haven&apos;t written any reviews yet.</Text>
+        <Text style={styles.stateText}>
+          You haven&apos;t written any reviews yet.
+        </Text>
       </View>
     );
   }
@@ -38,7 +40,10 @@ const History = () => {
       {submittedReviews.map((review) => (
         <View key={review.key} style={styles.card}>
           <View style={styles.productRow}>
-            <Image source={{ uri: review.productImage }} style={styles.productImage} />
+            <Image
+              source={{ uri: review.productImage }}
+              style={styles.productImage}
+            />
             <View style={styles.productInfo}>
               <Text style={styles.productName} numberOfLines={2}>
                 {review.productName}
@@ -47,10 +52,16 @@ const History = () => {
             </View>
           </View>
 
-          {review.comment.length > 0 && <Text style={styles.comment}>{review.comment}</Text>}
+          {review.comment.length > 0 && (
+            <Text style={styles.comment}>{review.comment}</Text>
+          )}
 
           {review.images.length > 0 && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imagesRow}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.imagesRow}
+            >
               {review.images.map((uri, idx) => (
                 <Image key={idx} source={{ uri }} style={styles.reviewImage} />
               ))}
@@ -58,7 +69,9 @@ const History = () => {
           )}
 
           <View style={styles.footerRow}>
-            <Text style={styles.gemsEarned}>+{review.gemsEarned} Gems earned</Text>
+            <Text style={styles.gemsEarned}>
+              +{review.gemsEarned} Gems earned
+            </Text>
             <Text style={styles.date}>{review.createdAt}</Text>
           </View>
         </View>

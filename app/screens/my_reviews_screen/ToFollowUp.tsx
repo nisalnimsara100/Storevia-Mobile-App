@@ -8,7 +8,8 @@ const ToFollowUp = () => {
       <Ionicons name="chatbubbles-outline" size={40} color="#ccc" />
       <Text style={styles.text}>No items need a follow-up right now.</Text>
       <Text style={styles.subText}>
-        If a seller replies to your review, you can add a follow-up comment here.
+        If a seller replies to your review, you can add a follow-up comment
+        here.
       </Text>
     </View>
   );

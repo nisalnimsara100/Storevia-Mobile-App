@@ -15,7 +15,7 @@ const ItemDetailsLayout = () => {
               style={styles.backButton}
               onPress={() => router.back()}
             >
-              <Ionicons name="arrow-back" size={24} color="#333" />
+              <Ionicons name="chevron-back" size={24} color="#333" />
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.searchBar} activeOpacity={0.8}>

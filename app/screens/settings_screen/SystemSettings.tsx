@@ -1,15 +1,8 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  RefreshControl,
-  Switch,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, ScrollView, RefreshControl, Switch } from 'react-native';
 import { router } from 'expo-router';
 import MenuItem from '../../components/MenuItem';
+import { ScreenHeader } from '@/components/ui';
 
 export const SystemSettings = () => {
   const [locationEnabled, setLocationEnabled] = React.useState(false);
@@ -33,13 +26,8 @@ export const SystemSettings = () => {
   };
   return (
     <View className="flex-1 bg-gray-100 mt-[10%]">
-      <View className="flex-row items-center gap-4 px-4 py-4 border-b border-gray-200 bg-white">
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
-        <Text className="text-lg font-bold text-center">System Settings</Text>
-        <Text className="text-lg font-bold text-center"></Text>{' '}
-        {/* don't remove */}
+      <View className="border-b border-gray-200 bg-white">
+        <ScreenHeader title="System Settings" onBack={() => router.back()} />
       </View>
       <ScrollView
         className="flex-1 mt-5"

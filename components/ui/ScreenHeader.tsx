@@ -10,12 +10,21 @@ export interface ScreenHeaderProps {
   transparent?: boolean;
 }
 
-export function ScreenHeader({ title, onBack, rightAction, transparent = false }: ScreenHeaderProps) {
+export function ScreenHeader({
+  title,
+  onBack,
+  rightAction,
+  transparent = false,
+}: ScreenHeaderProps) {
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: transparent ? 'transparent' : theme.color.background.DEFAULT },
+        {
+          backgroundColor: transparent
+            ? 'transparent'
+            : theme.color.background.DEFAULT,
+        },
       ]}
     >
       <View style={styles.side}>
@@ -25,7 +34,11 @@ export function ScreenHeader({ title, onBack, rightAction, transparent = false }
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             style={styles.backButton}
           >
-            <Ionicons name="chevron-back" size={24} color={theme.color.text.primary} />
+            <Ionicons
+              name="chevron-back"
+              size={24}
+              color={theme.color.text.primary}
+            />
           </TouchableOpacity>
         )}
       </View>

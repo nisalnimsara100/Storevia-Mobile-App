@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useState, useEffect } from 'react';
+import React, { createContext, ReactNode, useState } from 'react';
 import { useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { useAuthStore } from '@/app/stores/useAuthStore';
@@ -20,7 +20,9 @@ export interface CartContextType {
   logoutCartClear: () => void;
 }
 
-export const CartContext = createContext<CartContextType | undefined>(undefined);
+export const CartContext = createContext<CartContextType | undefined>(
+  undefined,
+);
 
 interface CartProviderProps {
   children: ReactNode;
@@ -80,12 +82,15 @@ export const CartProvider = ({ children }: CartProviderProps) => {
 
     const cartItem = { ...product, quantity: qty };
     const productId = cartItem.product_id || cartItem.id;
-    const existingIndex = cart.findIndex((item) => (item.product_id || item.id) === productId);
+    const existingIndex = cart.findIndex(
+      (item) => (item.product_id || item.id) === productId,
+    );
 
     let newCart = [...cart];
 
     if (existingIndex !== -1) {
-      newCart[existingIndex].quantity = (newCart[existingIndex].quantity || 1) + qty;
+      newCart[existingIndex].quantity =
+        (newCart[existingIndex].quantity || 1) + qty;
       setCart(newCart);
     } else {
       newCart.push(cartItem);
@@ -115,15 +120,19 @@ export const CartProvider = ({ children }: CartProviderProps) => {
           product_image: item.image?.uri || item.image,
           product_price: item.price,
           product_cod: item.product_cod_price || item.product_cod,
-          product_original_price: item.originalPrice || item.product_original_price,
+          product_original_price:
+            item.originalPrice || item.product_original_price,
           product_quantity: item.quantity,
           stock_available: item.stock || item.stock_available,
           product_category: item.category || item.product_category,
           product_discount: item.discount || item.product_discount,
-          product_store_name: item.store || item.store_name || item.product_store_name,
+          product_store_name:
+            item.store || item.store_name || item.product_store_name,
           product_store_id: item.store_id || item.product_store_id,
-          product_selected_color: item.selectedColor || item.product_selected_color,
-          product_selected_size: item.selectedSize || item.product_selected_size,
+          product_selected_color:
+            item.selectedColor || item.product_selected_color,
+          product_selected_size:
+            item.selectedSize || item.product_selected_size,
         }),
       });
 

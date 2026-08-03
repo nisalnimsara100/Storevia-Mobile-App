@@ -1,6 +1,6 @@
-import * as React from "react";
-import { TouchableOpacity, Text, View } from "react-native";
-import CountryFlag from "react-native-country-flag";
+import * as React from 'react';
+import { TouchableOpacity, Text, View } from 'react-native';
+import CountryFlag from 'react-native-country-flag';
 
 type MenuItemProps = {
   title: string;
@@ -9,7 +9,12 @@ type MenuItemProps = {
   flag?: string;
 };
 
-const MenuItem: React.FC<MenuItemProps> = ({ title, subtitle, onPress, flag }) => {
+const MenuItem: React.FC<MenuItemProps> = ({
+  title,
+  subtitle,
+  onPress,
+  flag,
+}) => {
   return (
     <TouchableOpacity
       onPress={onPress}

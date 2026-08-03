@@ -48,9 +48,8 @@ const TabScreen = () => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.headerRow}>
         <View style={styles.leftHeader}>
-          {/* <Ionicons name="chevron-back" size={scale(22)} color="#000" /> */}
           <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="black" />
+            <Ionicons name="chevron-back" size={24} color="black" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Activities</Text>
         </View>

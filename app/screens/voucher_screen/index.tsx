@@ -52,7 +52,10 @@ interface Voucher {
   amountLabel: string;
 }
 
-const THEME: Record<Theme, { accent: string; soft: string; watermark: string }> = {
+const THEME: Record<
+  Theme,
+  { accent: string; soft: string; watermark: string }
+> = {
   pink: { accent: '#ec4899', soft: '#fdf2f8', watermark: '#fce7f3' },
   teal: { accent: '#0d9488', soft: '#f0fdfa', watermark: '#cffafe' },
 };
@@ -121,20 +124,29 @@ const VoucherScreen = () => {
         const adminVouchers = result.vouchers?.admin_vouchers ?? {};
 
         // shipping: seller + admin shipping arrays
-        const sellerShipping: VoucherAPIResponse[] = sellerVouchers.shipping ?? [];
-        const adminShipping: VoucherAPIResponse[] = adminVouchers.shipping ?? [];
+        const sellerShipping: VoucherAPIResponse[] =
+          sellerVouchers.shipping ?? [];
+        const adminShipping: VoucherAPIResponse[] =
+          adminVouchers.shipping ?? [];
 
         // product/saving: seller + admin product + admin_all + admin_selected arrays
-        const sellerProduct: VoucherAPIResponse[] = sellerVouchers.product ?? [];
+        const sellerProduct: VoucherAPIResponse[] =
+          sellerVouchers.product ?? [];
         const adminProduct: VoucherAPIResponse[] = adminVouchers.product ?? [];
         const adminAll: VoucherAPIResponse[] = adminVouchers.admin_all ?? [];
-        const adminSelected: VoucherAPIResponse[] = adminVouchers.admin_selected ?? [];
+        const adminSelected: VoucherAPIResponse[] =
+          adminVouchers.admin_selected ?? [];
 
         setShippingVouchers(
           [...sellerShipping, ...adminShipping].map(parseVoucher),
         );
         setSavingVouchers(
-          [...sellerProduct, ...adminProduct, ...adminAll, ...adminSelected].map(parseVoucher),
+          [
+            ...sellerProduct,
+            ...adminProduct,
+            ...adminAll,
+            ...adminSelected,
+          ].map(parseVoucher),
         );
       } catch (error) {
         console.error('Error fetching vouchers:', error);
@@ -147,7 +159,10 @@ const VoucherScreen = () => {
     fetchVouchers();
   }, [user?.email]);
 
-  const collectVoucher = async (voucherCode: string, storeId: number | null | undefined) => {
+  const collectVoucher = async (
+    voucherCode: string,
+    storeId: number | null | undefined,
+  ) => {
     const userEmail = user?.email;
     if (!userEmail) {
       Alert.alert('Error', 'Please log in to collect vouchers');
@@ -191,7 +206,9 @@ const VoucherScreen = () => {
           style={{ color: t.watermark }}
           className="absolute top-3 right-2 text-3xl font-extrabold"
         >
-          {voucher.voucherType === 'shipping' ? 'FREE SHIPPING' : 'STOREVIA VOUCHER'}
+          {voucher.voucherType === 'shipping'
+            ? 'FREE SHIPPING'
+            : 'STOREVIA VOUCHER'}
         </Text>
 
         <View className="flex-row">
@@ -206,7 +223,10 @@ const VoucherScreen = () => {
             }}
           >
             <View className="flex-row items-baseline">
-              <Text className="text-2xl font-extrabold" style={{ color: accent }}>
+              <Text
+                className="text-2xl font-extrabold"
+                style={{ color: accent }}
+              >
                 {voucher.amountLabel}
               </Text>
             </View>
@@ -261,7 +281,9 @@ const VoucherScreen = () => {
               ) : (
                 <TouchableOpacity
                   activeOpacity={0.85}
-                  onPress={() => collectVoucher(voucher.voucherCode, voucher.storeID)}
+                  onPress={() =>
+                    collectVoucher(voucher.voucherCode, voucher.storeID)
+                  }
                   className="px-5 py-2 rounded-lg"
                   style={{ backgroundColor: accent }}
                 >

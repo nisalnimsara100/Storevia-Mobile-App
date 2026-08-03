@@ -40,7 +40,9 @@ export function Input({
           styles.field,
           {
             height: HEIGHTS[size],
-            borderColor: error ? theme.color.danger.DEFAULT : theme.color.border.DEFAULT,
+            borderColor: error
+              ? theme.color.danger.DEFAULT
+              : theme.color.border.DEFAULT,
           },
         ]}
       >

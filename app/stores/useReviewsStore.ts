@@ -23,7 +23,8 @@ interface ReviewsState {
   isReviewed: (orderId: number, productId: number) => boolean;
 }
 
-export const reviewKey = (orderId: number, productId: number) => `${orderId}-${productId}`;
+export const reviewKey = (orderId: number, productId: number) =>
+  `${orderId}-${productId}`;
 
 export const useReviewsStore = create<ReviewsState>()(
   persist(
@@ -37,11 +38,13 @@ export const useReviewsStore = create<ReviewsState>()(
           ],
         })),
       isReviewed: (orderId, productId) =>
-        get().submittedReviews.some((r) => r.key === reviewKey(orderId, productId)),
+        get().submittedReviews.some(
+          (r) => r.key === reviewKey(orderId, productId),
+        ),
     }),
     {
       name: 'storevia-submitted-reviews',
       storage: createJSONStorage(() => AsyncStorage),
-    }
-  )
+    },
+  ),
 );

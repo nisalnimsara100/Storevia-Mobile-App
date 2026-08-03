@@ -1,5 +1,10 @@
 import React from 'react';
-import { Modal as RNModal, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  Modal as RNModal,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import { theme } from '@/theme';
 
 export type ModalPresentation = 'center' | 'bottomSheet' | 'fullscreen';
@@ -11,14 +16,26 @@ export interface AppModalProps {
   children: React.ReactNode;
 }
 
-export function AppModal({ visible, onClose, presentation = 'bottomSheet', children }: AppModalProps) {
+export function AppModal({
+  visible,
+  onClose,
+  presentation = 'bottomSheet',
+  children,
+}: AppModalProps) {
   return (
-    <RNModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <RNModal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
       <TouchableWithoutFeedback onPress={onClose}>
         <View
           style={[
             styles.overlay,
-            { justifyContent: presentation === 'center' ? 'center' : 'flex-end' },
+            {
+              justifyContent: presentation === 'center' ? 'center' : 'flex-end',
+            },
           ]}
         >
           <TouchableWithoutFeedback onPress={() => {}}>

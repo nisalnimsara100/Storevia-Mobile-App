@@ -8,7 +8,13 @@ export interface SpinnerProps {
 }
 
 export function Spinner({ size = 'large', style }: SpinnerProps) {
-  return <ActivityIndicator size={size} color={theme.color.primary.DEFAULT} style={style} />;
+  return (
+    <ActivityIndicator
+      size={size}
+      color={theme.color.primary.DEFAULT}
+      style={style}
+    />
+  );
 }
 
 export interface SkeletonProps {
@@ -18,11 +24,21 @@ export interface SkeletonProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function Skeleton({ width = '100%', height = 16, borderRadius = theme.radius.sm, style }: SkeletonProps) {
+export function Skeleton({
+  width = '100%',
+  height = 16,
+  borderRadius = theme.radius.sm,
+  style,
+}: SkeletonProps) {
   return (
     <View
       style={[
-        { width: width as any, height, borderRadius, backgroundColor: theme.color.neutral[200] },
+        {
+          width: width as any,
+          height,
+          borderRadius,
+          backgroundColor: theme.color.neutral[200],
+        },
         style,
       ]}
     />

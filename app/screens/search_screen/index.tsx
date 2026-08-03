@@ -2,6 +2,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useState, useCallback, useEffect, useRef } from 'react';
+import {
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Image,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 interface Suggestion {
   product_id?: number;
@@ -10,20 +21,6 @@ interface Suggestion {
   name?: string;
   [key: string]: any;
 }
-
-interface SearchResult {
-  [key: string]: any;
-}
-import { ScrollView, Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-import { useAuthStore } from '../../stores/useAuthStore';
-
-const SUGGESTIONS = [
-  'iphone 16 pro back cover',
-  'iphone 16 back cover',
-  '11 pro max back cover',
-];
 
 const DISCOVERY_ITEMS = [
   '12 pro back cover',
@@ -36,17 +33,17 @@ const SearchScreen = () => {
   const { param } = useLocalSearchParams();
   const router = useRouter();
   const { user } = useAuthStore();
-  const [localSearchQuery, setLocalSearchQuery] = useState((param as string) || '');
+  const [localSearchQuery, setLocalSearchQuery] = useState(
+    (param as string) || '',
+  );
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [isSearchHistoryOpen, setIsSearchHistoryOpen] = useState(true);
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'history' | 'image'>('history');
   const [discoveryVisible, setDiscoveryVisible] = useState(true);
   const baseUrl = process.env.EXPO_PUBLIC_APP_BASE_URL;
 
   const fetchSearchedHistory = useCallback(async () => {
-    console.log("User Details: " , user);
     const userEmail = user?.email || '';
     if (!userEmail) {
       setHistory([]);
@@ -60,7 +57,7 @@ const SearchScreen = () => {
           headers: {
             Accept: 'application/json',
           },
-        }
+        },
       );
       const data = await response.json();
       setHistory(Array.isArray(data) ? data : []);
@@ -82,21 +79,13 @@ const SearchScreen = () => {
     const formData = new FormData();
     formData.append('user_email', userEmail);
     formData.append('keyword', keyword);
-    console.log("User Email: ", userEmail);
-    console.log("Keyword: ", keyword);
-    console.log("Base URL: ", baseUrl);
 
     try {
-      const res = await fetch(`${baseUrl}/api/save_search_keywords`, {
+      await fetch(`${baseUrl}/api/save_search_keywords`, {
         method: 'POST',
         body: formData,
       });
-      // await res.json();
-      const data = res.json();
-      console.log("Save Keywords: ", data);
-    } catch(e) {
-      console.log(e);
-    }
+    } catch {}
   };
 
   const clearSearchHistory = async () => {
@@ -114,15 +103,16 @@ const SearchScreen = () => {
         setHistory([]);
       }
     } catch {}
-    setIsSearchHistoryOpen(false);
   };
 
   const handleSearch = () => {
     if (localSearchQuery.trim()) {
       saveSearchKeyword(localSearchQuery);
       router.push(`/search?param=${encodeURIComponent(localSearchQuery)}`);
-      setIsSearchHistoryOpen(false);
-      setHistory((prev) => [localSearchQuery.trim(), ...prev.filter((h) => h !== localSearchQuery.trim())]);
+      setHistory((prev) => [
+        localSearchQuery.trim(),
+        ...prev.filter((h) => h !== localSearchQuery.trim()),
+      ]);
     }
   };
 
@@ -140,19 +130,17 @@ const SearchScreen = () => {
         },
       });
       const data = await res.json();
-      console.log("data", data)
       setSuggestions(Array.isArray(data) ? data : []);
     } catch {}
   };
 
   const handleInputChange = (value: string) => {
     setLocalSearchQuery(value);
-    setIsSearchHistoryOpen(true);
-    
+
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
-    
+
     debounceTimer.current = setTimeout(() => {
       fetchSuggestions(value);
     }, 300);
@@ -162,7 +150,6 @@ const SearchScreen = () => {
     const term = suggestion.product_name || suggestion.name || '';
     if (term) {
       setLocalSearchQuery(term);
-      setIsSearchHistoryOpen(false);
       saveSearchKeyword(term);
       setHistory((prev) => [term, ...prev.filter((h) => h !== term)]);
       router.push(`/search?param=${encodeURIComponent(term)}`);
@@ -171,7 +158,6 @@ const SearchScreen = () => {
 
   const handleHistoryItemClick = (item: string) => {
     setLocalSearchQuery(item);
-    setIsSearchHistoryOpen(false);
     saveSearchKeyword(item);
     router.push(`/search?param=${encodeURIComponent(item)}`);
   };
@@ -204,23 +190,36 @@ const SearchScreen = () => {
             style={{ fontSize: moderateScale(13), height: '100%' }}
           />
           <TouchableOpacity className="pl-2">
-            <Ionicons name="camera-outline" size={moderateScale(20)} color="#6b7280" />
+            <Ionicons
+              name="camera-outline"
+              size={moderateScale(20)}
+              color="#6b7280"
+            />
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity
           onPress={() => handleSearch()}
           className="bg-orange-500 rounded-full"
-          style={{ paddingHorizontal: scale(14), paddingVertical: verticalScale(8) }}
+          style={{
+            paddingHorizontal: scale(14),
+            paddingVertical: verticalScale(8),
+          }}
         >
-          <Text className="text-white font-semibold" style={{ fontSize: moderateScale(13) }}>
+          <Text
+            className="text-white font-semibold"
+            style={{ fontSize: moderateScale(13) }}
+          >
             Search
           </Text>
         </TouchableOpacity>
       </View>
 
       {localSearchQuery.length > 0 && suggestions.length > 0 ? (
-        <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-4 pt-2">
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          className="flex-1 px-4 pt-2"
+        >
           {suggestions.map((s, i) => (
             <TouchableOpacity
               key={s.product_id?.toString() || s.name || i.toString()}
@@ -229,21 +228,45 @@ const SearchScreen = () => {
             >
               {s.product_image ? (
                 <Image
-                  source={{ uri: s.product_image.startsWith('http') ? s.product_image : `${baseUrl}/images/${s.product_image}` }}
-                  style={{ width: scale(40), height: scale(40), borderRadius: scale(6), marginRight: scale(12) }}
+                  source={{
+                    uri: s.product_image.startsWith('http')
+                      ? s.product_image
+                      : `${baseUrl}/images/${s.product_image}`,
+                  }}
+                  style={{
+                    width: scale(40),
+                    height: scale(40),
+                    borderRadius: scale(6),
+                    marginRight: scale(12),
+                  }}
                   resizeMode="cover"
                 />
               ) : (
-                <View style={{ width: scale(40), height: scale(40), borderRadius: scale(6), marginRight: scale(12), backgroundColor: '#d1d5db' }} />
+                <View
+                  style={{
+                    width: scale(40),
+                    height: scale(40),
+                    borderRadius: scale(6),
+                    marginRight: scale(12),
+                    backgroundColor: '#d1d5db',
+                  }}
+                />
               )}
-              <Text className="text-gray-700 font-medium flex-1" style={{ fontSize: moderateScale(14) }} numberOfLines={2}>
+              <Text
+                className="text-gray-700 font-medium flex-1"
+                style={{ fontSize: moderateScale(14) }}
+                numberOfLines={2}
+              >
                 {s.product_name || s.name}
               </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-4 pt-2">
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          className="flex-1 px-4 pt-2"
+        >
           {/* Search / Image history tabs */}
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
@@ -259,7 +282,10 @@ const SearchScreen = () => {
                   Search History
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setActiveTab('image')} className="ml-4">
+              <TouchableOpacity
+                onPress={() => setActiveTab('image')}
+                className="ml-4"
+              >
                 <Text
                   className={
                     activeTab === 'image'
@@ -278,10 +304,17 @@ const SearchScreen = () => {
                 onPress={clearSearchHistory}
                 className="flex-row items-center"
               >
-                <Text className="text-gray-400 mr-1" style={{ fontSize: moderateScale(12) }}>
+                <Text
+                  className="text-gray-400 mr-1"
+                  style={{ fontSize: moderateScale(12) }}
+                >
                   Clear All
                 </Text>
-                <Ionicons name="trash-outline" size={moderateScale(15)} color="#9ca3af" />
+                <Ionicons
+                  name="trash-outline"
+                  size={moderateScale(15)}
+                  color="#9ca3af"
+                />
               </TouchableOpacity>
             )}
           </View>
@@ -297,11 +330,18 @@ const SearchScreen = () => {
             ) : (
               <View className="flex-row flex-wrap mb-5">
                 {history.map((item, index) => {
-                  const keyword = typeof item === 'string' ? item : item.search_keyword_name || item.keyword || '';
+                  const keyword =
+                    typeof item === 'string'
+                      ? item
+                      : item.search_keyword_name || item.keyword || '';
                   if (!keyword) return null;
                   return (
                     <TouchableOpacity
-                      key={typeof item === 'object' && item.search_id ? item.search_id.toString() : keyword + index}
+                      key={
+                        typeof item === 'object' && item.search_id
+                          ? item.search_id.toString()
+                          : keyword + index
+                      }
                       onPress={() => handleHistoryItemClick(keyword)}
                       className="bg-gray-100 rounded-lg mr-2 mb-2"
                       style={{
@@ -309,7 +349,10 @@ const SearchScreen = () => {
                         paddingVertical: verticalScale(8),
                       }}
                     >
-                      <Text className="text-gray-700" style={{ fontSize: moderateScale(12) }}>
+                      <Text
+                        className="text-gray-700"
+                        style={{ fontSize: moderateScale(12) }}
+                      >
                         {keyword}
                       </Text>
                     </TouchableOpacity>
@@ -319,8 +362,15 @@ const SearchScreen = () => {
             )
           ) : (
             <View className="items-center justify-center py-10 mb-5">
-              <Ionicons name="image-outline" size={moderateScale(32)} color="#d1d5db" />
-              <Text className="text-gray-400 mt-2" style={{ fontSize: moderateScale(12) }}>
+              <Ionicons
+                name="image-outline"
+                size={moderateScale(32)}
+                color="#d1d5db"
+              />
+              <Text
+                className="text-gray-400 mt-2"
+                style={{ fontSize: moderateScale(12) }}
+              >
                 No image search history yet
               </Text>
             </View>
@@ -328,14 +378,20 @@ const SearchScreen = () => {
 
           {/* Search discovery */}
           <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-black font-bold" style={{ fontSize: moderateScale(14) }}>
+            <Text
+              className="text-black font-bold"
+              style={{ fontSize: moderateScale(14) }}
+            >
               Search Discovery
             </Text>
             <TouchableOpacity
               onPress={() => setDiscoveryVisible((v) => !v)}
               className="flex-row items-center"
             >
-              <Text className="text-gray-400 mr-1" style={{ fontSize: moderateScale(12) }}>
+              <Text
+                className="text-gray-400 mr-1"
+                style={{ fontSize: moderateScale(12) }}
+              >
                 {discoveryVisible ? 'Hide' : 'Show'}
               </Text>
               <Ionicons
@@ -359,7 +415,10 @@ const SearchScreen = () => {
                     width: '48%',
                   }}
                 >
-                  <Text className="text-gray-700" style={{ fontSize: moderateScale(12) }}>
+                  <Text
+                    className="text-gray-700"
+                    style={{ fontSize: moderateScale(12) }}
+                  >
                     {item}
                   </Text>
                 </TouchableOpacity>

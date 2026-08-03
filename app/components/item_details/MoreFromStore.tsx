@@ -40,7 +40,8 @@ const STORE_PRODUCTS: StoreProduct[] = [
     reviews: 340,
     sold: 1200,
     tag: 'Bestseller',
-    description: 'Compact 10000mAh power bank with 22.5W fast charging support.',
+    description:
+      'Compact 10000mAh power bank with 22.5W fast charging support.',
   },
   {
     id: 102,
@@ -54,7 +55,8 @@ const STORE_PRODUCTS: StoreProduct[] = [
     rating: 4.6,
     reviews: 512,
     sold: 980,
-    description: 'Slim wireless charging pad compatible with all Qi-enabled devices.',
+    description:
+      'Slim wireless charging pad compatible with all Qi-enabled devices.',
   },
   {
     id: 103,
@@ -67,7 +69,8 @@ const STORE_PRODUCTS: StoreProduct[] = [
     reviews: 128,
     sold: 430,
     tag: 'New',
-    description: '6-in-1 USB-C hub with HDMI, USB 3.0 and fast charging pass-through.',
+    description:
+      '6-in-1 USB-C hub with HDMI, USB 3.0 and fast charging pass-through.',
   },
   {
     id: 104,
@@ -81,7 +84,8 @@ const STORE_PRODUCTS: StoreProduct[] = [
     rating: 4.7,
     reviews: 875,
     sold: 2400,
-    description: 'Sweat-resistant Bluetooth 5.0 neckband earphones with deep bass.',
+    description:
+      'Sweat-resistant Bluetooth 5.0 neckband earphones with deep bass.',
   },
   {
     id: 105,
@@ -93,19 +97,23 @@ const STORE_PRODUCTS: StoreProduct[] = [
     rating: 4.5,
     reviews: 96,
     sold: 310,
-    description: 'Durable braided cable with 65W wall adapter for rapid charging.',
+    description:
+      'Durable braided cable with 65W wall adapter for rapid charging.',
   },
   {
     id: 106,
     name: 'Laptop Sleeve 15.6" Water Resistant',
     image: require('../../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg'),
-    images: [require('../../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg')],
+    images: [
+      require('../../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg'),
+    ],
     price: 1800,
     stock: 18,
     rating: 4.4,
     reviews: 60,
     sold: 145,
-    description: 'Padded, water-resistant sleeve that fits laptops up to 15.6 inches.',
+    description:
+      'Padded, water-resistant sleeve that fits laptops up to 15.6 inches.',
   },
 ];
 
@@ -142,7 +150,11 @@ const MoreFromStore = () => {
             onPress={() => handlePress(item)}
           >
             <View style={styles.imageWrap}>
-              <Image source={item.image} style={styles.image} resizeMode="contain" />
+              <Image
+                source={item.image}
+                style={styles.image}
+                resizeMode="contain"
+              />
               {item.tag && (
                 <View style={styles.tagBadge}>
                   <Text style={styles.tagBadgeText}>{item.tag}</Text>
@@ -159,8 +171,12 @@ const MoreFromStore = () => {
             </View>
             {item.oldPrice && (
               <View style={styles.oldPriceRow}>
-                <Text style={styles.oldPrice}>Rs.{item.oldPrice.toLocaleString()}</Text>
-                {item.discount && <Text style={styles.discount}>-{item.discount}%</Text>}
+                <Text style={styles.oldPrice}>
+                  Rs.{item.oldPrice.toLocaleString()}
+                </Text>
+                {item.discount && (
+                  <Text style={styles.discount}>-{item.discount}%</Text>
+                )}
               </View>
             )}
 

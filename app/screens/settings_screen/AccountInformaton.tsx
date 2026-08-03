@@ -13,6 +13,7 @@ import {
   View,
   Alert,
 } from 'react-native';
+import { ScreenHeader } from '@/components/ui';
 
 const AccountInformaton = () => {
   const user = useAuthStore((state) => state.user);
@@ -23,25 +24,20 @@ const AccountInformaton = () => {
   const [fullName, setFullName] = useState(user?.name || 'Guest User');
   const [keepUpdatedName, setKeepUpdatedName] = useState('');
 
-  
   // Logout Logic
   const handleLogout = () => {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to log out?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Logout", 
-          style: "destructive",
-          onPress: () => {
-            // Expo Router ignores (auth) in the URL. 
-            // This replaces the stack with the login screen.
-            router.replace('/LoginSignup');
-          } 
-        }
-      ]
-    );
+    Alert.alert('Logout', 'Are you sure you want to log out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: () => {
+          // Expo Router ignores (auth) in the URL.
+          // This replaces the stack with the login screen.
+          router.replace('/LoginSignup');
+        },
+      },
+    ]);
   };
 
   const toggleDatePicker = () => setBirthdayModelOpen(!birthdayModelOpen);
@@ -59,15 +55,18 @@ const AccountInformaton = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View className="flex-1 bg-gray-100 mt-[10%]">
-        <View className="flex-row items-center gap-4 px-4 py-4 border-b border-gray-200 bg-white">
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </TouchableOpacity>
-          <Text className="text-lg font-bold">Account Information</Text>
+        <View className="border-b border-gray-200 bg-white">
+          <ScreenHeader
+            title="Account Information"
+            onBack={() => router.back()}
+          />
         </View>
 
         <ScrollView className="flex-1 mt-5">
-          <TouchableOpacity className="bg-white flex-row justify-between items-center px-4 py-4 border-b border-gray-200" onPress={toggleNameModal}>
+          <TouchableOpacity
+            className="bg-white flex-row justify-between items-center px-4 py-4 border-b border-gray-200"
+            onPress={toggleNameModal}
+          >
             <Text className="text-md text-gray-800">Full Name</Text>
             <View className="flex-row items-center">
               <Text className="text-md text-gray-400 mr-2">{fullName}</Text>
@@ -75,10 +74,15 @@ const AccountInformaton = () => {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity className="bg-white flex-row justify-between items-center px-4 py-4 border-b border-gray-200" onPress={toggleDatePicker}>
+          <TouchableOpacity
+            className="bg-white flex-row justify-between items-center px-4 py-4 border-b border-gray-200"
+            onPress={toggleDatePicker}
+          >
             <Text className="text-md text-gray-800">Email</Text>
             <View className="flex-row items-center">
-              <Text className="text-md text-gray-400 mr-2">{user?.email || 'No email'}</Text>
+              <Text className="text-md text-gray-400 mr-2">
+                {user?.email || 'No email'}
+              </Text>
               <Ionicons name="chevron-forward" size={20} color="#999" />
             </View>
           </TouchableOpacity>
@@ -88,7 +92,9 @@ const AccountInformaton = () => {
             onPress={handleLogout}
           >
             <Ionicons name="log-out-outline" size={20} color="#ef4444" />
-            <Text className="text-md font-semibold text-red-500 ml-2">Log Out</Text>
+            <Text className="text-md font-semibold text-red-500 ml-2">
+              Log Out
+            </Text>
           </TouchableOpacity>
         </ScrollView>
 
@@ -106,26 +112,36 @@ const AccountInformaton = () => {
         )}
 
         {nameModelOpen && (
-           <View className="absolute bottom-0 left-0 right-0 h-[60%] bg-white border-t border-gray-200 shadow-xl">
-             <View className="flex flex-row justify-between items-center py-5 px-5 ">
-               <Text className="font-semibold text-lg">Edit Full Name</Text>
-               <AntDesign name="close" size={20} color="#999" onPress={toggleNameModal} />
-             </View>
-             <View className="px-5">
-               <TextInput
-                 placeholder={fullName}
-                 onChangeText={setKeepUpdatedName}
-                 autoFocus
-                 className="text-base text-gray-800 border-b border-gray-300 pb-2"
-               />
-               <TouchableOpacity
-                 className="mt-8 bg-orange-600 py-4 rounded-xl"
-                 onPress={() => { updateName(); toggleNameModal(); }}
-               >
-                 <Text className="text-white text-center font-bold">Confirm</Text>
-               </TouchableOpacity>
-             </View>
-           </View>
+          <View className="absolute bottom-0 left-0 right-0 h-[60%] bg-white border-t border-gray-200 shadow-xl">
+            <View className="flex flex-row justify-between items-center py-5 px-5 ">
+              <Text className="font-semibold text-lg">Edit Full Name</Text>
+              <AntDesign
+                name="close"
+                size={20}
+                color="#999"
+                onPress={toggleNameModal}
+              />
+            </View>
+            <View className="px-5">
+              <TextInput
+                placeholder={fullName}
+                onChangeText={setKeepUpdatedName}
+                autoFocus
+                className="text-base text-gray-800 border-b border-gray-300 pb-2"
+              />
+              <TouchableOpacity
+                className="mt-8 bg-orange-600 py-4 rounded-xl"
+                onPress={() => {
+                  updateName();
+                  toggleNameModal();
+                }}
+              >
+                <Text className="text-white text-center font-bold">
+                  Confirm
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         )}
       </View>
     </KeyboardAvoidingView>

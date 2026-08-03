@@ -24,7 +24,7 @@ const baseUrl2 = BASE_URL;
 const storage = {
   set: (key: string, value: any) => {
     AsyncStorage.setItem(key, JSON.stringify(value)).catch((err) =>
-      console.error(`Error setting ${key} in storage:`, err)
+      console.error(`Error setting ${key} in storage:`, err),
     );
   },
   get: async (key: string) => {
@@ -35,7 +35,7 @@ const storage = {
       console.error(`Error getting ${key} from storage:`, err);
       return null;
     }
-  }
+  },
 };
 
 const confetti = (options?: any) => {
@@ -78,7 +78,9 @@ interface UserVoucher {
   voucher_type: string;
 }
 
-const isMeaningfulFeatureValue = (value: string | null | undefined): boolean => {
+const isMeaningfulFeatureValue = (
+  value: string | null | undefined,
+): boolean => {
   const normalized = String(value || '').trim();
   if (!normalized) return false;
   return !/^default(?:\s+(?:color|size))?$/i.test(normalized);
@@ -101,8 +103,7 @@ const Cart = () => {
   const getUserEmail = () => user?.email || '';
 
   // Fetch cart from API
-  const fetchCart = async () => {
-    console.log('Fetching cart for user from zustand:', user?.email);
+  const fetchCart = useCallback(async () => {
     const email = user?.email;
     if (!email) {
       setLoading(false);
@@ -110,7 +111,6 @@ const Cart = () => {
       setCartCount(0);
       return;
     }
-    console.log('Fetching cart for email:', email);
 
     try {
       const res = await fetch(`${BASE_URL}/api/get_cart`, {
@@ -120,7 +120,6 @@ const Cart = () => {
       });
 
       const data = await res.json();
-      console.log('Cart data:', data);
 
       if (data.cart_items && Array.isArray(data.cart_items)) {
         const items = data.cart_items.map((item: CartItem) => ({
@@ -140,9 +139,9 @@ const Cart = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.email, setCartCount]);
 
-  const fetchUserVouchers = async () => {
+  const fetchUserVouchers = useCallback(async () => {
     const email = user?.email;
     if (!email) return;
     try {
@@ -154,14 +153,14 @@ const Cart = () => {
     } catch (err) {
       console.error('Error fetching user vouchers:', err);
     }
-  };
+  }, [user?.email]);
 
   // Refetch cart when screen is focused (real-time update)
   useFocusEffect(
     useCallback(() => {
       fetchCart();
       fetchUserVouchers();
-    }, [user?.email]),
+    }, [fetchCart, fetchUserVouchers]),
   );
 
   /* ---------- GROUP BY STORE ---------- */
@@ -179,11 +178,16 @@ const Cart = () => {
   // Update cart item quantity
   // TODO: Replace with real API when ready: POST /api/update_cart { cart_id, quantity }
   const handleQuantityChange = async (item: CartItem, change: number) => {
-    const newQty = Math.max(1, Math.min(item.stock_available, item.product_quantity + change));
+    const newQty = Math.max(
+      1,
+      Math.min(item.stock_available, item.product_quantity + change),
+    );
 
     // Update local state
     setCartData((prev) => {
-      const updated = prev.map((i) => (i.id === item.id ? { ...i, product_quantity: newQty } : i));
+      const updated = prev.map((i) =>
+        i.id === item.id ? { ...i, product_quantity: newQty } : i,
+      );
       storage.set('cartItems', updated);
       return updated;
     });
@@ -281,7 +285,9 @@ const Cart = () => {
   // Toggle item selection
   const toggleSelectItem = (id: number) => {
     setCartData((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, selected: !item.selected } : item))
+      prev.map((item) =>
+        item.id === id ? { ...item, selected: !item.selected } : item,
+      ),
     );
   };
 
@@ -291,15 +297,19 @@ const Cart = () => {
   };
 
   // Calculate totals
-  const selectedItems = useMemo(() => cartData.filter((item) => item.selected), [cartData]);
+  const selectedItems = useMemo(
+    () => cartData.filter((item) => item.selected),
+    [cartData],
+  );
 
   const subtotal = useMemo(
     () =>
       selectedItems.reduce(
-        (sum, item) => sum + parseFloat(item.product_price) * item.product_quantity,
-        0
+        (sum, item) =>
+          sum + parseFloat(item.product_price) * item.product_quantity,
+        0,
       ),
-    [selectedItems]
+    [selectedItems],
   );
 
   const shippingFee = useMemo(() => {
@@ -335,10 +345,13 @@ const Cart = () => {
   const total = subtotal + shippingFee - voucherDiscount;
 
   const getVoucherProductIds = (voucher: UserVoucher): number[] => {
-    const rawProductIds = (voucher as UserVoucher & { product_ids?: unknown }).product_ids;
+    const rawProductIds = (voucher as UserVoucher & { product_ids?: unknown })
+      .product_ids;
 
     if (Array.isArray(rawProductIds)) {
-      return rawProductIds.map((id) => Number(id)).filter((id) => Number.isFinite(id));
+      return rawProductIds
+        .map((id) => Number(id))
+        .filter((id) => Number.isFinite(id));
     }
 
     return [];
@@ -349,15 +362,21 @@ const Cart = () => {
   };
 
   const applyVoucher = (voucher: UserVoucher) => {
-    const isAlreadySelected = selectedVouchers.some((v) => v.voucher_id === voucher.voucher_id);
+    const isAlreadySelected = selectedVouchers.some(
+      (v) => v.voucher_id === voucher.voucher_id,
+    );
     if (isAlreadySelected) {
       // Deselect
-      setSelectedVouchers((prev) => prev.filter((v) => v.voucher_id !== voucher.voucher_id));
+      setSelectedVouchers((prev) =>
+        prev.filter((v) => v.voucher_id !== voucher.voucher_id),
+      );
       return;
     }
     const minSpend = parseFloat(voucher.voucher_minimumSpend);
     if (subtotal < minSpend) {
-      alert(`Minimum spend of Rs. ${minSpend.toLocaleString()} is required to use this voucher.`);
+      alert(
+        `Minimum spend of Rs. ${minSpend.toLocaleString()} is required to use this voucher.`,
+      );
       return;
     }
 
@@ -398,15 +417,15 @@ const Cart = () => {
   useEffect(() => {
     fetchCart();
     fetchUserVouchers();
-  }, [user?.email]);
+  }, [fetchCart, fetchUserVouchers]);
 
   const storeIds = useMemo(() => {
     return Array.from(
       new Set(
         cartData
           .map((item) => item.product_store_id)
-          .filter((id): id is number => typeof id === 'number')
-      )
+          .filter((id): id is number => typeof id === 'number'),
+      ),
     );
   }, [cartData]);
 
@@ -415,7 +434,7 @@ const Cart = () => {
     const cartProductIds = new Set(
       selectedItems
         .map((item) => Number(item.product_id || item.id))
-        .filter((id) => Number.isFinite(id))
+        .filter((id) => Number.isFinite(id)),
     );
 
     const filtered = userVouchers.filter((v) => {
@@ -432,14 +451,17 @@ const Cart = () => {
       }
 
       // Seller vouchers remain store-scoped
-      return typeof v.voucherStoreID === 'number' && storeIds.includes(v.voucherStoreID);
+      return (
+        typeof v.voucherStoreID === 'number' &&
+        storeIds.includes(v.voucherStoreID)
+      );
     });
 
     setFilteredVouchers(filtered);
 
     // Remove any selected vouchers no longer in the filtered list
     setSelectedVouchers((prev) =>
-      prev.filter((sv) => filtered.some((v) => v.voucher_id === sv.voucher_id))
+      prev.filter((sv) => filtered.some((v) => v.voucher_id === sv.voucher_id)),
     );
   }, [userVouchers, storeIds, selectedItems]);
 
@@ -558,9 +580,9 @@ const Cart = () => {
               lineHeight: s(20),
             }}
           >
-            {user 
+            {user
               ? "Looks like you haven't added anything yet. Start exploring and find something you love!"
-              : "Please login first to view your cart and start shopping with Storevia!"}
+              : 'Please login first to view your cart and start shopping with Storevia!'}
           </Text>
           <TouchableOpacity
             style={{
@@ -569,358 +591,419 @@ const Cart = () => {
               paddingVertical: vs(12),
               borderRadius: s(8),
             }}
-            onPress={() => user ? router.push('/(tabs)/Home') : router.push('/(tabs)/Account')}
+            onPress={() =>
+              user
+                ? router.push('/(tabs)/Home')
+                : router.push('/(tabs)/Account')
+            }
           >
-            <Text
-              style={{ color: '#fff', fontSize: s(15), fontWeight: '700' }}
-            >
+            <Text style={{ color: '#fff', fontSize: s(15), fontWeight: '700' }}>
               {user ? 'Start Shopping' : 'Login First'}
             </Text>
           </TouchableOpacity>
         </View>
       ) : (
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: vs(120) }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* TITLE */}
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: vs(120) }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* TITLE */}
+          <View
+            style={{
+              backgroundColor: '#fff',
+              paddingHorizontal: s(16),
+              paddingVertical: vs(12),
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Text
+              style={{ fontSize: s(20), fontWeight: 'bold', color: '#1f2937' }}
+            >
+              My Cart
+            </Text>
+            {cartData.length > 0 && (
+              <TouchableOpacity onPress={confirmDeleteAll}>
+                <Text
+                  style={{
+                    color: '#ef4444',
+                    fontSize: s(13),
+                    fontWeight: '600',
+                  }}
+                >
+                  Clear All
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* STORES */}
+          {Object.entries(groupedByStore).map(([storeName, items]) => (
+            <View
+              key={storeName}
+              style={{ marginTop: vs(8), backgroundColor: '#fff' }}
+            >
+              {/* STORE HEADER */}
+              <TouchableOpacity
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingHorizontal: s(16),
+                  paddingVertical: vs(12),
+                  borderBottomWidth: 1,
+                  borderBottomColor: '#e5e7eb',
+                }}
+                onPress={() => {
+                  const allSelected = items.every((item) => item.selected);
+                  setCartData((prev) =>
+                    prev.map((cartItem) =>
+                      items.some((i) => i.id === cartItem.id)
+                        ? { ...cartItem, selected: !allSelected }
+                        : cartItem,
+                    ),
+                  );
+                }}
+              >
+                <CheckBox checked={items.every((item) => item.selected)} />
+                <Text
+                  style={{
+                    marginLeft: s(8),
+                    fontSize: s(13),
+                    fontWeight: '600',
+                    color: '#1f2937',
+                  }}
+                >
+                  🏪 {storeName}
+                </Text>
+              </TouchableOpacity>
+
+              {/* STORE ITEMS */}
+              {items.map((item) => (
+                <View
+                  key={item.id}
+                  style={{
+                    flexDirection: 'row',
+                    paddingHorizontal: s(12),
+                    paddingVertical: vs(12),
+                    alignItems: 'center',
+                  }}
+                >
+                  <TouchableOpacity onPress={() => toggleSelectItem(item.id)}>
+                    <CheckBox checked={item.selected ?? false} />
+                  </TouchableOpacity>
+
+                  <Image
+                    source={{ uri: item.product_image }}
+                    style={{
+                      width: s(64),
+                      height: s(64),
+                      borderRadius: s(8),
+                      marginHorizontal: s(10),
+                    }}
+                  />
+
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontSize: s(12),
+                        fontWeight: '500',
+                        color: '#1f2937',
+                      }}
+                      numberOfLines={2}
+                    >
+                      {item.product_name}
+                    </Text>
+
+                    <Text
+                      style={{
+                        fontSize: s(10),
+                        color: '#6b7280',
+                        marginTop: vs(4),
+                      }}
+                    >
+                      {item.product_category}
+                    </Text>
+
+                    {(isMeaningfulFeatureValue(item.product_selected_color) ||
+                      isMeaningfulFeatureValue(item.product_selected_size)) && (
+                      <Text
+                        style={{
+                          fontSize: s(10),
+                          color: '#6b7280',
+                          marginTop: vs(2),
+                        }}
+                        numberOfLines={1}
+                      >
+                        {[
+                          isMeaningfulFeatureValue(item.product_selected_color)
+                            ? `Color: ${item.product_selected_color}`
+                            : null,
+                          isMeaningfulFeatureValue(item.product_selected_size)
+                            ? `Size: ${item.product_selected_size}`
+                            : null,
+                        ]
+                          .filter(Boolean)
+                          .join(', ')}
+                      </Text>
+                    )}
+
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginTop: vs(4),
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: '#f97316',
+                          fontWeight: 'bold',
+                          fontSize: s(12),
+                          marginRight: s(8),
+                        }}
+                      >
+                        Rs. {item.product_price}
+                      </Text>
+                      <Text
+                        style={{
+                          color: '#9ca3af',
+                          textDecorationLine: 'line-through',
+                          fontSize: s(10),
+                        }}
+                      >
+                        Rs. {item.product_OriginalPrice}
+                      </Text>
+                    </View>
+
+                    <View
+                      style={{
+                        backgroundColor: '#fed7aa',
+                        paddingHorizontal: s(8),
+                        paddingVertical: vs(2),
+                        borderRadius: s(4),
+                        marginTop: vs(4),
+                        alignSelf: 'flex-start',
+                      }}
+                    >
+                      <Text style={{ fontSize: s(10), color: '#b45309' }}>
+                        {item.product_discount}%
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* QTY */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      borderWidth: 1,
+                      borderColor: '#d1d5db',
+                      borderRadius: s(6),
+                      marginLeft: s(8),
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={{
+                        width: s(20),
+                        height: s(20),
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      onPress={() => handleQuantityChange(item, -1)}
+                    >
+                      <Text style={{ fontSize: s(14) }}>−</Text>
+                    </TouchableOpacity>
+
+                    <Text
+                      style={{
+                        paddingHorizontal: s(8),
+                        alignSelf: 'center',
+                        fontSize: s(12),
+                      }}
+                    >
+                      {item.product_quantity}
+                    </Text>
+
+                    <TouchableOpacity
+                      style={{
+                        width: s(20),
+                        height: s(20),
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      onPress={() => handleQuantityChange(item, 1)}
+                    >
+                      <Text style={{ fontSize: s(14) }}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Delete button */}
+                  <TouchableOpacity
+                    onPress={() => confirmRemoveItem(item)}
+                    style={{ marginLeft: s(10) }}
+                  >
+                    <Ionicons
+                      name="trash-outline"
+                      size={s(20)}
+                      color="#ef4444"
+                    />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          ))}
+
+          {/* Vouchers Section */}
+          {filteredVouchers.length > 0 && (
+            <View
+              style={{
+                backgroundColor: '#fff',
+                marginTop: vs(8),
+                padding: s(16),
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: s(14),
+                  fontWeight: 'bold',
+                  color: '#1f2937',
+                  marginBottom: vs(8),
+                }}
+              >
+                Available Vouchers
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {filteredVouchers.map((voucher) => {
+                  const isSelected = selectedVouchers.some(
+                    (v) => v.voucher_id === voucher.voucher_id,
+                  );
+                  return (
+                    <TouchableOpacity
+                      key={voucher.voucher_id}
+                      onPress={() => applyVoucher(voucher)}
+                      style={{
+                        backgroundColor: isSelected ? '#ffedd5' : '#f3f4f6',
+                        borderColor: isSelected ? '#f97316' : '#e5e7eb',
+                        borderWidth: 1,
+                        borderRadius: s(8),
+                        padding: s(10),
+                        marginRight: s(10),
+                        minWidth: s(120),
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: s(12),
+                          fontWeight: 'bold',
+                          color: isSelected ? '#ea580c' : '#374151',
+                        }}
+                      >
+                        {voucher.voucher_code}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: s(10),
+                          color: '#6b7280',
+                          marginTop: vs(2),
+                        }}
+                        numberOfLines={1}
+                      >
+                        {voucher.voucherDescription}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: s(9),
+                          color: '#9ca3af',
+                          marginTop: vs(2),
+                        }}
+                      >
+                        Min: Rs. {voucher.voucher_minimumSpend}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          )}
+        </ScrollView>
+      )}
+
+      {/* ---------- CHECKOUT BAR ---------- */}
+      {cartData.length === 0 ? null : (
         <View
           style={{
             backgroundColor: '#fff',
             paddingHorizontal: s(16),
             paddingVertical: vs(12),
             flexDirection: 'row',
-            justifyContent: 'space-between',
             alignItems: 'center',
+            justifyContent: 'space-between',
+            borderTopWidth: 1,
+            borderTopColor: '#e5e7eb',
           }}
         >
-          <Text
-            style={{ fontSize: s(20), fontWeight: 'bold', color: '#1f2937' }}
+          <TouchableOpacity
+            style={{ flexDirection: 'row', alignItems: 'center' }}
+            onPress={() =>
+              toggleSelectAll(
+                !selectedItems.length || selectedItems.length < cartData.length,
+              )
+            }
           >
-            My Cart
-          </Text>
-          {cartData.length > 0 && (
-            <TouchableOpacity onPress={confirmDeleteAll}>
-              <Text style={{ color: '#ef4444', fontSize: s(13), fontWeight: '600' }}>
-                Clear All
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
+            <CheckBox checked={selectedItems.length === cartData.length} />
+            <Text style={{ marginLeft: s(6), fontSize: s(12) }}>All</Text>
+          </TouchableOpacity>
 
-        {/* STORES */}
-        {Object.entries(groupedByStore).map(([storeName, items]) => (
-          <View
-            key={storeName}
-            style={{ marginTop: vs(8), backgroundColor: '#fff' }}
-          >
-            {/* STORE HEADER */}
-            <TouchableOpacity
+          <View style={{ flex: 1, marginRight: s(10), marginLeft: s(12) }}>
+            <Text style={{ fontSize: s(11), color: '#1f2937' }}>
+              Subtotal:{' '}
+              <Text style={{ fontWeight: '600' }}>
+                Rs. {subtotal.toFixed(2)}
+              </Text>
+            </Text>
+            {shippingFee > 0 && (
+              <Text style={{ fontSize: s(10), color: '#6b7280' }}>
+                Shipping:{' '}
+                <Text style={{ color: '#ef4444' }}>
+                  Rs. {shippingFee.toFixed(2)}
+                </Text>
+              </Text>
+            )}
+            {voucherDiscount > 0 && (
+              <Text style={{ fontSize: s(10), color: '#10b981' }}>
+                Discount: <Text>-Rs. {voucherDiscount.toFixed(2)}</Text>
+              </Text>
+            )}
+            <Text
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingHorizontal: s(16),
-                paddingVertical: vs(12),
-                borderBottomWidth: 1,
-                borderBottomColor: '#e5e7eb',
-              }}
-              onPress={() => {
-                const allSelected = items.every((item) => item.selected);
-                setCartData((prev) =>
-                  prev.map((cartItem) =>
-                    items.some((i) => i.id === cartItem.id)
-                      ? { ...cartItem, selected: !allSelected }
-                      : cartItem
-                  )
-                );
+                fontSize: s(12),
+                color: '#1f2937',
+                fontWeight: 'bold',
+                marginTop: vs(2),
               }}
             >
-              <CheckBox checked={items.every((item) => item.selected)} />
-              <Text
-                style={{
-                  marginLeft: s(8),
-                  fontSize: s(13),
-                  fontWeight: '600',
-                  color: '#1f2937',
-                }}
-              >
-                🏪 {storeName}
-              </Text>
-            </TouchableOpacity>
-
-            {/* STORE ITEMS */}
-            {items.map((item) => (
-              <View
-                key={item.id}
-                style={{
-                  flexDirection: 'row',
-                  paddingHorizontal: s(12),
-                  paddingVertical: vs(12),
-                  alignItems: 'center',
-                }}
-              >
-                <TouchableOpacity onPress={() => toggleSelectItem(item.id)}>
-                  <CheckBox checked={item.selected ?? false} />
-                </TouchableOpacity>
-
-                <Image
-                  source={{ uri: item.product_image }}
-                  style={{
-                    width: s(64),
-                    height: s(64),
-                    borderRadius: s(8),
-                    marginHorizontal: s(10),
-                  }}
-                />
-
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={{
-                      fontSize: s(12),
-                      fontWeight: '500',
-                      color: '#1f2937',
-                    }}
-                    numberOfLines={2}
-                  >
-                    {item.product_name}
-                  </Text>
-
-                  <Text
-                    style={{
-                      fontSize: s(10),
-                      color: '#6b7280',
-                      marginTop: vs(4),
-                    }}
-                  >
-                    {item.product_category}
-                  </Text>
-
-                  {(isMeaningfulFeatureValue(item.product_selected_color) ||
-                    isMeaningfulFeatureValue(item.product_selected_size)) && (
-                    <Text
-                      style={{
-                        fontSize: s(10),
-                        color: '#6b7280',
-                        marginTop: vs(2),
-                      }}
-                      numberOfLines={1}
-                    >
-                      {[
-                        isMeaningfulFeatureValue(item.product_selected_color)
-                          ? `Color: ${item.product_selected_color}`
-                          : null,
-                        isMeaningfulFeatureValue(item.product_selected_size)
-                          ? `Size: ${item.product_selected_size}`
-                          : null,
-                      ]
-                        .filter(Boolean)
-                        .join(', ')}
-                    </Text>
-                  )}
-
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      marginTop: vs(4),
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: '#f97316',
-                        fontWeight: 'bold',
-                        fontSize: s(12),
-                        marginRight: s(8),
-                      }}
-                    >
-                      Rs. {item.product_price}
-                    </Text>
-                    <Text
-                      style={{
-                        color: '#9ca3af',
-                        textDecorationLine: 'line-through',
-                        fontSize: s(10),
-                      }}
-                    >
-                      Rs. {item.product_OriginalPrice}
-                    </Text>
-                  </View>
-
-                  <View
-                    style={{
-                      backgroundColor: '#fed7aa',
-                      paddingHorizontal: s(8),
-                      paddingVertical: vs(2),
-                      borderRadius: s(4),
-                      marginTop: vs(4),
-                      alignSelf: 'flex-start',
-                    }}
-                  >
-                    <Text style={{ fontSize: s(10), color: '#b45309' }}>
-                      {item.product_discount}%
-                    </Text>
-                  </View>
-                </View>
-
-                {/* QTY */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    borderWidth: 1,
-                    borderColor: '#d1d5db',
-                    borderRadius: s(6),
-                    marginLeft: s(8),
-                  }}
-                >
-                  <TouchableOpacity
-                    style={{
-                      width: s(20),
-                      height: s(20),
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                    onPress={() => handleQuantityChange(item, -1)}
-                  >
-                    <Text style={{ fontSize: s(14) }}>−</Text>
-                  </TouchableOpacity>
-
-                  <Text
-                    style={{
-                      paddingHorizontal: s(8),
-                      alignSelf: 'center',
-                      fontSize: s(12),
-                    }}
-                  >
-                    {item.product_quantity}
-                  </Text>
-
-                  <TouchableOpacity
-                    style={{
-                      width: s(20),
-                      height: s(20),
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                    onPress={() => handleQuantityChange(item, 1)}
-                  >
-                    <Text style={{ fontSize: s(14) }}>+</Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Delete button */}
-                <TouchableOpacity
-                  onPress={() => confirmRemoveItem(item)}
-                  style={{ marginLeft: s(10) }}
-                >
-                  <Ionicons name="trash-outline" size={s(20)} color="#ef4444" />
-                </TouchableOpacity>
-              </View>
-            ))}
+              Total:{' '}
+              <Text style={{ color: '#f97316' }}>Rs. {total.toFixed(2)}</Text>
+            </Text>
           </View>
-        ))}
 
-        {/* Vouchers Section */}
-        {filteredVouchers.length > 0 && (
-          <View style={{ backgroundColor: '#fff', marginTop: vs(8), padding: s(16) }}>
-            <Text style={{ fontSize: s(14), fontWeight: 'bold', color: '#1f2937', marginBottom: vs(8) }}>
-              Available Vouchers
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#f97316',
+              paddingHorizontal: s(14),
+              paddingVertical: vs(7),
+              borderRadius: s(6),
+            }}
+            onPress={handleCheckout}
+            disabled={checkoutLoading}
+          >
+            <Text style={{ color: '#fff', fontWeight: '600', fontSize: s(12) }}>
+              {checkoutLoading ? '...' : `Checkout (${selectedItems.length})`}
             </Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {filteredVouchers.map((voucher) => {
-                const isSelected = selectedVouchers.some((v) => v.voucher_id === voucher.voucher_id);
-                return (
-                  <TouchableOpacity
-                    key={voucher.voucher_id}
-                    onPress={() => applyVoucher(voucher)}
-                    style={{
-                      backgroundColor: isSelected ? '#ffedd5' : '#f3f4f6',
-                      borderColor: isSelected ? '#f97316' : '#e5e7eb',
-                      borderWidth: 1,
-                      borderRadius: s(8),
-                      padding: s(10),
-                      marginRight: s(10),
-                      minWidth: s(120),
-                    }}
-                  >
-                    <Text style={{ fontSize: s(12), fontWeight: 'bold', color: isSelected ? '#ea580c' : '#374151' }}>
-                      {voucher.voucher_code}
-                    </Text>
-                    <Text style={{ fontSize: s(10), color: '#6b7280', marginTop: vs(2) }} numberOfLines={1}>
-                      {voucher.voucherDescription}
-                    </Text>
-                    <Text style={{ fontSize: s(9), color: '#9ca3af', marginTop: vs(2) }}>
-                      Min: Rs. {voucher.voucher_minimumSpend}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          </View>
-        )}
-      </ScrollView>
-      )}
-
-      {/* ---------- CHECKOUT BAR ---------- */}
-      {cartData.length === 0 ? null : (
-      <View
-        style={{
-          backgroundColor: '#fff',
-          paddingHorizontal: s(16),
-          paddingVertical: vs(12),
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          borderTopWidth: 1,
-          borderTopColor: '#e5e7eb',
-        }}
-      >
-        <TouchableOpacity
-          style={{ flexDirection: 'row', alignItems: 'center' }}
-          onPress={() => toggleSelectAll(!selectedItems.length || selectedItems.length < cartData.length)}
-        >
-          <CheckBox checked={selectedItems.length === cartData.length} />
-          <Text style={{ marginLeft: s(6), fontSize: s(12) }}>All</Text>
-        </TouchableOpacity>
-
-        <View style={{ flex: 1, marginRight: s(10), marginLeft: s(12) }}>
-          <Text style={{ fontSize: s(11), color: '#1f2937' }}>
-            Subtotal: <Text style={{ fontWeight: '600' }}>Rs. {subtotal.toFixed(2)}</Text>
-          </Text>
-          {shippingFee > 0 && (
-            <Text style={{ fontSize: s(10), color: '#6b7280' }}>
-              Shipping: <Text style={{ color: '#ef4444' }}>Rs. {shippingFee.toFixed(2)}</Text>
-            </Text>
-          )}
-          {voucherDiscount > 0 && (
-            <Text style={{ fontSize: s(10), color: '#10b981' }}>
-              Discount: <Text>-Rs. {voucherDiscount.toFixed(2)}</Text>
-            </Text>
-          )}
-          <Text style={{ fontSize: s(12), color: '#1f2937', fontWeight: 'bold', marginTop: vs(2) }}>
-            Total:{' '}
-            <Text style={{ color: '#f97316' }}>
-              Rs. {total.toFixed(2)}
-            </Text>
-          </Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          style={{
-            backgroundColor: '#f97316',
-            paddingHorizontal: s(14),
-            paddingVertical: vs(7),
-            borderRadius: s(6),
-          }}
-          onPress={handleCheckout}
-          disabled={checkoutLoading}
-        >
-          <Text style={{ color: '#fff', fontWeight: '600', fontSize: s(12) }}>
-            {checkoutLoading ? '...' : `Checkout (${selectedItems.length})`}
-          </Text>
-        </TouchableOpacity>
-      </View>
       )}
 
       {/* ---------- DELETE CONFIRMATION MODAL ---------- */}
@@ -959,9 +1042,7 @@ const Cart = () => {
                 textAlign: 'center',
               }}
             >
-              {deleteType === 'all'
-                ? 'Clear Cart?'
-                : 'Remove Item?'}
+              {deleteType === 'all' ? 'Clear Cart?' : 'Remove Item?'}
             </Text>
             <Text
               style={{
@@ -976,7 +1057,13 @@ const Cart = () => {
                 ? 'Are you sure you want to remove all items from your cart?'
                 : 'Are you sure you want to remove this item from your cart?'}
             </Text>
-            <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                width: '100%',
+                justifyContent: 'space-between',
+              }}
+            >
               <TouchableOpacity
                 onPress={handleCancelDelete}
                 style={{
@@ -988,7 +1075,9 @@ const Cart = () => {
                   alignItems: 'center',
                 }}
               >
-                <Text style={{ color: '#374151', fontWeight: '600' }}>Cancel</Text>
+                <Text style={{ color: '#374151', fontWeight: '600' }}>
+                  Cancel
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleConfirmDelete}
@@ -1011,4 +1100,3 @@ const Cart = () => {
 };
 
 export default Cart;
-

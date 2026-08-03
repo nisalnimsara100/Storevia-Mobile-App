@@ -1,7 +1,7 @@
-import { Ionicons } from '@expo/vector-icons'
-import * as React from 'react'
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons';
+import * as React from 'react';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const promos = [
   {
@@ -18,12 +18,16 @@ const promos = [
     image: require('../../../assets/banners/banner2.jpg'),
     desc: '80% දක්වා වට්ටම්! Fashion, Electronics සහ තවත් දේවල්!',
   },
-]
+];
 
 const PromoCard = ({ item }: { item: any }) => {
   return (
     <View className="px-4">
-      <TouchableOpacity activeOpacity={0.95} style={{ borderWidth: 1, borderColor: '#e8e8e8' }} className="bg-white rounded-2xl overflow-hidden my-3">
+      <TouchableOpacity
+        activeOpacity={0.95}
+        style={{ borderWidth: 1, borderColor: '#e8e8e8' }}
+        className="bg-white rounded-2xl overflow-hidden my-3"
+      >
         <View className="flex-row items-center p-4">
           <View className="w-12 h-12 bg-pink-400 rounded-lg items-center justify-center mr-3 relative">
             <Ionicons name="megaphone" size={18} color="white" />
@@ -37,7 +41,11 @@ const PromoCard = ({ item }: { item: any }) => {
 
         <View className="px-4">
           <View className="w-full h-40 rounded-lg overflow-hidden bg-gray-100">
-            <Image source={item.image} className="w-full h-full" resizeMode="cover" />
+            <Image
+              source={item.image}
+              className="w-full h-full"
+              resizeMode="cover"
+            />
           </View>
         </View>
 
@@ -46,13 +54,13 @@ const PromoCard = ({ item }: { item: any }) => {
         </View>
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
 
 const PromosScreen = () => {
   return (
     // Keep the top safe area white so status bar and header appear on white
-    <SafeAreaView edges={["top"]} className="flex-1 bg-white">
+    <SafeAreaView edges={['top']} className="flex-1 bg-white">
       {/* Header stays on the white safe area to match the design */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200 bg-white">
         <TouchableOpacity className="p-1">
@@ -68,15 +76,17 @@ const PromosScreen = () => {
 
       {/* Content area uses a light gray background; cards remain white */}
       <View className="flex-1 bg-slate-100">
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 48 }}>
-          {promos.map(p => (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 48 }}
+        >
+          {promos.map((p) => (
             <PromoCard key={p.id} item={p} />
           ))}
         </ScrollView>
       </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default PromosScreen
-
+export default PromosScreen;

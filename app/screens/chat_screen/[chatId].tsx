@@ -1,19 +1,23 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   Alert,
   Animated,
   FlatList,
   Image,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -123,44 +127,47 @@ const ChatConversation = () => {
     };
   };
 
-  const fetchChatMessages = async (nextProductId?: number, nextStoreId?: number) => {
-    if (!BASE_URL || !nextProductId || !nextStoreId) return;
+  const fetchChatMessages = useCallback(
+    async (nextProductId?: number, nextStoreId?: number) => {
+      if (!BASE_URL || !nextProductId || !nextStoreId) return;
 
-    const userEmail = USER_EMAIL ?? '';
-    try {
-      const response = await fetch(`${BASE_URL}/api/messages/get_messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_id: nextProductId,
-          store_id: nextStoreId,
-          user_email: userEmail,
-          from: 'product_page',
-          sender: 'user',
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to load chat messages');
-      }
-
-      const result = await response.json();
-      const items: ChatMessageApi[] = result.messages || [];
-      const mapped = items.map(normalizeChatMessage);
-
-      setMessages(() => {
-        const merged = [...initialMessages, ...mapped];
-        const seen = new Set<string>();
-        return merged.filter((msg) => {
-          if (seen.has(msg.id)) return false;
-          seen.add(msg.id);
-          return true;
+      const userEmail = USER_EMAIL ?? '';
+      try {
+        const response = await fetch(`${BASE_URL}/api/messages/get_messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            product_id: nextProductId,
+            store_id: nextStoreId,
+            user_email: userEmail,
+            from: 'product_page',
+            sender: 'user',
+          }),
         });
-      });
-    } catch (error) {
-      console.error('Error loading chat messages:', error);
-    }
-  };
+
+        if (!response.ok) {
+          throw new Error('Failed to load chat messages');
+        }
+
+        const result = await response.json();
+        const items: ChatMessageApi[] = result.messages || [];
+        const mapped = items.map(normalizeChatMessage);
+
+        setMessages(() => {
+          const merged = [...initialMessages, ...mapped];
+          const seen = new Set<string>();
+          return merged.filter((msg) => {
+            if (seen.has(msg.id)) return false;
+            seen.add(msg.id);
+            return true;
+          });
+        });
+      } catch (error) {
+        console.error('Error loading chat messages:', error);
+      }
+    },
+    [initialMessages],
+  );
 
   const sendChatMessage = async (text: string) => {
     if (!BASE_URL || !chatMeta.productId || !chatMeta.storeId) return;
@@ -215,8 +222,7 @@ const ChatConversation = () => {
     }, 4000);
 
     return () => clearInterval(intervalId);
-  }, [chatMeta.productId, chatMeta.storeId]);
-
+  }, [chatMeta.productId, chatMeta.storeId, fetchChatMessages]);
 
   const toggleAttachments = () => {
     setShowEmojis(false);
@@ -361,13 +367,6 @@ const ChatConversation = () => {
     </Animated.View>
   );
 
-  const dismissKeyboardAndMenus = () => {
-    Keyboard.dismiss();
-    setShowAttachments(false);
-    setShowEmojis(false);
-  };
-
-
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -403,8 +402,12 @@ const ChatConversation = () => {
             style={styles.messagesList}
             contentContainerStyle={styles.messagesContent}
             keyboardShouldPersistTaps="handled"
-            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-            onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
+            onContentSizeChange={() =>
+              flatListRef.current?.scrollToEnd({ animated: true })
+            }
+            onLayout={() =>
+              flatListRef.current?.scrollToEnd({ animated: true })
+            }
             onScrollBeginDrag={() => {
               setShowAttachments(false);
               setShowEmojis(false);
@@ -423,7 +426,10 @@ const ChatConversation = () => {
           {/* Input Area - This stays on top of menus */}
           <View style={styles.inputContainer}>
             <TouchableOpacity
-              style={[styles.inputButton, showAttachments && styles.inputButtonActive]}
+              style={[
+                styles.inputButton,
+                showAttachments && styles.inputButtonActive,
+              ]}
               onPress={toggleAttachments}
             >
               {showAttachments ? (
@@ -443,13 +449,19 @@ const ChatConversation = () => {
             />
 
             <TouchableOpacity
-              style={[styles.inputButton, showEmojis && styles.inputButtonActive]}
+              style={[
+                styles.inputButton,
+                showEmojis && styles.inputButtonActive,
+              ]}
               onPress={toggleEmojis}
             >
               <Text style={styles.emojiButtonText}>😊</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.sendButton} onPress={handleSendChat}>
+            <TouchableOpacity
+              style={styles.sendButton}
+              onPress={handleSendChat}
+            >
               <Ionicons name="send" size={18} color="#FFFFFF" />
             </TouchableOpacity>
           </View>

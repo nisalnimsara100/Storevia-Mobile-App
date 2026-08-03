@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -35,9 +35,7 @@ const Account = () => {
   const [personalizedProducts, setPersonalizedProducts] = useState<any[]>([]);
 
   //GET STATS OF USER
-  const getStats = async (email: string) => {
-    console.log('email for stats: ', email);
-    console.log('profile image:', profilePicture);
+  const getStats = useCallback(async (email: string) => {
     try {
       const res1 = await fetch(
         `${BASEURL}/api/user/followed_stores/${encodeURIComponent(email)}`,
@@ -59,8 +57,6 @@ const Account = () => {
       );
       const data1 = await res1.json();
       const data2 = await res2.json();
-      // console.log("User Stats: ", data);
-      // console.log("User Stats: ", data2.vouchers.length);
       setFollowedStoresCount(data1.followedStores.length);
       setCollectedVoucherCount(data2.vouchers.length);
     } catch (err) {
@@ -68,7 +64,7 @@ const Account = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -79,7 +75,7 @@ const Account = () => {
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [getStats]);
 
   useEffect(() => {
     const email = user?.email;
@@ -103,11 +99,13 @@ const Account = () => {
         const raw = data?.products || data?.data?.products || data?.data || [];
 
         if (Array.isArray(raw)) {
-          // Just grab the first 6 products, adapting your transformation lightly 
+          // Just grab the first 6 products, adapting your transformation lightly
           // without relying on undefined external helpers.
           const transformed = raw.map((p: any) => {
             const price = parseFloat(p.product_price ?? p.price ?? '0');
-            const originalPrice = parseFloat(p.originalPrice ?? p.product_originalPrice ?? '0');
+            const originalPrice = parseFloat(
+              p.originalPrice ?? p.product_originalPrice ?? '0',
+            );
             return {
               ...p,
               product_image: p.product_image || p.image,
@@ -115,8 +113,9 @@ const Account = () => {
               originalPrice: originalPrice > price ? originalPrice : undefined,
             };
           });
-          const inStockProducts = transformed.filter((p: any) => 
-            p.product_stock === undefined || Number(p.product_stock) > 0
+          const inStockProducts = transformed.filter(
+            (p: any) =>
+              p.product_stock === undefined || Number(p.product_stock) > 0,
           );
           setPersonalizedProducts(inStockProducts.slice(0, 6));
         } else {
@@ -171,7 +170,7 @@ const Account = () => {
                     : user?.photoURL
                       ? { uri: user.photoURL }
                       : require('../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg')
-                }   
+                }
                 style={styles.profilePic}
               />
               <View style={styles.cameraIcon}>
@@ -334,16 +333,23 @@ const Account = () => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {personalizedProducts.length > 0 ? (
                 personalizedProducts.map((p, index) => {
-                  const discount = p.originalPrice 
-                    ? `${Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}%` 
+                  const discount = p.originalPrice
+                    ? `${Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}%`
                     : undefined;
                   return (
                     <ProductCard
                       key={index}
                       title={p.product_name || p.name}
-                      img={{ uri: p.product_image || 'https://via.placeholder.com/150' }}
+                      img={{
+                        uri:
+                          p.product_image || 'https://via.placeholder.com/150',
+                      }}
                       price={p.price.toLocaleString()}
-                      oldPrice={p.originalPrice ? p.originalPrice.toLocaleString() : undefined}
+                      oldPrice={
+                        p.originalPrice
+                          ? p.originalPrice.toLocaleString()
+                          : undefined
+                      }
                       discount={discount}
                     />
                   );
@@ -416,7 +422,9 @@ const ProductCard = ({ img, title, price, oldPrice, discount }: any) => (
       ) : null}
       <View style={styles.priceRow}>
         <Text style={styles.priceText}>Rs {price}</Text>
-        {oldPrice ? <Text style={styles.oldPriceText}>Rs {oldPrice}</Text> : null}
+        {oldPrice ? (
+          <Text style={styles.oldPriceText}>Rs {oldPrice}</Text>
+        ) : null}
       </View>
     </View>
   </View>
@@ -609,7 +617,11 @@ const styles = StyleSheet.create({
     borderRadius: scale(4),
     zIndex: 1,
   },
-  discountText: { color: '#fff', fontSize: responsiveFontSize(8), fontWeight: 'bold' },
+  discountText: {
+    color: '#fff',
+    fontSize: responsiveFontSize(8),
+    fontWeight: 'bold',
+  },
   productInfo: {
     padding: scale(8),
   },

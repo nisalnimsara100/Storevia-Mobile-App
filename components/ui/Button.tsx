@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { theme } from '@/theme';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'text' | 'danger';
+export type ButtonVariant =
+  'primary' | 'secondary' | 'outline' | 'text' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps {
@@ -109,11 +110,17 @@ export function Button({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'outline' || variant === 'text' ? theme.color.primary.DEFAULT : theme.color.text.inverse}
+          color={
+            variant === 'outline' || variant === 'text'
+              ? theme.color.primary.DEFAULT
+              : theme.color.text.inverse
+          }
         />
       ) : (
         <View style={styles.content}>
-          {icon && iconPosition === 'left' && <View style={styles.iconLeft}>{icon}</View>}
+          {icon && iconPosition === 'left' && (
+            <View style={styles.iconLeft}>{icon}</View>
+          )}
           <Text
             style={{
               color: variantStyle.textColor,
@@ -125,7 +132,9 @@ export function Button({
           >
             {label}
           </Text>
-          {icon && iconPosition === 'right' && <View style={styles.iconRight}>{icon}</View>}
+          {icon && iconPosition === 'right' && (
+            <View style={styles.iconRight}>{icon}</View>
+          )}
         </View>
       )}
     </TouchableOpacity>

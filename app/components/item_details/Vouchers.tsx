@@ -8,12 +8,10 @@ import {
   View,
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { s, vs} from 'react-native-size-matters';
+import { s, vs } from 'react-native-size-matters';
 import { useAuthStore } from '../../stores/useAuthStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
-
-
 
 interface Voucher {
   id: string | number;
@@ -59,10 +57,12 @@ interface VouchersResponse {
       product?: VoucherAPIResponse[];
       shipping?: VoucherAPIResponse[];
     };
-    admin_vouchers: VoucherAPIResponse[] | {
-      product?: VoucherAPIResponse[];
-      shipping?: VoucherAPIResponse[];
-    };
+    admin_vouchers:
+      | VoucherAPIResponse[]
+      | {
+          product?: VoucherAPIResponse[];
+          shipping?: VoucherAPIResponse[];
+        };
   };
 }
 
@@ -73,10 +73,6 @@ interface VoucherCarouselProps {
 const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
   const { user } = useAuthStore();
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
-  const [productVouchers, setProductVouchers] = useState<Voucher[]>([]);
-  const [freeShippingVouchers, setFreeShippingVouchers] = useState<Voucher[]>(
-    [],
-  );
   const [collectedVoucherIds, setCollectedVoucherIds] = useState<Set<string>>(
     new Set(),
   );
@@ -118,8 +114,7 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
       voucherCode: apiVoucher.voucherCode,
       voucherDescription: apiVoucher.voucherDescription,
       voucherDiscountType: apiVoucher.voucherDiscountType as
-        | 'flat'
-        | 'percentage',
+        'flat' | 'percentage',
       voucherDiscountRate: discountRate,
       voucherDiscountPrice: discountPrice,
       voucherExpiryDate: expiryDate,
@@ -140,12 +135,6 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
   useEffect(() => {
     const fetchVouchers = async (storeId: number) => {
       const userEmail = USER_EMAIL;
-      console.log(
-        'Fetching vouchers for store ID:',
-        storeId,
-        'and user email:',
-        userEmail,
-      );
       try {
         const response = await fetch(`${BASE_URL}/api/get_vouchers`, {
           method: 'POST',
@@ -162,18 +151,23 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
         }
 
         const result: VouchersResponse = await response.json();
-        console.log('Voucher API Data:', result);
 
         const sellerVouchers = result.data?.seller_vouchers || {};
 
         // Collect admin vouchers (may be an array or object with product/shipping keys)
         const adminVouchersRaw = result.data?.admin_vouchers;
-        const adminProductVouchers: VoucherAPIResponse[] = Array.isArray(adminVouchersRaw)
+        const adminProductVouchers: VoucherAPIResponse[] = Array.isArray(
+          adminVouchersRaw,
+        )
           ? (adminVouchersRaw as VoucherAPIResponse[])
-          : (adminVouchersRaw as { product?: VoucherAPIResponse[] })?.product || [];
-        const adminShippingVouchers: VoucherAPIResponse[] = Array.isArray(adminVouchersRaw)
+          : (adminVouchersRaw as { product?: VoucherAPIResponse[] })?.product ||
+            [];
+        const adminShippingVouchers: VoucherAPIResponse[] = Array.isArray(
+          adminVouchersRaw,
+        )
           ? []
-          : (adminVouchersRaw as { shipping?: VoucherAPIResponse[] })?.shipping || [];
+          : (adminVouchersRaw as { shipping?: VoucherAPIResponse[] })
+              ?.shipping || [];
 
         const parsedProductVouchers = [
           ...(sellerVouchers.product || []),
@@ -190,15 +184,13 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
           ...parsedShippingVouchers,
         ];
         setVouchers(allVouchers);
-        setProductVouchers(parsedProductVouchers);
-        setFreeShippingVouchers(parsedShippingVouchers);
       } catch (error) {
         console.error('Error fetching vouchers:', error);
       }
     };
 
     fetchVouchers(storeID as number);
-  }, [storeID]);
+  }, [storeID, USER_EMAIL]);
 
   const collectVoucher = async (voucherCode: string, storeId: number) => {
     // if (!user) {
@@ -303,8 +295,15 @@ const VoucherCarousel = ({ storeID }: VoucherCarouselProps) => {
                   <Text style={[styles.amount, { color: item.accentColor }]}>
                     {item.amount}
                   </Text>
-                  <View style={[styles.codeBadge, { borderColor: item.accentColor }]}>
-                    <Text style={[styles.codeText, { color: item.accentColor }]}>
+                  <View
+                    style={[
+                      styles.codeBadge,
+                      { borderColor: item.accentColor },
+                    ]}
+                  >
+                    <Text
+                      style={[styles.codeText, { color: item.accentColor }]}
+                    >
                       {item.voucherCode}
                     </Text>
                   </View>

@@ -1,55 +1,55 @@
-import { Ionicons } from '@expo/vector-icons'
-import { useLocalSearchParams } from 'expo-router'
-import React, { useState } from 'react'
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
 import {
   Alert,
   StyleSheet,
   Switch,
   Text,
   TouchableOpacity,
-  View
-} from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ChatSettings = () => {
-  const { storeName, productName } = useLocalSearchParams()
+  const { storeName, productName } = useLocalSearchParams();
   const resolvedStoreName =
     typeof storeName === 'string' && storeName.trim().length > 0
       ? storeName.trim()
-      : 'Store'
+      : 'Store';
   const resolvedProductName =
     typeof productName === 'string' && productName.trim().length > 0
       ? productName.trim()
-      : 'Product'
-  const [muteNotifications, setMuteNotifications] = useState(false)
-  const [addToBlacklist, setAddToBlacklist] = useState(false)
+      : 'Product';
+  const [muteNotifications, setMuteNotifications] = useState(false);
+  const [addToBlacklist, setAddToBlacklist] = useState(false);
 
   const handleMuteToggle = (value: boolean) => {
-    setMuteNotifications(value)
+    setMuteNotifications(value);
     Alert.alert(
-      'Mute Notifications', 
-      value ? 'Notifications muted' : 'Notifications enabled'
-    )
-  }
+      'Mute Notifications',
+      value ? 'Notifications muted' : 'Notifications enabled',
+    );
+  };
 
   const handleBlacklistToggle = (value: boolean) => {
-    setAddToBlacklist(value)
+    setAddToBlacklist(value);
     if (value) {
       Alert.alert(
-        'Add to Blacklist', 
-        'This seller has been added to blacklist. You can no longer send or receive messages.'
-      )
+        'Add to Blacklist',
+        'This seller has been added to blacklist. You can no longer send or receive messages.',
+      );
     } else {
       Alert.alert(
-        'Remove from Blacklist', 
-        'This seller has been removed from blacklist.'
-      )
+        'Remove from Blacklist',
+        'This seller has been removed from blacklist.',
+      );
     }
-  }
+  };
 
   const handleUserProfile = () => {
-    Alert.alert('Profile', `Opening ${resolvedStoreName} profile...`)
-  }
+    Alert.alert('Profile', `Opening ${resolvedStoreName} profile...`);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -85,7 +85,8 @@ const ChatSettings = () => {
           <View style={styles.settingContent}>
             <Text style={styles.settingLabel}>Add to Blacklist</Text>
             <Text style={styles.settingDescription}>
-              When you add this seller to the blacklist, you can neither send or receive any message from this seller
+              When you add this seller to the blacklist, you can neither send or
+              receive any message from this seller
             </Text>
           </View>
           <Switch
@@ -97,8 +98,8 @@ const ChatSettings = () => {
         </View>
       </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -170,6 +171,6 @@ const styles = StyleSheet.create({
     color: '#666666',
     lineHeight: 18,
   },
-})
+});
 
-export default ChatSettings
+export default ChatSettings;

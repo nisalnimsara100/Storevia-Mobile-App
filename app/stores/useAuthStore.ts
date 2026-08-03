@@ -69,8 +69,12 @@ export const useAuthStore = create<AuthState>()(
 
         return set((state) => ({
           user: userData,
-          cartCount: data?.cart_count !== undefined ? data.cart_count : state.cartCount,
-          followedStoreIds: data?.followed_store_ids !== undefined ? data.followed_store_ids : state.followedStoreIds,
+          cartCount:
+            data?.cart_count !== undefined ? data.cart_count : state.cartCount,
+          followedStoreIds:
+            data?.followed_store_ids !== undefined
+              ? data.followed_store_ids
+              : state.followedStoreIds,
         }));
       },
 

@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   RefreshControl,
@@ -10,7 +10,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 
 // Import JSON data directly
 import messagesData from '../../data/messagesData.json';
@@ -59,16 +62,21 @@ interface CustomerData {
 type Message = PromotionMessage | OrderMessage | DeliveryMessage;
 
 const Messages: React.FC = () => {
-  const [isNewCustomer, setIsNewCustomer] = useState<boolean>(false);
-  const [promotionMessages, setPromotionMessages] = useState<PromotionMessage[]>([]);
+  const [isNewCustomer] = useState<boolean>(false);
+  const [promotionMessages, setPromotionMessages] = useState<
+    PromotionMessage[]
+  >([]);
   const [orderMessages, setOrderMessages] = useState<OrderMessage[]>([]);
-  const [deliveryMessages, setDeliveryMessages] = useState<DeliveryMessage[]>([]);
+  const [deliveryMessages, setDeliveryMessages] = useState<DeliveryMessage[]>(
+    [],
+  );
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  
-  const autoUpdateInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const autoUpdateInterval = useRef<ReturnType<typeof setInterval> | null>(
+    null,
+  );
   const insets = useSafeAreaInsets();
 
-  
   const formatDate = (dateString: string | Date): string => {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');
@@ -77,14 +85,14 @@ const Messages: React.FC = () => {
     return `${day}/${month}/${year}`;
   };
 
-  const getCurrentDate = (): string => {
+  const getCurrentDate = useCallback((): string => {
     return formatDate(new Date());
-  };
+  }, []);
 
-  const generateRandomPromotion = (): PromotionMessage => {
+  const generateRandomPromotion = useCallback((): PromotionMessage => {
     const templates = (messagesData as any).promotionTemplates;
     const template = templates[Math.floor(Math.random() * templates.length)];
-    
+
     return {
       id: Date.now() + Math.random(),
       type: 'promo' as const,
@@ -96,33 +104,60 @@ const Messages: React.FC = () => {
       footerText: template.footerText,
       isNew: true,
     };
-  };
+  }, [getCurrentDate]);
 
-  
-  const startAutoUpdates = (): void => {
+  const startAutoUpdates = useCallback((): void => {
     if (autoUpdateInterval.current) {
       clearInterval(autoUpdateInterval.current);
     }
-    
+
     autoUpdateInterval.current = setInterval(() => {
-      
       if (Math.random() < 0.25) {
         const newPromotion = generateRandomPromotion();
-        setPromotionMessages(prev => {
+        setPromotionMessages((prev) => {
           // Keep only last 4 promotions
           const updated = [newPromotion, ...prev].slice(0, 4);
           return updated.map((msg, index) => ({ ...msg, isNew: index === 0 }));
         });
       }
     }, 45000); // Every 45 seconds
-  };
+  }, [generateRandomPromotion]);
 
-  const stopAutoUpdates = (): void => {
+  const stopAutoUpdates = useCallback((): void => {
     if (autoUpdateInterval.current) {
       clearInterval(autoUpdateInterval.current);
       autoUpdateInterval.current = null;
     }
-  };
+  }, []);
+
+  const loadMessagesFromJSON = useCallback(async (): Promise<void> => {
+    try {
+      setRefreshing(true);
+
+      const data = messagesData as any;
+
+      const customerData: CustomerData = isNewCustomer
+        ? data.newCustomer
+        : data.existingCustomer;
+
+      // Load promotions (available for both customer types)
+      setPromotionMessages(customerData.promotions || []);
+
+      // Load orders and deliveries only for existing customers
+      if (!customerData.isNewCustomer) {
+        setOrderMessages(customerData.orders || []);
+        setDeliveryMessages(customerData.deliveries || []);
+      } else {
+        setOrderMessages([]);
+        setDeliveryMessages([]);
+      }
+    } catch (error) {
+      console.error('Error loading messages from JSON:', error);
+      Alert.alert('Error', 'Failed to load messages. Please try again.');
+    } finally {
+      setRefreshing(false);
+    }
+  }, [isNewCustomer]);
 
   // Load messages from JSON data
   useEffect(() => {
@@ -132,39 +167,7 @@ const Messages: React.FC = () => {
     return () => {
       stopAutoUpdates();
     };
-  }, [isNewCustomer]);
-
-  const loadMessagesFromJSON = async (): Promise<void> => {
-    try {
-      setRefreshing(true);
-
-      
-      const data = messagesData as any;
-      
-      
-      const customerData: CustomerData = isNewCustomer 
-        ? data.newCustomer 
-        : data.existingCustomer;
-      
-      // Load promotions (available for both customer types)
-      setPromotionMessages(customerData.promotions || []);
-      
-      // Load orders and deliveries only for existing customers
-      if (!customerData.isNewCustomer) {
-        setOrderMessages(customerData.orders || []);
-        setDeliveryMessages(customerData.deliveries || []);
-      } else {
-        setOrderMessages([]);
-        setDeliveryMessages([]);
-      }
-
-    } catch (error) {
-      console.error('Error loading messages from JSON:', error);
-      Alert.alert('Error', 'Failed to load messages. Please try again.');
-    } finally {
-      setRefreshing(false);
-    }
-  };
+  }, [loadMessagesFromJSON, startAutoUpdates, stopAutoUpdates]);
 
   // Event handlers
   const onRefresh = (): void => {
@@ -197,11 +200,16 @@ const Messages: React.FC = () => {
       Alert.alert('Error', 'Invalid message data');
       return;
     }
-    Alert.alert('Message Details', `Type: ${message.type}\nTitle: ${message.title}\nDate: ${message.date}`);
+    Alert.alert(
+      'Message Details',
+      `Type: ${message.type}\nTitle: ${message.title}\nDate: ${message.date}`,
+    );
   };
 
   const handleMarkAllAsRead = (): void => {
-    setPromotionMessages(prev => prev.map(msg => ({ ...msg, isNew: false })));
+    setPromotionMessages((prev) =>
+      prev.map((msg) => ({ ...msg, isNew: false })),
+    );
     Alert.alert('Success', 'All messages marked as read');
   };
 
@@ -218,9 +226,12 @@ const Messages: React.FC = () => {
 
   // Render promotion message
   const renderPromotionMessage = (message: PromotionMessage) => (
-    <TouchableOpacity 
-      key={message.id} 
-      style={[styles.promoMessageContainer, message.isNew && styles.newMessageContainer]}
+    <TouchableOpacity
+      key={message.id}
+      style={[
+        styles.promoMessageContainer,
+        message.isNew && styles.newMessageContainer,
+      ]}
       onPress={() => handleMessagePress(message)}
     >
       <View style={styles.promoHeader}>
@@ -237,9 +248,17 @@ const Messages: React.FC = () => {
         )}
       </View>
       <Text style={styles.messageDate}>{message.date}</Text>
-      <View style={[styles.promoImageContainer, { backgroundColor: message.backgroundColor }]}>
+      <View
+        style={[
+          styles.promoImageContainer,
+          { backgroundColor: message.backgroundColor },
+        ]}
+      >
         <Text style={styles.promoContent}>{message.content}</Text>
-        <TouchableOpacity style={styles.playButton} onPress={getActionHandler(message.actionText)}>
+        <TouchableOpacity
+          style={styles.playButton}
+          onPress={getActionHandler(message.actionText)}
+        >
           <Text style={styles.playButtonText}>{message.actionText}</Text>
         </TouchableOpacity>
       </View>
@@ -249,8 +268,8 @@ const Messages: React.FC = () => {
 
   // Render order message
   const renderOrderMessage = (message: OrderMessage) => (
-    <TouchableOpacity 
-      key={message.id} 
+    <TouchableOpacity
+      key={message.id}
       style={styles.orderMessageContainer}
       onPress={() => handleMessagePress(message)}
     >
@@ -258,7 +277,9 @@ const Messages: React.FC = () => {
         <View style={styles.orderIconContainer}>
           <Ionicons name="bag" size={20} color="#FF6B35" />
         </View>
-        <Text style={styles.orderTitle} numberOfLines={2}>{message.title}</Text>
+        <Text style={styles.orderTitle} numberOfLines={2}>
+          {message.title}
+        </Text>
       </View>
       <Text style={styles.messageDate}>{message.date}</Text>
       <View style={styles.orderContent}>
@@ -266,7 +287,9 @@ const Messages: React.FC = () => {
           <Ionicons name="bag-outline" size={40} color="#FF6B35" />
         </View>
         <View style={styles.orderTextContainer}>
-          <Text style={styles.orderText} numberOfLines={3}>{message.content}</Text>
+          <Text style={styles.orderText} numberOfLines={3}>
+            {message.content}
+          </Text>
           <Text style={styles.orderNumber}>{message.orderNumber}</Text>
           <Text style={styles.orderStatus}>Status: {message.status}</Text>
         </View>
@@ -276,8 +299,8 @@ const Messages: React.FC = () => {
 
   // Render delivery message
   const renderDeliveryMessage = (message: DeliveryMessage) => (
-    <TouchableOpacity 
-      key={message.id} 
+    <TouchableOpacity
+      key={message.id}
       style={styles.deliveryMessageContainer}
       onPress={() => handleMessagePress(message)}
     >
@@ -293,9 +316,13 @@ const Messages: React.FC = () => {
           <Ionicons name="checkmark-circle-outline" size={40} color="#4CAF50" />
         </View>
         <View style={styles.deliveryTextContainer}>
-          <Text style={styles.deliveryText} numberOfLines={2}>{message.content}</Text>
+          <Text style={styles.deliveryText} numberOfLines={2}>
+            {message.content}
+          </Text>
           <Text style={styles.orderNumber}>{message.orderNumber}</Text>
-          <Text style={styles.deliveryStatus}>Delivered by: {message.deliveredBy}</Text>
+          <Text style={styles.deliveryStatus}>
+            Delivered by: {message.deliveredBy}
+          </Text>
           <Text style={styles.deliveryTime}>Time: {message.deliveryTime}</Text>
         </View>
       </View>
@@ -304,10 +331,12 @@ const Messages: React.FC = () => {
 
   // Main render views
   const renderNewCustomerView = () => (
-    <ScrollView 
-      style={styles.messagesContainer} 
+    <ScrollView
+      style={styles.messagesContainer}
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       {promotionMessages.length > 0 && (
         <View style={styles.lastDaysHeader}>
@@ -315,16 +344,20 @@ const Messages: React.FC = () => {
         </View>
       )}
       {promotionMessages.map(renderPromotionMessage)}
-      
+
       {promotionMessages.length === 0 && (
         <View style={styles.emptyStateContainer}>
           <View style={styles.emptyIconContainer}>
             <Ionicons name="mail-outline" size={60} color="#FF6B35" />
           </View>
           <Text style={styles.emptyStateText}>
-            Once you receive any personalized messages, you&apos;ll see them listed here.
+            Once you receive any personalized messages, you&apos;ll see them
+            listed here.
           </Text>
-          <TouchableOpacity style={styles.startShoppingButton} onPress={handleStartShopping}>
+          <TouchableOpacity
+            style={styles.startShoppingButton}
+            onPress={handleStartShopping}
+          >
             <Text style={styles.startShoppingText}>START SHOPPING</Text>
           </TouchableOpacity>
         </View>
@@ -333,10 +366,12 @@ const Messages: React.FC = () => {
   );
 
   const renderExistingCustomerView = () => (
-    <ScrollView 
-      style={styles.messagesContainer} 
+    <ScrollView
+      style={styles.messagesContainer}
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <View style={styles.lastDaysHeader}>
         <Text style={styles.lastDaysText}>Last 7 days</Text>
@@ -344,17 +379,23 @@ const Messages: React.FC = () => {
 
       {promotionMessages.map(renderPromotionMessage)}
       {orderMessages.length > 0 && orderMessages.map(renderOrderMessage)}
-      {deliveryMessages.length > 0 && deliveryMessages.map(renderDeliveryMessage)}
+      {deliveryMessages.length > 0 &&
+        deliveryMessages.map(renderDeliveryMessage)}
 
-      {promotionMessages.length === 0 && orderMessages.length === 0 && deliveryMessages.length === 0 && (
-        <View style={styles.noMessagesContainer}>
-          <Text style={styles.noMessagesText}>No messages available</Text>
-        </View>
-      )}
+      {promotionMessages.length === 0 &&
+        orderMessages.length === 0 &&
+        deliveryMessages.length === 0 && (
+          <View style={styles.noMessagesContainer}>
+            <Text style={styles.noMessagesText}>No messages available</Text>
+          </View>
+        )}
     </ScrollView>
   );
 
-  const hasMessages = promotionMessages.length > 0 || orderMessages.length > 0 || deliveryMessages.length > 0;
+  const hasMessages =
+    promotionMessages.length > 0 ||
+    orderMessages.length > 0 ||
+    deliveryMessages.length > 0;
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
@@ -394,7 +435,9 @@ const Messages: React.FC = () => {
         <TouchableOpacity style={styles.tab} onPress={handlePromosPress}>
           <View style={styles.tabIcon}>
             <Ionicons name="megaphone-outline" size={20} color="#f97316" />
-            {promotionMessages.length > 0 && <View style={styles.notificationDot} />}
+            {promotionMessages.length > 0 && (
+              <View style={styles.notificationDot} />
+            )}
           </View>
           <Text style={styles.tabText}>Promos</Text>
         </TouchableOpacity>

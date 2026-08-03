@@ -1,6 +1,6 @@
 /**
  * Storevia design tokens — single source of truth.
- * See /design.md for rationale. Consumed by:
+ * See /docs/design.md for rationale. Consumed by:
  *  - tailwind.config.js (via require, CommonJS) for NativeWind className usage
  *  - theme/index.ts (via import) for StyleSheet/inline style usage in components
  * Keep this file plain CommonJS (no TS-only syntax) so it can be required()

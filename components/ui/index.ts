@@ -25,4 +25,8 @@ export type { SpinnerProps, SkeletonProps } from './Skeleton';
 export { toast } from './Toast';
 
 export { ProductCard } from './ProductCard';
-export type { ProductCardProps, ProductCardVariant, Product } from './ProductCard';
+export type {
+  ProductCardProps,
+  ProductCardVariant,
+  Product,
+} from './ProductCard';

@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/app/stores/useAuthStore';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
-
 
 interface OrderItem {
   id: number;
@@ -68,7 +67,8 @@ const All = ({ statusFilter }: AllProps) => {
 
   const getStatusColor = (status: string) => {
     const normalized = status.toLowerCase();
-    if (normalized === 'cancelled' || normalized === 'canceled') return '#E53935';
+    if (normalized === 'cancelled' || normalized === 'canceled')
+      return '#E53935';
     if (normalized === 'delivered') return '#4CAF50';
     if (normalized === 'placed') return '#FF5722';
     return '#4A90E2';
@@ -85,7 +85,7 @@ const All = ({ statusFilter }: AllProps) => {
     return ['Buy again'];
   };
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     if (!BASE_URL) {
       setError('Base URL not configured.');
       setLoading(false);
@@ -123,11 +123,11 @@ const All = ({ statusFilter }: AllProps) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [USER_EMAIL]);
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [fetchOrders]);
 
   const normalizedFilters = statusFilter?.map((status) =>
     status.trim().toLowerCase(),
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   orderCard: {
     padding: 15,
     borderBottomWidth: 12,
-    borderBottomColor: '#F5F5F5', 
+    borderBottomColor: '#F5F5F5',
   },
   shopHeader: {
     flexDirection: 'row',
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 14,
-  }
+  },
 });
 
 export default All;

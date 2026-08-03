@@ -1,5 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -18,7 +24,15 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL ?? '';
 
-const AVATAR_COLORS = ['#FF7043', '#26A69A', '#5C6BC0', '#EC407A', '#8D6E63', '#7CB342', '#42A5F5'];
+const AVATAR_COLORS = [
+  '#FF7043',
+  '#26A69A',
+  '#5C6BC0',
+  '#EC407A',
+  '#8D6E63',
+  '#7CB342',
+  '#42A5F5',
+];
 
 // Shape returned by the API
 interface ApiReview {
@@ -57,7 +71,11 @@ interface ImageEntry {
 const formatDate = (dateStr: string): string => {
   try {
     const d = new Date(dateStr.replace(' ', 'T'));
-    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    return d.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
   } catch {
     return dateStr;
   }
@@ -138,7 +156,11 @@ const ReviewPreviewCard = ({
   const extraCount = review.images.length - shownImages.length;
 
   return (
-    <TouchableOpacity style={styles.previewCard} activeOpacity={0.8} onPress={onPressCard}>
+    <TouchableOpacity
+      style={styles.previewCard}
+      activeOpacity={0.8}
+      onPress={onPressCard}
+    >
       <View style={styles.previewTextCol}>
         <Text style={styles.previewText} numberOfLines={2}>
           {review.text}
@@ -154,7 +176,8 @@ const ReviewPreviewCard = ({
       {shownImages.length > 0 && (
         <View style={styles.previewImagesCol}>
           {shownImages.map((uri, idx) => {
-            const isLastWithOverlay = idx === shownImages.length - 1 && extraCount > 0;
+            const isLastWithOverlay =
+              idx === shownImages.length - 1 && extraCount > 0;
             return (
               <TouchableOpacity
                 key={idx}
@@ -165,7 +188,9 @@ const ReviewPreviewCard = ({
                 <Image source={{ uri }} style={styles.previewThumb} />
                 {isLastWithOverlay && (
                   <View style={styles.previewThumbOverlay}>
-                    <Text style={styles.previewThumbOverlayText}>+{extraCount}</Text>
+                    <Text style={styles.previewThumbOverlayText}>
+                      +{extraCount}
+                    </Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -195,10 +220,20 @@ const FullReviewItem = ({
     <View style={styles.fullReviewCard}>
       <View style={styles.fullReviewHeader}>
         {review.userImage ? (
-          <Image source={{ uri: review.userImage }} style={styles.avatarImage} />
+          <Image
+            source={{ uri: review.userImage }}
+            style={styles.avatarImage}
+          />
         ) : (
-          <View style={[styles.avatar, { backgroundColor: getAvatarColor(review.name) }]}>
-            <Text style={styles.avatarText}>{review.name.charAt(0).toUpperCase()}</Text>
+          <View
+            style={[
+              styles.avatar,
+              { backgroundColor: getAvatarColor(review.name) },
+            ]}
+          >
+            <Text style={styles.avatarText}>
+              {review.name.charAt(0).toUpperCase()}
+            </Text>
           </View>
         )}
         <View style={styles.fullReviewHeaderInfo}>
@@ -206,13 +241,17 @@ const FullReviewItem = ({
             {review.name}
           </Text>
           <Text style={styles.fullReviewMeta} numberOfLines={1}>
-            {review.date}{review.variant ? ` | ${review.variant}` : ''}
+            {review.date}
+            {review.variant ? ` | ${review.variant}` : ''}
           </Text>
         </View>
         <StarRow rating={review.rating} size={14} />
       </View>
 
-      <Text style={styles.fullReviewText} numberOfLines={expanded ? undefined : 4}>
+      <Text
+        style={styles.fullReviewText}
+        numberOfLines={expanded ? undefined : 4}
+      >
         {review.text}
       </Text>
       {isLong && (
@@ -228,7 +267,11 @@ const FullReviewItem = ({
           style={styles.fullReviewImagesRow}
         >
           {review.images.map((uri, idx) => (
-            <TouchableOpacity key={idx} activeOpacity={0.85} onPress={() => onPressImage(idx)}>
+            <TouchableOpacity
+              key={idx}
+              activeOpacity={0.85}
+              onPress={() => onPressImage(idx)}
+            >
               <Image source={{ uri }} style={styles.fullReviewImage} />
             </TouchableOpacity>
           ))}
@@ -242,7 +285,12 @@ const FullReviewItem = ({
             size={16}
             color={review.liked ? '#FF5722' : '#888'}
           />
-          <Text style={[styles.footerActionText, review.liked && styles.footerActionTextActive]}>
+          <Text
+            style={[
+              styles.footerActionText,
+              review.liked && styles.footerActionTextActive,
+            ]}
+          >
             {review.likes} Likes
           </Text>
         </TouchableOpacity>
@@ -297,7 +345,7 @@ const Ratings = ({ productId }: RatingsProps) => {
       } else {
         setError('Failed to load reviews.');
       }
-    } catch (err) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -318,12 +366,12 @@ const Ratings = ({ productId }: RatingsProps) => {
 
   const withImagesActualCount = useMemo(
     () => reviews.filter((r) => r.images.length > 0).length,
-    [reviews]
+    [reviews],
   );
 
   const uniqueVariants = useMemo(
     () => Array.from(new Set(reviews.map((r) => r.variant).filter(Boolean))),
-    [reviews]
+    [reviews],
   );
 
   const allImages = useMemo<ImageEntry[]>(
@@ -333,9 +381,9 @@ const Ratings = ({ productId }: RatingsProps) => {
           uri,
           reviewId: r.id,
           imageIndexInReview,
-        }))
+        })),
       ),
-    [reviews]
+    [reviews],
   );
 
   const filteredSortedReviews = useMemo(() => {
@@ -355,7 +403,7 @@ const Ratings = ({ productId }: RatingsProps) => {
 
   const currentViewerImage = allImages[viewerIndex];
   const currentViewerReview = currentViewerImage
-    ? reviews.find((r) => r.id === currentViewerImage.reviewId) ?? null
+    ? (reviews.find((r) => r.id === currentViewerImage.reviewId) ?? null)
     : null;
 
   useEffect(() => {
@@ -373,7 +421,7 @@ const Ratings = ({ productId }: RatingsProps) => {
           disliked: liked ? false : r.disliked,
           likes: r.likes + (liked ? 1 : -1),
         };
-      })
+      }),
     );
   };
 
@@ -388,7 +436,7 @@ const Ratings = ({ productId }: RatingsProps) => {
           liked: disliked ? false : r.liked,
           likes: r.liked && disliked ? r.likes - 1 : r.likes,
         };
-      })
+      }),
     );
   };
 
@@ -405,7 +453,9 @@ const Ratings = ({ productId }: RatingsProps) => {
 
   const openImageViewer = (reviewId: string, imageIndexInReview: number) => {
     const index = allImages.findIndex(
-      (img) => img.reviewId === reviewId && img.imageIndexInReview === imageIndexInReview
+      (img) =>
+        img.reviewId === reviewId &&
+        img.imageIndexInReview === imageIndexInReview,
     );
     setViewerIndex(index >= 0 ? index : 0);
     setGridVisible(false);
@@ -428,10 +478,18 @@ const Ratings = ({ productId }: RatingsProps) => {
   return (
     <View style={styles.container}>
       {/* Summary header */}
-      <TouchableOpacity style={styles.headerRow} activeOpacity={0.7} onPress={() => openReviewsModal()}>
-        <Text style={styles.headerTitle}>Ratings & Reviews ({totalReviews})</Text>
+      <TouchableOpacity
+        style={styles.headerRow}
+        activeOpacity={0.7}
+        onPress={() => openReviewsModal()}
+      >
+        <Text style={styles.headerTitle}>
+          Ratings & Reviews ({totalReviews})
+        </Text>
         <View style={styles.headerRight}>
-          <Text style={styles.headerRating}>{avgRating > 0 ? avgRating.toFixed(1) : '—'}</Text>
+          <Text style={styles.headerRating}>
+            {avgRating > 0 ? avgRating.toFixed(1) : '—'}
+          </Text>
           <StarRow rating={avgRating} size={14} />
           <Ionicons name="chevron-forward" size={18} color="#B0B0B0" />
         </View>
@@ -443,7 +501,9 @@ const Ratings = ({ productId }: RatingsProps) => {
         onPress={() => openReviewsModal('images')}
       >
         <Ionicons name="image-outline" size={14} color="#FF5722" />
-        <Text style={styles.imagesChipText}>With images/videos ({withImagesActualCount})</Text>
+        <Text style={styles.imagesChipText}>
+          With images/videos ({withImagesActualCount})
+        </Text>
       </TouchableOpacity>
 
       {/* Loading / error / preview states */}
@@ -463,30 +523,43 @@ const Ratings = ({ productId }: RatingsProps) => {
         </View>
       )}
 
-      {!loading && !error && previewReviews.map((review) => (
-        <ReviewPreviewCard
-          key={review.id}
-          review={review}
-          onPressCard={() => openReviewsModal()}
-          onPressImage={(idx) => openImageViewer(review.id, idx)}
-        />
-      ))}
+      {!loading &&
+        !error &&
+        previewReviews.map((review) => (
+          <ReviewPreviewCard
+            key={review.id}
+            review={review}
+            onPressCard={() => openReviewsModal()}
+            onPressImage={(idx) => openImageViewer(review.id, idx)}
+          />
+        ))}
 
       {!loading && !error && totalReviews === 0 && (
         <Text style={styles.emptyText}>No reviews yet for this product.</Text>
       )}
 
-      <TouchableOpacity style={styles.seeAllBtn} activeOpacity={0.7} onPress={() => openReviewsModal()}>
+      <TouchableOpacity
+        style={styles.seeAllBtn}
+        activeOpacity={0.7}
+        onPress={() => openReviewsModal()}
+      >
         <Text style={styles.seeAllText}>See all {totalReviews} reviews</Text>
         <Ionicons name="chevron-forward" size={15} color="#FF5722" />
       </TouchableOpacity>
 
       {/* Full ratings & reviews modal */}
-      <Modal visible={reviewsModalVisible} animationType="slide" onRequestClose={closeReviewsModal}>
+      <Modal
+        visible={reviewsModalVisible}
+        animationType="slide"
+        onRequestClose={closeReviewsModal}
+      >
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={closeReviewsModal} style={styles.modalIconBtn}>
-              <Ionicons name="arrow-back" size={22} color="#333" />
+            <TouchableOpacity
+              onPress={closeReviewsModal}
+              style={styles.modalIconBtn}
+            >
+              <Ionicons name="chevron-back" size={22} color="#333" />
             </TouchableOpacity>
             <Text style={styles.modalHeaderTitle}>Ratings & Reviews</Text>
             <View style={styles.modalIconBtn} />
@@ -497,13 +570,19 @@ const Ratings = ({ productId }: RatingsProps) => {
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.modalListContent}
-            ItemSeparatorComponent={() => <View style={styles.reviewSeparator} />}
+            ItemSeparatorComponent={() => (
+              <View style={styles.reviewSeparator} />
+            )}
             ListHeaderComponent={
               <View>
                 <View style={styles.summaryBox}>
-                  <Text style={styles.summaryRatingNum}>{avgRating > 0 ? avgRating.toFixed(1) : '—'}</Text>
+                  <Text style={styles.summaryRatingNum}>
+                    {avgRating > 0 ? avgRating.toFixed(1) : '—'}
+                  </Text>
                   <StarRow rating={avgRating} size={16} />
-                  <Text style={styles.summaryReviewsCount}>{totalReviews} Reviews</Text>
+                  <Text style={styles.summaryReviewsCount}>
+                    {totalReviews} Reviews
+                  </Text>
                 </View>
 
                 <View style={styles.aiSummaryBox}>
@@ -512,9 +591,15 @@ const Ratings = ({ productId }: RatingsProps) => {
                       <Ionicons name="sparkles" size={14} color="#7C4DFF" />
                       <Text style={styles.aiSummaryTitle}>AI summary</Text>
                     </View>
-                    <Text style={styles.aiSummaryBadge}>Powered by AI from genuine reviews</Text>
+                    <Text style={styles.aiSummaryBadge}>
+                      Powered by AI from genuine reviews
+                    </Text>
                   </View>
-                  <Text style={styles.aiSummaryText}>{'Reviews are summarised based on verified purchases from customers on Storevia.'}</Text>
+                  <Text style={styles.aiSummaryText}>
+                    {
+                      'Reviews are summarised based on verified purchases from customers on Storevia.'
+                    }
+                  </Text>
                 </View>
 
                 <ScrollView
@@ -523,28 +608,50 @@ const Ratings = ({ productId }: RatingsProps) => {
                   style={styles.filterChipsRow}
                 >
                   <TouchableOpacity
-                    style={[styles.filterChip, filter === 'all' && styles.filterChipActive]}
+                    style={[
+                      styles.filterChip,
+                      filter === 'all' && styles.filterChipActive,
+                    ]}
                     onPress={() => setFilter('all')}
                   >
-                    <Text style={[styles.filterChipText, filter === 'all' && styles.filterChipTextActive]}>
+                    <Text
+                      style={[
+                        styles.filterChipText,
+                        filter === 'all' && styles.filterChipTextActive,
+                      ]}
+                    >
                       ALL
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.filterChip, filter === 'images' && styles.filterChipActive]}
+                    style={[
+                      styles.filterChip,
+                      filter === 'images' && styles.filterChipActive,
+                    ]}
                     onPress={() => setFilter('images')}
                   >
                     <Text
-                      style={[styles.filterChipText, filter === 'images' && styles.filterChipTextActive]}
+                      style={[
+                        styles.filterChipText,
+                        filter === 'images' && styles.filterChipTextActive,
+                      ]}
                     >
                       With image/video ({withImagesActualCount})
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.filterChip, filter === 'low' && styles.filterChipActive]}
+                    style={[
+                      styles.filterChip,
+                      filter === 'low' && styles.filterChipActive,
+                    ]}
                     onPress={() => setFilter('low')}
                   >
-                    <Text style={[styles.filterChipText, filter === 'low' && styles.filterChipTextActive]}>
+                    <Text
+                      style={[
+                        styles.filterChipText,
+                        filter === 'low' && styles.filterChipTextActive,
+                      ]}
+                    >
                       Low rating
                     </Text>
                   </TouchableOpacity>
@@ -555,7 +662,9 @@ const Ratings = ({ productId }: RatingsProps) => {
                       setSortMenuVisible(false);
                     }}
                   >
-                    <Text style={styles.categoryChipText}>{categoryFilter ?? 'By category'}</Text>
+                    <Text style={styles.categoryChipText}>
+                      {categoryFilter ?? 'By category'}
+                    </Text>
                     <Ionicons name="chevron-down" size={13} color="#666" />
                   </TouchableOpacity>
                 </ScrollView>
@@ -592,13 +701,21 @@ const Ratings = ({ productId }: RatingsProps) => {
                     onPress={() =>
                       Alert.alert(
                         'Genuine Reviews',
-                        'These reviews are collected only from customers who purchased this product through Storevia.'
+                        'These reviews are collected only from customers who purchased this product through Storevia.',
                       )
                     }
                   >
-                    <Ionicons name="shield-checkmark" size={14} color="#4CAF50" />
+                    <Ionicons
+                      name="shield-checkmark"
+                      size={14}
+                      color="#4CAF50"
+                    />
                     <Text style={styles.genuineText}>Genuine Reviews</Text>
-                    <Ionicons name="help-circle-outline" size={13} color="#999" />
+                    <Ionicons
+                      name="help-circle-outline"
+                      size={13}
+                      color="#999"
+                    />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.sortRow}
@@ -623,7 +740,9 @@ const Ratings = ({ productId }: RatingsProps) => {
                           setSortMenuVisible(false);
                         }}
                       >
-                        <Text style={styles.dropdownItemText}>{SORT_LABELS[key]}</Text>
+                        <Text style={styles.dropdownItemText}>
+                          {SORT_LABELS[key]}
+                        </Text>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -638,22 +757,38 @@ const Ratings = ({ productId }: RatingsProps) => {
                 onPressImage={(idx) => openImageViewer(item.id, idx)}
               />
             )}
-            ListEmptyComponent={<Text style={styles.emptyText}>No reviews match this filter.</Text>}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>
+                No reviews match this filter.
+              </Text>
+            }
           />
         </View>
       </Modal>
 
       {/* Full-screen image viewer */}
-      <Modal visible={imageViewerVisible} animationType="fade" onRequestClose={closeImageViewer}>
+      <Modal
+        visible={imageViewerVisible}
+        animationType="fade"
+        onRequestClose={closeImageViewer}
+      >
         <View style={styles.viewerContainer}>
           <View style={styles.viewerHeader}>
-            <TouchableOpacity onPress={closeImageViewer} style={styles.viewerIconBtn}>
+            <TouchableOpacity
+              onPress={closeImageViewer}
+              style={styles.viewerIconBtn}
+            >
               <Ionicons name="close" size={24} color="#fff" />
             </TouchableOpacity>
             <Text style={styles.viewerCounter}>
-              {allImages.length > 0 ? `${viewerIndex + 1}/${allImages.length}` : ''}
+              {allImages.length > 0
+                ? `${viewerIndex + 1}/${allImages.length}`
+                : ''}
             </Text>
-            <TouchableOpacity onPress={() => setGridVisible((v) => !v)} style={styles.viewerIconBtn}>
+            <TouchableOpacity
+              onPress={() => setGridVisible((v) => !v)}
+              style={styles.viewerIconBtn}
+            >
               <Ionicons name="grid-outline" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -674,12 +809,18 @@ const Ratings = ({ productId }: RatingsProps) => {
                   index,
                 })}
                 onMomentumScrollEnd={(e) => {
-                  const idx = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+                  const idx = Math.round(
+                    e.nativeEvent.contentOffset.x / SCREEN_WIDTH,
+                  );
                   setViewerIndex(idx);
                 }}
                 renderItem={({ item }) => (
                   <View style={styles.viewerImageWrap}>
-                    <Image source={{ uri: item.uri }} style={styles.viewerImage} resizeMode="contain" />
+                    <Image
+                      source={{ uri: item.uri }}
+                      style={styles.viewerImage}
+                      resizeMode="contain"
+                    />
                   </View>
                 )}
               />
@@ -687,7 +828,9 @@ const Ratings = ({ productId }: RatingsProps) => {
               {currentViewerReview && (
                 <View style={styles.viewerCaption}>
                   <StarRow rating={currentViewerReview.rating} size={13} />
-                  <Text style={styles.viewerCaptionName}>{currentViewerReview.name}</Text>
+                  <Text style={styles.viewerCaptionName}>
+                    {currentViewerReview.name}
+                  </Text>
                   <Text
                     style={styles.viewerCaptionText}
                     numberOfLines={captionExpanded ? undefined : 2}
@@ -695,8 +838,12 @@ const Ratings = ({ productId }: RatingsProps) => {
                     {currentViewerReview.text}
                   </Text>
                   {currentViewerReview.text.length > 90 && (
-                    <TouchableOpacity onPress={() => setCaptionExpanded((v) => !v)}>
-                      <Text style={styles.viewerMoreText}>{captionExpanded ? 'Less' : 'More'}</Text>
+                    <TouchableOpacity
+                      onPress={() => setCaptionExpanded((v) => !v)}
+                    >
+                      <Text style={styles.viewerMoreText}>
+                        {captionExpanded ? 'Less' : 'More'}
+                      </Text>
                     </TouchableOpacity>
                   )}
                   <View style={styles.viewerActionsRow}>
@@ -705,7 +852,11 @@ const Ratings = ({ productId }: RatingsProps) => {
                       onPress={() => toggleLike(currentViewerReview.id)}
                     >
                       <Ionicons
-                        name={currentViewerReview.liked ? 'thumbs-up' : 'thumbs-up-outline'}
+                        name={
+                          currentViewerReview.liked
+                            ? 'thumbs-up'
+                            : 'thumbs-up-outline'
+                        }
                         size={18}
                         color="#fff"
                       />
@@ -715,16 +866,28 @@ const Ratings = ({ productId }: RatingsProps) => {
                       onPress={() => toggleDislike(currentViewerReview.id)}
                     >
                       <Ionicons
-                        name={currentViewerReview.disliked ? 'thumbs-down' : 'thumbs-down-outline'}
+                        name={
+                          currentViewerReview.disliked
+                            ? 'thumbs-down'
+                            : 'thumbs-down-outline'
+                        }
                         size={18}
                         color="#fff"
                       />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.viewerActionBtn}>
-                      <Ionicons name="chatbubble-outline" size={17} color="#fff" />
+                      <Ionicons
+                        name="chatbubble-outline"
+                        size={17}
+                        color="#fff"
+                      />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.viewerActionBtn}>
-                      <Ionicons name="ellipsis-horizontal" size={18} color="#fff" />
+                      <Ionicons
+                        name="ellipsis-horizontal"
+                        size={18}
+                        color="#fff"
+                      />
                     </TouchableOpacity>
                   </View>
                 </View>

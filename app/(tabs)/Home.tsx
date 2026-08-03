@@ -22,8 +22,7 @@ import Swiper from 'react-native-swiper';
 
 import { Link, useRouter } from 'expo-router';
 
-import FlashSaleCard from '../components/FlashSaleCard';
-import LargeProductTile from '../components/LargeProductTile';
+import { ProductCard } from '@/components/ui';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 
@@ -275,7 +274,11 @@ const Home = () => {
                 return (
                   <TouchableOpacity
                     activeOpacity={0.85}
-                    onPress={() => router.push(`/search?param=${encodeURIComponent(item.name)}`)}
+                    onPress={() =>
+                      router.push(
+                        `/search?param=${encodeURIComponent(item.name)}`,
+                      )
+                    }
                     style={styles.categoryTile}
                   >
                     <View
@@ -291,10 +294,7 @@ const Home = () => {
                         strokeWidth={2}
                       />
                     </View>
-                    <Text
-                      style={styles.categoryLabel}
-                      numberOfLines={1}
-                    >
+                    <Text style={styles.categoryLabel} numberOfLines={1}>
                       {item.name}
                     </Text>
                   </TouchableOpacity>
@@ -376,7 +376,9 @@ const Home = () => {
               showsHorizontalScrollIndicator={false}
               data={flashSaleItems}
               keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => <FlashSaleCard item={item} />}
+              renderItem={({ item }) => (
+                <ProductCard product={item} variant="flashsale" />
+              )}
             />
           </View>
         );
@@ -388,7 +390,9 @@ const Home = () => {
               data={products}
               keyExtractor={(item) => item.id.toString()}
               numColumns={2}
-              renderItem={({ item }) => <LargeProductTile item={item} />}
+              renderItem={({ item }) => (
+                <ProductCard product={item} variant="list" />
+              )}
               showsVerticalScrollIndicator={false}
               scrollEnabled={false}
             />

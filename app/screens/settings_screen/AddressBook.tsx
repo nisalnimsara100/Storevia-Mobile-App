@@ -15,8 +15,10 @@ import {
   View,
 } from 'react-native';
 import { useAuthStore } from '../../stores/useAuthStore';
+import { ScreenHeader } from '@/components/ui';
 
-const baseUrl2 = process.env.EXPO_PUBLIC_APP_BASE_URL || 'http://localhost:3000';
+const baseUrl2 =
+  process.env.EXPO_PUBLIC_APP_BASE_URL || 'http://localhost:3000';
 
 const SRI_LANKA_PROVINCES = [
   'Western Province',
@@ -88,7 +90,7 @@ const AddressBook = () => {
     try {
       const response = await fetch(
         `${baseUrl2}/api/user/address?email=${encodeURIComponent(currentloggedInEmail)}`,
-        { method: 'GET', headers: { Accept: 'application/json' } }
+        { method: 'GET', headers: { Accept: 'application/json' } },
       );
       const data = await response.json();
       console.log('address data:', data);
@@ -198,7 +200,10 @@ const AddressBook = () => {
       console.log('save address response:', data);
 
       if (data.status !== 'success') {
-        Alert.alert('Error', data?.message || 'Failed to save address. Please try again.');
+        Alert.alert(
+          'Error',
+          data?.message || 'Failed to save address. Please try again.',
+        );
         return false;
       }
 
@@ -268,7 +273,10 @@ const AddressBook = () => {
         setAddresses(updatedAddresses);
         return true;
       } else {
-        Alert.alert('Error', result?.message || 'Failed to update address. Please try again.');
+        Alert.alert(
+          'Error',
+          result?.message || 'Failed to update address. Please try again.',
+        );
         return false;
       }
     } catch (err) {
@@ -319,7 +327,7 @@ const AddressBook = () => {
       addresses.map((addr, i) => ({
         ...addr,
         useAsBilling: i === index,
-      }))
+      })),
     );
   };
 
@@ -329,8 +337,10 @@ const AddressBook = () => {
       .filter(Boolean)
       .join(', ');
 
-  const setField = <K extends keyof NewAddressForm>(key: K, value: NewAddressForm[K]) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
+  const setField = <K extends keyof NewAddressForm>(
+    key: K,
+    value: NewAddressForm[K],
+  ) => setForm((prev) => ({ ...prev, [key]: value }));
 
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
@@ -341,31 +351,30 @@ const AddressBook = () => {
     >
       <View className="flex-1 bg-gray-50">
         {/* Header */}
-        <View className="flex-row items-center gap-4 px-4 py-4 border-b border-gray-200 bg-white mt-[10%]">
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </TouchableOpacity>
-          <Text className="text-lg font-bold text-center flex-1">My Address</Text>
-          <View className="w-8" />
+        <View className="border-b border-gray-200 bg-white mt-[10%]">
+          <ScreenHeader title="My Address" onBack={() => router.back()} />
         </View>
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="w-full px-4 pt-4 bg-gray-50">
-
             {/* Add Address Button */}
             <TouchableOpacity
               className="bg-white flex-row justify-center items-center py-4 border-2 border-blue-500 rounded-sm mb-6"
               onPress={openAddModal}
             >
               <Ionicons name="add-circle-outline" size={20} color="#3b82f6" />
-              <Text className="text-base font-light text-blue-600 ml-2">Add New Address</Text>
+              <Text className="text-base font-light text-blue-600 ml-2">
+                Add New Address
+              </Text>
             </TouchableOpacity>
 
             {/* Loading */}
             {loading && (
               <View className="flex-1 items-center justify-center py-12">
                 <ActivityIndicator size="large" color="#3b82f6" />
-                <Text className="text-gray-400 text-sm mt-3">Loading addresses...</Text>
+                <Text className="text-gray-400 text-sm mt-3">
+                  Loading addresses...
+                </Text>
               </View>
             )}
 
@@ -373,8 +382,12 @@ const AddressBook = () => {
             {!loading && addresses.length === 0 && (
               <View className="flex-1 items-center justify-center py-16">
                 <Ionicons name="location-outline" size={48} color="#d1d5db" />
-                <Text className="text-gray-400 text-base mt-3 font-medium">No addresses found</Text>
-                <Text className="text-gray-300 text-sm mt-1">Add a new address to get started</Text>
+                <Text className="text-gray-400 text-base mt-3 font-medium">
+                  No addresses found
+                </Text>
+                <Text className="text-gray-300 text-sm mt-1">
+                  Add a new address to get started
+                </Text>
               </View>
             )}
 
@@ -403,7 +416,11 @@ const AddressBook = () => {
                       className="flex-row items-center"
                       onPress={() => openEditModal(addr, index)}
                     >
-                      <Ionicons name="create-outline" size={18} color="#6b7280" />
+                      <Ionicons
+                        name="create-outline"
+                        size={18}
+                        color="#6b7280"
+                      />
                       <Text className="text-gray-500 text-sm ml-1">Edit</Text>
                     </TouchableOpacity>
                   </View>
@@ -411,12 +428,22 @@ const AddressBook = () => {
                   {/* Name & Phone */}
                   <View className="flex-row justify-between items-center mb-3">
                     <Text className="text-base font-bold text-gray-900">
-                      {[addr.firstName, addr.lastName].filter(Boolean).join(' ') || user?.name || 'N/A'}
+                      {[addr.firstName, addr.lastName]
+                        .filter(Boolean)
+                        .join(' ') ||
+                        user?.name ||
+                        'N/A'}
                     </Text>
                     {addr.phone ? (
                       <View className="flex-row items-center">
-                        <Ionicons name="call-outline" size={14} color="#6b7280" />
-                        <Text className="text-sm text-gray-600 font-medium ml-1">{addr.phone}</Text>
+                        <Ionicons
+                          name="call-outline"
+                          size={14}
+                          color="#6b7280"
+                        />
+                        <Text className="text-sm text-gray-600 font-medium ml-1">
+                          {addr.phone}
+                        </Text>
                       </View>
                     ) : null}
                   </View>
@@ -424,7 +451,12 @@ const AddressBook = () => {
                   {/* Address line */}
                   <View className="mb-4">
                     <View className="flex-row items-start">
-                      <Ionicons name="location-outline" size={16} color="#9ca3af" style={{ marginTop: 2 }} />
+                      <Ionicons
+                        name="location-outline"
+                        size={16}
+                        color="#9ca3af"
+                        style={{ marginTop: 2 }}
+                      />
                       <Text className="text-gray-600 text-sm leading-5 ml-2 flex-1">
                         {formatAddressLine(addr) || 'No address details'}
                       </Text>
@@ -437,7 +469,9 @@ const AddressBook = () => {
                       {addr.useAsBilling && (
                         <View className="bg-amber-50 border border-amber-300 rounded-full px-3 py-1 flex-row items-center gap-1">
                           <Ionicons name="star" size={10} color="#d97706" />
-                          <Text className="text-amber-700 font-semibold text-xs">DEFAULT SHIPPING</Text>
+                          <Text className="text-amber-700 font-semibold text-xs">
+                            DEFAULT SHIPPING
+                          </Text>
                         </View>
                       )}
                     </View>
@@ -446,10 +480,18 @@ const AddressBook = () => {
                     {!addr.useAsBilling && (
                       <TouchableOpacity
                         className="flex-row items-center bg-amber-50 border border-amber-200 rounded-full px-3 py-1 mt-1"
-                        onPress={() => handleToggleBillingAddress(index, Number(addr.id))}
+                        onPress={() =>
+                          handleToggleBillingAddress(index, Number(addr.id))
+                        }
                       >
-                        <Ionicons name="star-outline" size={12} color="#d97706" />
-                        <Text className="text-amber-700 font-medium text-xs ml-1">Set as Default</Text>
+                        <Ionicons
+                          name="star-outline"
+                          size={12}
+                          color="#d97706"
+                        />
+                        <Text className="text-amber-700 font-medium text-xs ml-1">
+                          Set as Default
+                        </Text>
                       </TouchableOpacity>
                     )}
                   </View>
@@ -461,10 +503,20 @@ const AddressBook = () => {
 
       {/* ── Add / Edit Address Modal ──────────────────────────────────────── */}
       <Modal visible={modalOpen} transparent animationType="slide">
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            justifyContent: 'flex-end',
+          }}
+        >
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{ backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
+            style={{
+              backgroundColor: '#fff',
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+            }}
           >
             {/* Modal Header */}
             <View className="flex-row justify-between items-center px-5 pt-5 pb-3 border-b border-gray-100">
@@ -485,7 +537,9 @@ const AddressBook = () => {
               {/* Row: First / Last name */}
               <View className="flex-row gap-3 mt-4">
                 <View className="flex-1">
-                  <Text className="text-xs text-gray-500 mb-1 font-medium">First Name *</Text>
+                  <Text className="text-xs text-gray-500 mb-1 font-medium">
+                    First Name *
+                  </Text>
                   <TextInput
                     className="border border-gray-200 rounded-xl px-3 py-3 text-sm text-gray-800 bg-gray-50"
                     placeholder="John"
@@ -495,7 +549,9 @@ const AddressBook = () => {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-xs text-gray-500 mb-1 font-medium">Last Name *</Text>
+                  <Text className="text-xs text-gray-500 mb-1 font-medium">
+                    Last Name *
+                  </Text>
                   <TextInput
                     className="border border-gray-200 rounded-xl px-3 py-3 text-sm text-gray-800 bg-gray-50"
                     placeholder="Doe"
@@ -508,7 +564,9 @@ const AddressBook = () => {
 
               {/* Phone */}
               <View className="mt-4">
-                <Text className="text-xs text-gray-500 mb-1 font-medium">Phone Number *</Text>
+                <Text className="text-xs text-gray-500 mb-1 font-medium">
+                  Phone Number *
+                </Text>
                 <TextInput
                   className="border border-gray-200 rounded-xl px-3 py-3 text-sm text-gray-800 bg-gray-50"
                   placeholder="07X XXX XXXX"
@@ -521,7 +579,9 @@ const AddressBook = () => {
 
               {/* Address */}
               <View className="mt-4">
-                <Text className="text-xs text-gray-500 mb-1 font-medium">Street Address *</Text>
+                <Text className="text-xs text-gray-500 mb-1 font-medium">
+                  Street Address *
+                </Text>
                 <TextInput
                   className="border border-gray-200 rounded-xl px-3 py-3 text-sm text-gray-800 bg-gray-50"
                   placeholder="No. 12, Main Street"
@@ -535,7 +595,9 @@ const AddressBook = () => {
 
               {/* City */}
               <View className="mt-4">
-                <Text className="text-xs text-gray-500 mb-1 font-medium">City *</Text>
+                <Text className="text-xs text-gray-500 mb-1 font-medium">
+                  City *
+                </Text>
                 <TextInput
                   className="border border-gray-200 rounded-xl px-3 py-3 text-sm text-gray-800 bg-gray-50"
                   placeholder="Colombo"
@@ -547,12 +609,20 @@ const AddressBook = () => {
 
               {/* Province picker */}
               <View className="mt-4">
-                <Text className="text-xs text-gray-500 mb-1 font-medium">Province *</Text>
+                <Text className="text-xs text-gray-500 mb-1 font-medium">
+                  Province *
+                </Text>
                 <TouchableOpacity
                   className="border border-gray-200 rounded-xl px-3 py-3 bg-gray-50 flex-row justify-between items-center"
                   onPress={() => setProvincePickerOpen((p) => !p)}
                 >
-                  <Text className={form.province ? 'text-sm text-gray-800' : 'text-sm text-gray-400'}>
+                  <Text
+                    className={
+                      form.province
+                        ? 'text-sm text-gray-800'
+                        : 'text-sm text-gray-400'
+                    }
+                  >
                     {form.province || 'Select Province'}
                   </Text>
                   <Ionicons
@@ -568,13 +638,22 @@ const AddressBook = () => {
                       <TouchableOpacity
                         key={p}
                         className={`px-4 py-3 border-b border-gray-50 flex-row justify-between items-center ${form.province === p ? 'bg-blue-50' : ''}`}
-                        onPress={() => { setField('province', p); setProvincePickerOpen(false); }}
+                        onPress={() => {
+                          setField('province', p);
+                          setProvincePickerOpen(false);
+                        }}
                       >
-                        <Text className={`text-sm ${form.province === p ? 'text-blue-600 font-semibold' : 'text-gray-700'}`}>
+                        <Text
+                          className={`text-sm ${form.province === p ? 'text-blue-600 font-semibold' : 'text-gray-700'}`}
+                        >
                           {p}
                         </Text>
                         {form.province === p && (
-                          <Ionicons name="checkmark" size={16} color="#3b82f6" />
+                          <Ionicons
+                            name="checkmark"
+                            size={16}
+                            color="#3b82f6"
+                          />
                         )}
                       </TouchableOpacity>
                     ))}
@@ -584,7 +663,9 @@ const AddressBook = () => {
 
               {/* Postal Code */}
               <View className="mt-4">
-                <Text className="text-xs text-gray-500 mb-1 font-medium">Postal Code</Text>
+                <Text className="text-xs text-gray-500 mb-1 font-medium">
+                  Postal Code
+                </Text>
                 <TextInput
                   className="border border-gray-200 rounded-xl px-3 py-3 text-sm text-gray-800 bg-gray-50"
                   placeholder="10100"
@@ -598,8 +679,12 @@ const AddressBook = () => {
               {/* Use as Billing */}
               <View className="flex-row justify-between items-center mt-5 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
                 <View className="flex-1 pr-4">
-                  <Text className="text-sm font-semibold text-gray-800">Use as billing address</Text>
-                  <Text className="text-xs text-gray-400 mt-0.5">Set this as your default billing address</Text>
+                  <Text className="text-sm font-semibold text-gray-800">
+                    Use as billing address
+                  </Text>
+                  <Text className="text-xs text-gray-400 mt-0.5">
+                    Set this as your default billing address
+                  </Text>
                 </View>
                 <Switch
                   value={form.useAsBilling}

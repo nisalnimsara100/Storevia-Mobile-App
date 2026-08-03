@@ -3,7 +3,7 @@ import { reviewKey, useReviewsStore } from '@/app/stores/useReviewsStore';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   Image,
@@ -36,7 +36,9 @@ const WriteReview = () => {
   }>();
 
   const { user } = useAuthStore();
-  const addSubmittedReview = useReviewsStore((state) => state.addSubmittedReview);
+  const addSubmittedReview = useReviewsStore(
+    (state) => state.addSubmittedReview,
+  );
 
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
@@ -46,7 +48,8 @@ const WriteReview = () => {
 
   const orderId = Number(params.orderId);
   const productId = Number(params.productId);
-  const commentGemsEarned = comment.trim().length >= MIN_COMMENT_LENGTH ? COMMENT_GEMS : 0;
+  const commentGemsEarned =
+    comment.trim().length >= MIN_COMMENT_LENGTH ? COMMENT_GEMS : 0;
   const photoGemsEarned = images.length > 0 ? PHOTO_GEMS : 0;
   const totalGems = RATING_GEMS + commentGemsEarned + photoGemsEarned;
   const progress = totalGems / MAX_GEMS;
@@ -56,7 +59,10 @@ const WriteReview = () => {
   const pickImages = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('Permission needed', 'Please allow photo library access to add photos.');
+      Alert.alert(
+        'Permission needed',
+        'Please allow photo library access to add photos.',
+      );
       return;
     }
 
@@ -78,10 +84,13 @@ const WriteReview = () => {
   };
 
   const handleSubmit = async () => {
-    if (comment.trim().length > 0 && comment.trim().length < MIN_COMMENT_LENGTH) {
+    if (
+      comment.trim().length > 0 &&
+      comment.trim().length < MIN_COMMENT_LENGTH
+    ) {
       Alert.alert(
         'Review too short',
-        `Please enter at least ${MIN_COMMENT_LENGTH} characters, or clear the box to rate only.`
+        `Please enter at least ${MIN_COMMENT_LENGTH} characters, or clear the box to rate only.`,
       );
       return;
     }
@@ -140,7 +149,7 @@ const WriteReview = () => {
   const gemsInfo = () =>
     Alert.alert(
       'Gems',
-      'Earn Gems by rating, writing a detailed review (30+ characters), and adding photos or videos. Gems can be redeemed for discounts.'
+      'Earn Gems by rating, writing a detailed review (30+ characters), and adding photos or videos. Gems can be redeemed for discounts.',
     );
 
   return (
@@ -156,18 +165,28 @@ const WriteReview = () => {
         <View style={styles.backBtn} />
       </View>
 
-      <ScrollView style={styles.flex} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        style={styles.flex}
+        contentContainerStyle={styles.scrollContent}
+      >
         <View style={styles.productRow}>
           {params.productImage ? (
-            <Image source={{ uri: params.productImage }} style={styles.productImage} />
+            <Image
+              source={{ uri: params.productImage }}
+              style={styles.productImage}
+            />
           ) : (
-            <View style={[styles.productImage, styles.productImagePlaceholder]} />
+            <View
+              style={[styles.productImage, styles.productImagePlaceholder]}
+            />
           )}
           <View style={styles.productInfo}>
             <Text style={styles.productName} numberOfLines={2}>
               {params.productName}
             </Text>
-            {!!params.variant && <Text style={styles.productVariant}>{params.variant}</Text>}
+            {!!params.variant && (
+              <Text style={styles.productVariant}>{params.variant}</Text>
+            )}
           </View>
         </View>
 
@@ -175,7 +194,11 @@ const WriteReview = () => {
           <Text style={styles.ratingLabel}>Overall Rating</Text>
           <View style={styles.starsRow}>
             {Array.from({ length: 5 }).map((_, i) => (
-              <TouchableOpacity key={i} onPress={() => setRating(i + 1)} hitSlop={6}>
+              <TouchableOpacity
+                key={i}
+                onPress={() => setRating(i + 1)}
+                hitSlop={6}
+              >
                 <Ionicons
                   name="star"
                   size={24}
@@ -190,7 +213,9 @@ const WriteReview = () => {
         <View style={styles.divider} />
 
         <View style={styles.hintRow}>
-          <Text style={styles.hintText}>Please enter at least {MIN_COMMENT_LENGTH} characters</Text>
+          <Text style={styles.hintText}>
+            Please enter at least {MIN_COMMENT_LENGTH} characters
+          </Text>
           <Text style={styles.gemsHint}>Get {COMMENT_GEMS} Gems</Text>
         </View>
         <TextInput
@@ -211,13 +236,20 @@ const WriteReview = () => {
           {images.map((uri) => (
             <View key={uri} style={styles.mediaThumbWrap}>
               <Image source={{ uri }} style={styles.mediaThumb} />
-              <TouchableOpacity style={styles.removeMediaBtn} onPress={() => removeImage(uri)}>
+              <TouchableOpacity
+                style={styles.removeMediaBtn}
+                onPress={() => removeImage(uri)}
+              >
                 <Ionicons name="close" size={12} color="#fff" />
               </TouchableOpacity>
             </View>
           ))}
           {images.length < MAX_IMAGES && (
-            <TouchableOpacity style={styles.uploadBox} activeOpacity={0.7} onPress={pickImages}>
+            <TouchableOpacity
+              style={styles.uploadBox}
+              activeOpacity={0.7}
+              onPress={pickImages}
+            >
               <Ionicons name="camera-outline" size={22} color="#999" />
               <Text style={styles.uploadText}>Upload Photo/Video</Text>
             </TouchableOpacity>
@@ -250,7 +282,9 @@ const WriteReview = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.progressTrack}>
-            <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+            <View
+              style={[styles.progressFill, { width: `${progress * 100}%` }]}
+            />
           </View>
         </View>
 
@@ -261,7 +295,11 @@ const WriteReview = () => {
           disabled={submitting}
         >
           <Text style={styles.submitBtnText}>
-            {submitting ? 'Submitting...' : hasContent ? 'Submit Review' : 'Rate only'}
+            {submitting
+              ? 'Submitting...'
+              : hasContent
+                ? 'Submit Review'
+                : 'Rate only'}
           </Text>
         </TouchableOpacity>
       </View>

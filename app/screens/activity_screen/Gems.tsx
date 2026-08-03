@@ -7,7 +7,7 @@ import {
   View,
   Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: scale(8),
-
   },
   iconWrapper: {
     width: scale(28),
@@ -122,12 +121,12 @@ const styles = StyleSheet.create({
     fontSize: responsiveFontSize(12),
     fontWeight: '400',
     color: '#000',
-    fontFamily: "PoppinsBold",
+    fontFamily: 'PoppinsBold',
   },
   cardDate: {
     fontSize: responsiveFontSize(10),
     color: '#999',
-    fontFamily: "PoppinsRegular",
+    fontFamily: 'PoppinsRegular',
   },
   cardImage: {
     width: '100%',
@@ -138,8 +137,7 @@ const styles = StyleSheet.create({
   cardDesc: {
     fontSize: responsiveFontSize(10),
     color: '#333',
-    fontFamily: "PoppinsRegular",
-    
+    fontFamily: 'PoppinsRegular',
   },
 });
 

@@ -21,9 +21,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ProductCard from '../components/ProductCard';
+import { ProductCard } from '@/components/ui';
 import { useAuth } from '../context/authContext';
-import { useAuthStore } from '../stores/useAuthStore';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -35,9 +34,7 @@ interface Props {
 }
 
 const LoginSignup = ({ onLogin }: Props) => {
-  const { signIn, signUp, signInWithGoogle, signInWithApple, loading } =
-    useAuth();
-  const { user } = useAuthStore();
+  const { signIn, signUp, signInWithGoogle, signInWithApple } = useAuth();
 
   const [loginVisible, setLoginVisible] = useState(false);
   const [signUpVisible, setSignUpVisible] = useState(false);
@@ -79,11 +76,14 @@ const LoginSignup = ({ onLogin }: Props) => {
           },
         });
         const data = await response.json();
-        const raw = data?.products || data?.data?.products || data?.data || data || [];
+        const raw =
+          data?.products || data?.data?.products || data?.data || data || [];
         if (Array.isArray(raw)) {
           const transformed = raw.map((p: any) => {
             const price = parseFloat(p.product_price ?? p.price ?? '0');
-            const originalPrice = parseFloat(p.originalPrice ?? p.product_originalPrice ?? '0');
+            const originalPrice = parseFloat(
+              p.originalPrice ?? p.product_originalPrice ?? '0',
+            );
             return {
               ...p,
               product_image: p.product_image || p.image,
@@ -91,8 +91,9 @@ const LoginSignup = ({ onLogin }: Props) => {
               originalPrice: originalPrice > price ? originalPrice : undefined,
             };
           });
-          const inStockProducts = transformed.filter((p: any) =>
-            p.product_stock === undefined || Number(p.product_stock) > 0
+          const inStockProducts = transformed.filter(
+            (p: any) =>
+              p.product_stock === undefined || Number(p.product_stock) > 0,
           );
           setTopRatedProducts(inStockProducts.slice(0, 6));
         }
@@ -174,7 +175,7 @@ const LoginSignup = ({ onLogin }: Props) => {
       setOtp('');
       setSignUpVisible(false); // Close signup modal
       setShowOtpModal(true); // Show OTP modal
-    } catch (error: any) {
+    } catch {
       alert(
         `❌ Network Error: Could not reach verification server. Please try again.`,
       );
@@ -265,7 +266,7 @@ const LoginSignup = ({ onLogin }: Props) => {
         ? androidRedirectUri
         : undefined;
 
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+  const [, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId:
       process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ||
       'your-web-client-id.apps.googleusercontent.com',
@@ -277,14 +278,6 @@ const LoginSignup = ({ onLogin }: Props) => {
       'your-android-client-id.apps.googleusercontent.com',
     redirectUri: isExpoGo ? undefined : customRedirectUri,
   });
-
-  useEffect(() => {
-    if (request) {
-      console.log('=== GOOGLE AUTH URL ===');
-      console.log(request.url);
-      console.log('=======================');
-    }
-  }, [request]);
 
   useEffect(() => {
     if (response?.type === 'success') {
@@ -303,7 +296,7 @@ const LoginSignup = ({ onLogin }: Props) => {
           alert(`❌ Google Login Error: ${error.message}`);
         });
     }
-  }, [response]);
+  }, [response, onLogin, signInWithGoogle]);
 
   // 🍎 Apple Auth Setup
   const handleAppleLogin = async () => {
@@ -345,7 +338,7 @@ const LoginSignup = ({ onLogin }: Props) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* --- HEADER (Original UI) --- */}
         <View style={styles.header}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.settingsIcon}
             onPress={() => router.push('/screens/settings_screen')}
           >
@@ -430,21 +423,19 @@ const LoginSignup = ({ onLogin }: Props) => {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {topRatedProducts.length > 0 ? (
               topRatedProducts.map((p, index) => {
-                const discount = p.originalPrice
-                  ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)
-                  : undefined;
-                  console.log(p)
                 return (
                   <View key={index} style={{ width: 150 }}>
                     <ProductCard
-                      item={{
+                      variant="grid"
+                      product={{
                         id: p.id || p.product_id || index,
-                        image: p.product_image ? { uri: p.product_image } : require('../../assets/products/watch.jpg'),
+                        image: p.product_image
+                          ? { uri: p.product_image }
+                          : require('../../assets/products/watch.jpg'),
                         name: p.product_name || p.name || 'Product',
                         price: p.price,
                         oldPrice: p.originalPrice,
                         discount: p.product_discount,
-                        cod:p.product_cod
                       }}
                     />
                   </View>
@@ -454,37 +445,40 @@ const LoginSignup = ({ onLogin }: Props) => {
               <>
                 <View style={{ width: 150 }}>
                   <ProductCard
-                    item={{
+                    variant="grid"
+                    product={{
                       id: 1,
                       image: require('../../assets/products/watch.jpg'),
                       name: 'Luxury Watch',
                       price: 4274,
                       oldPrice: 17096,
-                      discount: 75
+                      discount: 75,
                     }}
                   />
                 </View>
                 <View style={{ width: 150 }}>
                   <ProductCard
-                    item={{
+                    variant="grid"
+                    product={{
                       id: 2,
                       image: require('../../assets/products/wallet.png'),
                       name: 'Leather Wallet',
                       price: 1650,
                       oldPrice: 3000,
-                      discount: 30
+                      discount: 30,
                     }}
                   />
                 </View>
                 <View style={{ width: 150 }}>
                   <ProductCard
-                    item={{
+                    variant="grid"
+                    product={{
                       id: 3,
                       image: require('../../assets/products/laptop.jpg'),
                       name: 'Gaming Laptop',
                       price: 145455,
                       oldPrice: 180000,
-                      discount: 5
+                      discount: 5,
                     }}
                   />
                 </View>

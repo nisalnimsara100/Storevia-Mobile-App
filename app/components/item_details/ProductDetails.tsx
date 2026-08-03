@@ -97,7 +97,10 @@ const ProductDetails = () => {
           <Image
             key={idx}
             source={image.source}
-            style={[styles.descriptionImage, { aspectRatio: image.aspectRatio }]}
+            style={[
+              styles.descriptionImage,
+              { aspectRatio: image.aspectRatio },
+            ]}
             resizeMode="cover"
           />
         ))}
@@ -109,7 +112,9 @@ const ProductDetails = () => {
           activeOpacity={0.7}
           onPress={() => setDescriptionExpanded((v) => !v)}
         >
-          <Text style={styles.seeMoreText}>{descriptionExpanded ? 'See less' : 'See more'}</Text>
+          <Text style={styles.seeMoreText}>
+            {descriptionExpanded ? 'See less' : 'See more'}
+          </Text>
           <Ionicons
             name={descriptionExpanded ? 'chevron-up' : 'chevron-down'}
             size={16}

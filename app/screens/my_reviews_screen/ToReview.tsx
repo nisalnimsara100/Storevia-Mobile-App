@@ -2,7 +2,7 @@ import { useAuthStore } from '@/app/stores/useAuthStore';
 import { useReviewsStore } from '@/app/stores/useReviewsStore';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -51,9 +51,11 @@ const ToReview = ({ onCountChange }: ToReviewProps) => {
   const submittedReviews = useReviewsStore((state) => state.submittedReviews);
   const USER_EMAIL = user?.email;
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     if (!BASE_URL || !USER_EMAIL) {
-      setError(!USER_EMAIL ? 'User email not available.' : 'Base URL not configured.');
+      setError(
+        !USER_EMAIL ? 'User email not available.' : 'Base URL not configured.',
+      );
       setLoading(false);
       return;
     }
@@ -64,7 +66,10 @@ const ToReview = ({ onCountChange }: ToReviewProps) => {
 
       const response = await fetch(`${BASE_URL}/api/orders/user_orders`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         body: JSON.stringify({ email: USER_EMAIL }),
       });
 
@@ -78,28 +83,32 @@ const ToReview = ({ onCountChange }: ToReviewProps) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [USER_EMAIL]);
 
   useEffect(() => {
     fetchOrders();
-  }, [USER_EMAIL]);
+  }, [fetchOrders]);
 
-  const reviewedKeys = new Set(submittedReviews.map((r) => r.key));
-
-  const pendingOrders = orders
-    .filter((order) => order.order_status.toLowerCase() === 'delivered')
-    .map((order) => ({
-      ...order,
-      order_items: order.order_items.filter(
-        (item) => !reviewedKeys.has(`${order.id}-${item.product_id}`)
-      ),
-    }))
-    .filter((order) => order.order_items.length > 0);
+  const pendingOrders = useMemo(() => {
+    const reviewedKeys = new Set(submittedReviews.map((r) => r.key));
+    return orders
+      .filter((order) => order.order_status.toLowerCase() === 'delivered')
+      .map((order) => ({
+        ...order,
+        order_items: order.order_items.filter(
+          (item) => !reviewedKeys.has(`${order.id}-${item.product_id}`),
+        ),
+      }))
+      .filter((order) => order.order_items.length > 0);
+  }, [orders, submittedReviews]);
 
   useEffect(() => {
-    const count = pendingOrders.reduce((sum, order) => sum + order.order_items.length, 0);
+    const count = pendingOrders.reduce(
+      (sum, order) => sum + order.order_items.length,
+      0,
+    );
     onCountChange?.(count);
-  }, [orders, submittedReviews]);
+  }, [pendingOrders, onCountChange]);
 
   const handleReviewPress = (order: Order, item: OrderItem) => {
     router.push({
@@ -151,7 +160,11 @@ const ToReview = ({ onCountChange }: ToReviewProps) => {
       {pendingOrders.map((order) => (
         <View key={order.id} style={styles.orderCard}>
           <View style={styles.shopHeader}>
-            <MaterialCommunityIcons name="storefront-outline" size={18} color="#000" />
+            <MaterialCommunityIcons
+              name="storefront-outline"
+              size={18}
+              color="#000"
+            />
             <Text style={styles.shopName}>{order.order_number}</Text>
             <Ionicons name="chevron-forward" size={16} color="#999" />
           </View>
@@ -181,8 +194,8 @@ const ToReview = ({ onCountChange }: ToReviewProps) => {
               <View style={styles.gemsBanner}>
                 <Text style={styles.gemsIcon}>💎</Text>
                 <Text style={styles.gemsText}>
-                  Earn max <Text style={styles.gemsBold}>600</Text> Gems (Rs. 6) by writing a
-                  review!
+                  Earn max <Text style={styles.gemsBold}>600</Text> Gems (Rs. 6)
+                  by writing a review!
                 </Text>
               </View>
             </View>

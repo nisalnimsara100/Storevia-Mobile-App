@@ -2,6 +2,10 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Project docs
+
+For Storevia-specific documentation — design system, architecture, coding standards, and the latest QA audit — see **[`docs/`](./docs/README.md)**.
+
 ## Get started
 
 1. Install dependencies

@@ -56,7 +56,11 @@ const MyReviewsScreen = () => {
                 style={[styles.tabItem, isActive && styles.activeTabItem]}
               >
                 <View style={styles.tabLabelRow}>
-                  <Text style={[styles.tabText, isActive && styles.activeTabText]}>{tab}</Text>
+                  <Text
+                    style={[styles.tabText, isActive && styles.activeTabText]}
+                  >
+                    {tab}
+                  </Text>
                   {tab === 'To Review' && toReviewCount > 0 && (
                     <View style={styles.tabBadge}>
                       <Text style={styles.tabBadgeText}>{toReviewCount}</Text>

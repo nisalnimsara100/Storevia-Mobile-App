@@ -1,7 +1,7 @@
-import { Ionicons } from '@expo/vector-icons'
-import { Stack, router } from 'expo-router'
-import React from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { Ionicons } from '@expo/vector-icons';
+import { Stack, router } from 'expo-router';
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 export default function ChatLayout() {
   return (
@@ -40,7 +40,13 @@ export default function ChatLayout() {
             headerTitle: () => (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View>
-                  <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333333' }}>
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                      color: '#333333',
+                    }}
+                  >
                     {resolvedStoreName}
                   </Text>
                 </View>
@@ -50,7 +56,11 @@ export default function ChatLayout() {
             headerRight: () => (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <TouchableOpacity style={{ marginRight: 8 }}>
-                  <Ionicons name="storefront-outline" size={24} color="#333333" />
+                  <Ionicons
+                    name="storefront-outline"
+                    size={24}
+                    color="#333333"
+                  />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() =>
@@ -63,7 +73,11 @@ export default function ChatLayout() {
                     })
                   }
                 >
-                  <Ionicons name="ellipsis-vertical" size={24} color="#333333" />
+                  <Ionicons
+                    name="ellipsis-vertical"
+                    size={24}
+                    color="#333333"
+                  />
                 </TouchableOpacity>
               </View>
             ),
@@ -78,5 +92,5 @@ export default function ChatLayout() {
         }}
       />
     </Stack>
-  )
+  );
 }

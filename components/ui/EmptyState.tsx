@@ -11,14 +11,25 @@ export interface EmptyStateProps {
   onAction?: () => void;
 }
 
-export function EmptyState({ icon, title, subtitle, actionLabel, onAction }: EmptyStateProps) {
+export function EmptyState({
+  icon,
+  title,
+  subtitle,
+  actionLabel,
+  onAction,
+}: EmptyStateProps) {
   return (
     <View style={styles.container}>
       {icon && <View style={styles.icon}>{icon}</View>}
       <Text style={styles.title}>{title}</Text>
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       {actionLabel && onAction && (
-        <Button label={actionLabel} onPress={onAction} variant="primary" style={styles.action} />
+        <Button
+          label={actionLabel}
+          onPress={onAction}
+          variant="primary"
+          style={styles.action}
+        />
       )}
     </View>
   );

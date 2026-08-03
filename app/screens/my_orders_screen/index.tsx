@@ -1,8 +1,7 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Dimensions,
   Pressable,
   StyleSheet,
   Text,
@@ -19,8 +18,6 @@ import ToShip from './ToShip';
 import ToReceive from './ToReceive';
 import ToReview from './ToReview';
 
-const { width: screenWidth } = Dimensions.get('window');
-
 const tabs = ['All', 'To Pay', 'To Ship', 'To Receive', 'To Review'];
 
 const MyOrdersScreen = () => {
@@ -28,29 +25,34 @@ const MyOrdersScreen = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'All': return <All />;
-      case 'To Pay': return <ToPay />;
-      case 'To Ship': return <ToShip />;
-      case 'To Receive': return <ToReceive />;
-      case 'To Review': return <ToReview />;
-      default: return <All />;
+      case 'All':
+        return <All />;
+      case 'To Pay':
+        return <ToPay />;
+      case 'To Ship':
+        return <ToShip />;
+      case 'To Receive':
+        return <ToReceive />;
+      case 'To Review':
+        return <ToReview />;
+      default:
+        return <All />;
     }
   };
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      
       {/* Header with Search and Filter */}
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={24} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Orders</Text>
-        
+
         <View style={styles.searchContainer}>
           <Ionicons name="search-outline" size={18} color="#999" />
-          <TextInput 
-            placeholder="Search by seller na..." 
+          <TextInput
+            placeholder="Search by seller na..."
             style={styles.searchInput}
             placeholderTextColor="#999"
           />
@@ -71,16 +73,10 @@ const MyOrdersScreen = () => {
               <Pressable
                 key={tab}
                 onPress={() => setActiveTab(tab)}
-                style={[
-                  styles.tabItem,
-                  isActive && styles.activeTabItem,
-                ]}
+                style={[styles.tabItem, isActive && styles.activeTabItem]}
               >
                 <Text
-                  style={[
-                    styles.tabText,
-                    isActive && styles.activeTabText,
-                  ]}
+                  style={[styles.tabText, isActive && styles.activeTabText]}
                 >
                   {tab}
                 </Text>
@@ -151,7 +147,7 @@ const styles = StyleSheet.create({
   },
   activeTabItem: {
     borderBottomWidth: 2,
-    borderBottomColor: '#FF5722', 
+    borderBottomColor: '#FF5722',
   },
   tabText: {
     fontSize: 15,

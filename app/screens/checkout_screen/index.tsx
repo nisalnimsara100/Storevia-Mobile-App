@@ -157,9 +157,7 @@ const CheckoutScreen = () => {
   const loadAddresses = React.useCallback(async () => {
     try {
       const response = await fetch(
-        `${BASE_URL}/api/user/address?email=${encodeURIComponent(
-          EMAIL,
-        )}`,
+        `${BASE_URL}/api/user/address?email=${encodeURIComponent(EMAIL)}`,
       );
 
       if (!response.ok) {
@@ -182,22 +180,21 @@ const CheckoutScreen = () => {
     } catch (error) {
       console.error('Error fetching addresses:', error);
     }
-  }, []);
+  }, [EMAIL]);
 
-  const fetchUserCollectedVouchers = async () => {
+  const fetchUserCollectedVouchers = React.useCallback(async () => {
     const email = EMAIL;
     if (!email) return;
     try {
       const res = await fetch(`${BASE_URL}/api/user/get_voucher/${email}`);
       const data = await res.json();
-      console.log('Fetched user vouchers:', data);
       if (data.status === 'success' && Array.isArray(data.vouchers)) {
         setUserVouchers(data.vouchers);
       }
     } catch (err) {
       console.error('Error fetching user vouchers:', err);
     }
-  };
+  }, [EMAIL]);
 
   // Convert user vouchers to Voucher format
   const vouchers: Voucher[] = userVouchers.map((uv, index) => {
@@ -234,7 +231,7 @@ const CheckoutScreen = () => {
   React.useEffect(() => {
     loadAddresses();
     fetchUserCollectedVouchers();
-  }, [loadAddresses]);
+  }, [loadAddresses, fetchUserCollectedVouchers]);
 
   React.useEffect(() => {
     setOrderNumber(generateOrderNumber());
@@ -308,9 +305,7 @@ const CheckoutScreen = () => {
 
   const subtotal = parseFloat(calculateSubtotal());
   const voucherDiscount = calculateVoucherDiscount();
-  const total = (subtotal - voucherDiscount + shippingCost).toFixed(
-    2,
-  );
+  const total = (subtotal - voucherDiscount + shippingCost).toFixed(2);
 
   const router = useRouter();
 
@@ -488,15 +483,12 @@ const CheckoutScreen = () => {
 
                         <View style={styles.priceContainer}>
                           <Text style={styles.currentPrice}>
-                            Rs.{' '}
-                            {(
-                              parseFloat(item.product_price) 
-                             
-                            ).toFixed(2)}
+                            Rs. {parseFloat(item.product_price).toFixed(2)}
                           </Text>
                           {item.product_discount && (
                             <Text style={styles.originalPrice}>
-                              {Math.round(parseFloat(item.product_discount))}% off
+                              {Math.round(parseFloat(item.product_discount))}%
+                              off
                             </Text>
                           )}
                         </View>

@@ -46,21 +46,50 @@ function formatSold(n?: number) {
   return (n / 1_000_000).toFixed(1) + 'M';
 }
 
-function Price({ price, oldPrice, discount, size = 'lg' }: { price: number; oldPrice?: number; discount?: number; size?: 'lg' | '2xl' }) {
+function Price({
+  price,
+  oldPrice,
+  discount,
+  size = 'lg',
+}: {
+  price: number;
+  oldPrice?: number;
+  discount?: number;
+  size?: 'lg' | '2xl';
+}) {
   return (
     <View style={styles.priceRow}>
-      <Text style={{ color: theme.color.primary.DEFAULT, fontFamily: theme.font.family.bold, fontWeight: theme.font.weight.bold, fontSize: theme.font.size[size] }}>
+      <Text
+        style={{
+          color: theme.color.primary.DEFAULT,
+          fontFamily: theme.font.family.bold,
+          fontWeight: theme.font.weight.bold,
+          fontSize: theme.font.size[size],
+        }}
+      >
         Rs.{price.toFixed(2)}
       </Text>
       {oldPrice ? (
         <Text style={styles.oldPrice}>Rs.{oldPrice.toFixed(2)}</Text>
       ) : null}
-      {discount ? <Badge label={`-${discount}%`} tone="discount" size="sm" style={styles.discountBadge} /> : null}
+      {discount ? (
+        <Badge
+          label={`-${discount}%`}
+          tone="discount"
+          size="sm"
+          style={styles.discountBadge}
+        />
+      ) : null}
     </View>
   );
 }
 
-export function ProductCard({ product, variant = 'grid', onPress, onAddToCart }: ProductCardProps) {
+export function ProductCard({
+  product,
+  variant = 'grid',
+  onPress,
+  onAddToCart,
+}: ProductCardProps) {
   const router = useRouter();
 
   const handlePress =
@@ -74,14 +103,26 @@ export function ProductCard({ product, variant = 'grid', onPress, onAddToCart }:
 
   if (variant === 'flashsale') {
     return (
-      <TouchableOpacity style={styles.flashsaleCard} onPress={handlePress} activeOpacity={0.8}>
-        <Image source={resolveImage(product.image)} style={styles.flashsaleImage} resizeMode="contain" />
+      <TouchableOpacity
+        style={styles.flashsaleCard}
+        onPress={handlePress}
+        activeOpacity={0.8}
+      >
+        <Image
+          source={resolveImage(product.image)}
+          style={styles.flashsaleImage}
+          resizeMode="contain"
+        />
         {product.stock !== undefined && (
           <Text style={styles.flashsaleStock}>Only {product.stock} left</Text>
         )}
         <Price price={product.price} oldPrice={product.oldPrice} size="lg" />
         {product.discount ? (
-          <Badge label={`-${product.discount}%`} tone="discount" style={styles.flashsaleDiscountBadge} />
+          <Badge
+            label={`-${product.discount}%`}
+            tone="discount"
+            style={styles.flashsaleDiscountBadge}
+          />
         ) : null}
       </TouchableOpacity>
     );
@@ -89,13 +130,26 @@ export function ProductCard({ product, variant = 'grid', onPress, onAddToCart }:
 
   if (variant === 'list') {
     return (
-      <TouchableOpacity style={styles.listCard} onPress={handlePress} activeOpacity={0.9}>
+      <TouchableOpacity
+        style={styles.listCard}
+        onPress={handlePress}
+        activeOpacity={0.9}
+      >
         <View style={styles.listImageWrap}>
-          <Image source={resolveImage(product.image)} style={styles.listImage} resizeMode="cover" />
+          <Image
+            source={resolveImage(product.image)}
+            style={styles.listImage}
+            resizeMode="cover"
+          />
           {(product.badges?.length ?? 0) > 0 && (
             <View style={styles.listBadgeStrip}>
               {product.badges!.map((b, i) => (
-                <Badge key={i} label={b} tone={i === 0 ? 'freeDelivery' : 'new'} style={styles.listBadgeItem} />
+                <Badge
+                  key={i}
+                  label={b}
+                  tone={i === 0 ? 'freeDelivery' : 'new'}
+                  style={styles.listBadgeItem}
+                />
               ))}
             </View>
           )}
@@ -108,7 +162,8 @@ export function ProductCard({ product, variant = 'grid', onPress, onAddToCart }:
           <View style={styles.metaRow}>
             <StarRating rating={product.rating ?? 0} size={12} />
             <Text style={styles.metaText}>
-              {' '}({product.reviews ?? 0}) | {formatSold(product.sold)} Sold
+              {' '}
+              ({product.reviews ?? 0}) | {formatSold(product.sold)} Sold
             </Text>
           </View>
         </View>
@@ -122,22 +177,47 @@ export function ProductCard({ product, variant = 'grid', onPress, onAddToCart }:
 
   // grid (default)
   return (
-    <TouchableOpacity style={styles.gridCard} onPress={handlePress} activeOpacity={0.8}>
+    <TouchableOpacity
+      style={styles.gridCard}
+      onPress={handlePress}
+      activeOpacity={0.8}
+    >
       <View style={styles.gridImageWrap}>
-        <Image source={resolveImage(product.image)} style={styles.gridImage} resizeMode="contain" />
-        <Badge label="FREE DELIVERY" tone="freeDelivery" size="sm" style={styles.gridFreeBadge} />
+        <Image
+          source={resolveImage(product.image)}
+          style={styles.gridImage}
+          resizeMode="contain"
+        />
+        <Badge
+          label="FREE DELIVERY"
+          tone="freeDelivery"
+          size="sm"
+          style={styles.gridFreeBadge}
+        />
       </View>
       <Text style={styles.gridName} numberOfLines={2}>
         {product.name}
       </Text>
-      <Price price={product.price} oldPrice={product.oldPrice} discount={product.discount} size="lg" />
+      <Price
+        price={product.price}
+        oldPrice={product.oldPrice}
+        discount={product.discount}
+        size="lg"
+      />
       <Text style={styles.metaText}>
-        {(product.rating ?? 0).toFixed(1)} ({product.reviews ?? 0}) · {formatSold(product.sold)} Sold
+        {(product.rating ?? 0).toFixed(1)} ({product.reviews ?? 0}) ·{' '}
+        {formatSold(product.sold)} Sold
       </Text>
       {(product.badges?.length ?? 0) > 0 && (
         <View style={styles.gridBadgeRow}>
           {product.badges!.map((b, i) => (
-            <Badge key={i} label={b} tone="freeDelivery" size="sm" style={styles.gridBadgeItem} />
+            <Badge
+              key={i}
+              label={b}
+              tone="freeDelivery"
+              size="sm"
+              style={styles.gridBadgeItem}
+            />
           ))}
         </View>
       )}
@@ -145,9 +225,20 @@ export function ProductCard({ product, variant = 'grid', onPress, onAddToCart }:
   );
 }
 
-function DetailCard({ product, onAddToCart }: { product: Product; onAddToCart?: () => void }) {
+function DetailCard({
+  product,
+  onAddToCart,
+}: {
+  product: Product;
+  onAddToCart?: () => void;
+}) {
   const [imageIndex, setImageIndex] = useState(0);
-  const images = product.images && product.images.length > 0 ? product.images : product.image ? [product.image] : [];
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : product.image
+        ? [product.image]
+        : [];
   const totalImages = images.length || 1;
 
   return (
@@ -163,27 +254,52 @@ function DetailCard({ product, onAddToCart }: { product: Product; onAddToCart?: 
         >
           {images.map((img, i) => (
             <View key={i} style={styles.detailSlide}>
-              <Image source={resolveImage(img)} style={styles.detailImage} resizeMode="contain" />
+              <Image
+                source={resolveImage(img)}
+                style={styles.detailImage}
+                resizeMode="contain"
+              />
             </View>
           ))}
         </Swiper>
-        <Badge label="FREE DELIVERY" tone="freeDelivery" style={styles.detailFreeBadge} />
+        <Badge
+          label="FREE DELIVERY"
+          tone="freeDelivery"
+          style={styles.detailFreeBadge}
+        />
         <View style={styles.detailPhotoCount}>
-          <Text style={styles.detailPhotoCountText}>{`${imageIndex + 1}/${totalImages}`}</Text>
+          <Text
+            style={styles.detailPhotoCountText}
+          >{`${imageIndex + 1}/${totalImages}`}</Text>
         </View>
       </View>
 
       <View style={styles.detailInfo}>
         <Text style={styles.detailName}>{product.name}</Text>
         <View style={styles.metaRow}>
-          <StarRating rating={product.rating ?? 0} size={13} showCount reviewCount={product.reviews} />
-          <Text style={styles.metaText}> | {formatSold(product.sold)} sold</Text>
+          <StarRating
+            rating={product.rating ?? 0}
+            size={13}
+            showCount
+            reviewCount={product.reviews}
+          />
+          <Text style={styles.metaText}>
+            {' '}
+            | {formatSold(product.sold)} sold
+          </Text>
         </View>
 
-        <Price price={product.price} oldPrice={product.oldPrice} discount={product.discount} size="2xl" />
+        <Price
+          price={product.price}
+          oldPrice={product.oldPrice}
+          discount={product.discount}
+          size="2xl"
+        />
 
         {product.stock !== undefined && (
-          <Text style={styles.detailStock}>Only {product.stock} left in stock</Text>
+          <Text style={styles.detailStock}>
+            Only {product.stock} left in stock
+          </Text>
         )}
 
         {product.description ? (
@@ -194,7 +310,14 @@ function DetailCard({ product, onAddToCart }: { product: Product; onAddToCart?: 
         ) : null}
 
         {onAddToCart && (
-          <Button label="Add to Cart" onPress={onAddToCart} variant="primary" size="lg" fullWidth style={styles.detailAddToCart} />
+          <Button
+            label="Add to Cart"
+            onPress={onAddToCart}
+            variant="primary"
+            size="lg"
+            fullWidth
+            style={styles.detailAddToCart}
+          />
         )}
       </View>
     </View>

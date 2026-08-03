@@ -10,55 +10,55 @@ This document reflects decisions made after auditing the existing (AI-generated)
 
 ### Brand & semantic scales
 
-| Token | Value | Usage |
-|---|---|---|
-| `primary.50` | `#fff7ed` | Tinted backgrounds behind primary-colored text/icons (e.g. "FREE DELIVERY" pill) |
-| `primary.100` | `#ffedd5` | Subtle primary-tinted surfaces |
-| `primary.500` (`DEFAULT`) | `#f97316` | **Canonical brand color.** All primary buttons, active tab icon, prices, links, focus rings |
-| `primary.600` | `#ea580c` | Pressed/active state of primary elements |
-| `primary.700` | `#c2410c` | Text-on-light-primary-background if extra contrast needed |
-| `secondary.DEFAULT` | `#2563eb` | Secondary actions that must be visually distinct from primary (rare — most CTAs should use primary or outline, not a second brand color) |
-| `success.DEFAULT` | `#16a34a` | In-stock, free delivery, completed order, success toast |
-| `success.bg` | `#dcfce7` | Success badge/pill background |
-| `danger.DEFAULT` | `#dc2626` | Errors, discounts, out-of-stock, destructive actions, "Danger" button |
-| `danger.bg` | `#fee2e2` | Danger badge/pill background |
-| `warning.DEFAULT` | `#f59e0b` | Low-stock warnings, pending states |
-| `warning.bg` | `#fef3c7` | Warning badge/pill background |
-| `star` | `#f59e0b` | Rating stars (filled) — same value as `warning`, named separately for semantic clarity |
+| Token                     | Value     | Usage                                                                                                                                    |
+| ------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `primary.50`              | `#fff7ed` | Tinted backgrounds behind primary-colored text/icons (e.g. "FREE DELIVERY" pill)                                                         |
+| `primary.100`             | `#ffedd5` | Subtle primary-tinted surfaces                                                                                                           |
+| `primary.500` (`DEFAULT`) | `#f97316` | **Canonical brand color.** All primary buttons, active tab icon, prices, links, focus rings                                              |
+| `primary.600`             | `#ea580c` | Pressed/active state of primary elements                                                                                                 |
+| `primary.700`             | `#c2410c` | Text-on-light-primary-background if extra contrast needed                                                                                |
+| `secondary.DEFAULT`       | `#2563eb` | Secondary actions that must be visually distinct from primary (rare — most CTAs should use primary or outline, not a second brand color) |
+| `success.DEFAULT`         | `#16a34a` | In-stock, free delivery, completed order, success toast                                                                                  |
+| `success.bg`              | `#dcfce7` | Success badge/pill background                                                                                                            |
+| `danger.DEFAULT`          | `#dc2626` | Errors, discounts, out-of-stock, destructive actions, "Danger" button                                                                    |
+| `danger.bg`               | `#fee2e2` | Danger badge/pill background                                                                                                             |
+| `warning.DEFAULT`         | `#f59e0b` | Low-stock warnings, pending states                                                                                                       |
+| `warning.bg`              | `#fef3c7` | Warning badge/pill background                                                                                                            |
+| `star`                    | `#f59e0b` | Rating stars (filled) — same value as `warning`, named separately for semantic clarity                                                   |
 
 > **Decision — canonical brand orange:** `#f97316` replaces `#f36d21` (previously auth-screens-only) and `#FF5722` (previously a review-screen accent). `#f97316` was chosen because it's already hardcoded as the bottom-tab active color (`app/(tabs)/_layout.tsx`), making it the color users already see on every screen. The other two oranges are retired outright — they were drift, not intentional secondary brand colors.
 
 ### Neutrals (grayscale)
 
-| Token | Value |
-|---|---|
-| `neutral.0` | `#ffffff` |
-| `neutral.50` | `#f9fafb` |
-| `neutral.100` | `#f3f4f6` |
-| `neutral.200` | `#e5e7eb` |
-| `neutral.300` | `#d1d5db` |
-| `neutral.400` | `#9ca3af` |
-| `neutral.500` | `#6b7280` |
-| `neutral.600` | `#4b5563` |
-| `neutral.700` | `#374151` |
-| `neutral.800` | `#1f2937` |
-| `neutral.900` | `#111827` |
+| Token          | Value     |
+| -------------- | --------- |
+| `neutral.0`    | `#ffffff` |
+| `neutral.50`   | `#f9fafb` |
+| `neutral.100`  | `#f3f4f6` |
+| `neutral.200`  | `#e5e7eb` |
+| `neutral.300`  | `#d1d5db` |
+| `neutral.400`  | `#9ca3af` |
+| `neutral.500`  | `#6b7280` |
+| `neutral.600`  | `#4b5563` |
+| `neutral.700`  | `#374151` |
+| `neutral.800`  | `#1f2937` |
+| `neutral.900`  | `#111827` |
 | `neutral.1000` | `#000000` |
 
 ### Semantic aliases (use these in component code, not raw neutrals)
 
-| Token | Value | Usage |
-|---|---|---|
-| `text.primary` | `#111827` (`neutral.900`) | Headings, product names, body text |
-| `text.secondary` | `#6b7280` (`neutral.500`) | Metadata, timestamps, helper text, review counts |
-| `text.disabled` | `#9ca3af` (`neutral.400`) | Placeholder text, disabled labels |
-| `text.inverse` | `#ffffff` | Text on dark/colored backgrounds (buttons, badges) |
-| `background.DEFAULT` | `#ffffff` | Screen background |
-| `background.subtle` | `#f9fafb` (`neutral.50`) | Section backgrounds, input fields |
-| `surface.DEFAULT` | `#ffffff` | Card/sheet surfaces |
-| `border.DEFAULT` | `#e5e7eb` (`neutral.200`) | Dividers, input borders, card borders |
-| `border.focus` | `#f97316` (`primary.500`) | Focused input border |
-| `overlay` | `rgba(0,0,0,0.5)` | Modal/bottom-sheet scrim (replaces 8+ independently-typed rgba values) |
+| Token                | Value                     | Usage                                                                  |
+| -------------------- | ------------------------- | ---------------------------------------------------------------------- |
+| `text.primary`       | `#111827` (`neutral.900`) | Headings, product names, body text                                     |
+| `text.secondary`     | `#6b7280` (`neutral.500`) | Metadata, timestamps, helper text, review counts                       |
+| `text.disabled`      | `#9ca3af` (`neutral.400`) | Placeholder text, disabled labels                                      |
+| `text.inverse`       | `#ffffff`                 | Text on dark/colored backgrounds (buttons, badges)                     |
+| `background.DEFAULT` | `#ffffff`                 | Screen background                                                      |
+| `background.subtle`  | `#f9fafb` (`neutral.50`)  | Section backgrounds, input fields                                      |
+| `surface.DEFAULT`    | `#ffffff`                 | Card/sheet surfaces                                                    |
+| `border.DEFAULT`     | `#e5e7eb` (`neutral.200`) | Dividers, input borders, card borders                                  |
+| `border.focus`       | `#f97316` (`primary.500`) | Focused input border                                                   |
+| `overlay`            | `rgba(0,0,0,0.5)`         | Modal/bottom-sheet scrim (replaces 8+ independently-typed rgba values) |
 
 **Rule:** no raw hex codes in component/screen code. Always reference a token (`theme.color.*` in StyleSheet, or `bg-primary-500`/`text-neutral-900` etc. in className).
 
@@ -70,67 +70,67 @@ This document reflects decisions made after auditing the existing (AI-generated)
 
 Poppins (already bundled as 5 weights via `expo-font` in `app/_layout.tsx`). System font is the fallback only until a component is migrated.
 
-| Token | Font file |
-|---|---|
-| `font.light` | PoppinsLight |
-| `font.regular` | PoppinsRegular |
-| `font.medium` | PoppinsMedium |
+| Token           | Font file       |
+| --------------- | --------------- |
+| `font.light`    | PoppinsLight    |
+| `font.regular`  | PoppinsRegular  |
+| `font.medium`   | PoppinsMedium   |
 | `font.semibold` | PoppinsSemiBold |
-| `font.bold` | PoppinsBold |
+| `font.bold`     | PoppinsBold     |
 
 ### Size scale (discrete — replaces the old 8–28 continuous range)
 
-| Token | px | Typical usage |
-|---|---|---|
-| `xs` | 12 | Badges, timestamps, fine print |
-| `sm` | 13 | Secondary text, review counts, captions |
-| `base` | 14 | Body text, default UI text |
-| `md` | 15 | Emphasized body text |
-| `lg` | 16 | Product name, input text |
-| `xl` | 18 | Section headings |
-| `2xl` | 20 | Screen titles, product detail price |
-| `3xl` | 24 | Large headings |
-| `4xl` | 28 | Hero/onboarding headings |
+| Token  | px  | Typical usage                           |
+| ------ | --- | --------------------------------------- |
+| `xs`   | 12  | Badges, timestamps, fine print          |
+| `sm`   | 13  | Secondary text, review counts, captions |
+| `base` | 14  | Body text, default UI text              |
+| `md`   | 15  | Emphasized body text                    |
+| `lg`   | 16  | Product name, input text                |
+| `xl`   | 18  | Section headings                        |
+| `2xl`  | 20  | Screen titles, product detail price     |
+| `3xl`  | 24  | Large headings                          |
+| `4xl`  | 28  | Hero/onboarding headings                |
 
 ### Line height
 
-| Token | px |
-|---|---|
-| `xs` | 16 |
-| `sm` | 18 |
-| `base` | 20 |
-| `md` | 22 |
-| `lg` | 24 |
-| `xl` | 26 |
-| `2xl` | 28 |
-| `3xl` | 32 |
-| `4xl` | 36 |
+| Token  | px  |
+| ------ | --- |
+| `xs`   | 16  |
+| `sm`   | 18  |
+| `base` | 20  |
+| `md`   | 22  |
+| `lg`   | 24  |
+| `xl`   | 26  |
+| `2xl`  | 28  |
+| `3xl`  | 32  |
+| `4xl`  | 36  |
 
 ### Weight scale (replaces the `'700'` / `"700"` / `'bold'` / `font-bold` mix)
 
-| Token | Value | Maps to font family |
-|---|---|---|
-| `regular` | `400` | PoppinsRegular |
-| `medium` | `500` | PoppinsMedium |
-| `semibold` | `600` | PoppinsSemiBold |
-| `bold` | `700` | PoppinsBold |
+| Token      | Value | Maps to font family |
+| ---------- | ----- | ------------------- |
+| `regular`  | `400` | PoppinsRegular      |
+| `medium`   | `500` | PoppinsMedium       |
+| `semibold` | `600` | PoppinsSemiBold     |
+| `bold`     | `700` | PoppinsBold         |
 
 **Rule:** always pair a numeric `fontWeight` with the matching Poppins `fontFamily` (e.g. weight `700` → `fontFamily: 'PoppinsBold'`, not `fontFamily: 'PoppinsRegular', fontWeight: '700'`), since Poppins ships as separate font files per weight rather than a single variable font.
 
 ### Applied type roles
 
-| Role | Size | Weight | Color |
-|---|---|---|---|
-| Screen title | `xl` (18) | `semibold` | `text.primary` |
-| Section heading | `lg` (16) | `semibold` | `text.primary` |
-| Product name (card) | `sm`/`base` (13–14) | `medium` | `text.primary` |
-| Product name (detail page) | `lg` (16) | `bold` | `text.primary` |
-| Price (card) | `lg` (16) | `bold` | `primary.500` |
-| Price (detail page) | `2xl` (20) | `bold` | `primary.500` |
-| Old/strikethrough price | `sm` (13) | `regular` | `text.disabled` |
-| Discount tag | `xs` (12) | `semibold` | `danger.DEFAULT` |
-| Body/description | `base` (14) | `regular` | `text.secondary` |
-| Metadata (rating/sold/reviews) | `xs` (12) | `regular` | `text.secondary` |
+| Role                           | Size                | Weight     | Color            |
+| ------------------------------ | ------------------- | ---------- | ---------------- |
+| Screen title                   | `xl` (18)           | `semibold` | `text.primary`   |
+| Section heading                | `lg` (16)           | `semibold` | `text.primary`   |
+| Product name (card)            | `sm`/`base` (13–14) | `medium`   | `text.primary`   |
+| Product name (detail page)     | `lg` (16)           | `bold`     | `text.primary`   |
+| Price (card)                   | `lg` (16)           | `bold`     | `primary.500`    |
+| Price (detail page)            | `2xl` (20)          | `bold`     | `primary.500`    |
+| Old/strikethrough price        | `sm` (13)           | `regular`  | `text.disabled`  |
+| Discount tag                   | `xs` (12)           | `semibold` | `danger.DEFAULT` |
+| Body/description               | `base` (14)         | `regular`  | `text.secondary` |
+| Metadata (rating/sold/reviews) | `xs` (12)           | `regular`  | `text.secondary` |
 
 ---
 
@@ -138,20 +138,21 @@ Poppins (already bundled as 5 weights via `expo-font` in `app/_layout.tsx`). Sys
 
 4px base unit, 8px as the common step for most layout gaps.
 
-| Token | px |
-|---|---|
-| `0` | 0 |
-| `1` | 4 |
-| `2` | 8 |
-| `3` | 12 |
-| `4` | 16 |
-| `5` | 20 |
-| `6` | 24 |
-| `8` | 32 |
-| `10` | 40 |
-| `12` | 48 |
+| Token | px  |
+| ----- | --- |
+| `0`   | 0   |
+| `1`   | 4   |
+| `2`   | 8   |
+| `3`   | 12  |
+| `4`   | 16  |
+| `5`   | 20  |
+| `6`   | 24  |
+| `8`   | 32  |
+| `10`  | 40  |
+| `12`  | 48  |
 
 **Rules:**
+
 - Card padding: `4` (16px). Compact card padding (grid product cards): `2` (8px).
 - Screen horizontal padding: `4` (16px).
 - Gap between stacked elements (label→input, title→subtitle): `1`–`2` (4–8px).
@@ -165,23 +166,23 @@ Poppins (already bundled as 5 weights via `expo-font` in `app/_layout.tsx`). Sys
 
 ### Radius scale (replaces 15 ad-hoc values: 2,3,4,6,8,9,10,12,16,18,20,25,30,40)
 
-| Token | px | Usage |
-|---|---|---|
-| `none` | 0 | — |
-| `sm` | 4 | Badges, small tags |
-| `md` | 8 | Buttons, inputs, small cards |
-| `lg` | 12 | Product cards, modals |
-| `xl` | 16 | Bottom sheets, large cards |
-| `2xl` | 20 | Hero banners |
+| Token  | px  | Usage                              |
+| ------ | --- | ---------------------------------- |
+| `none` | 0   | —                                  |
+| `sm`   | 4   | Badges, small tags                 |
+| `md`   | 8   | Buttons, inputs, small cards       |
+| `lg`   | 12  | Product cards, modals              |
+| `xl`   | 16  | Bottom sheets, large cards         |
+| `2xl`  | 20  | Hero banners                       |
 | `full` | 999 | Circular avatars, pill badges, FAB |
 
 ### Shadow / elevation (replaces the `elevation: 1000/10000` hacks used only to force Android stacking order)
 
-| Token | iOS shadow | Android elevation | Usage |
-|---|---|---|---|
-| `sm` | offset (0,1), opacity 0.06, radius 2 | 2 | Subtle card lift (product cards on list/grid) |
-| `md` | offset (0,2), opacity 0.10, radius 6 | 4 | Floating buttons, dropdowns, toasts |
-| `lg` | offset (0,4), opacity 0.14, radius 12 | 8 | Modals, bottom sheets |
+| Token | iOS shadow                            | Android elevation | Usage                                         |
+| ----- | ------------------------------------- | ----------------- | --------------------------------------------- |
+| `sm`  | offset (0,1), opacity 0.06, radius 2  | 2                 | Subtle card lift (product cards on list/grid) |
+| `md`  | offset (0,2), opacity 0.10, radius 6  | 4                 | Floating buttons, dropdowns, toasts           |
+| `lg`  | offset (0,4), opacity 0.14, radius 12 | 8                 | Modals, bottom sheets                         |
 
 **Rule:** `elevation`/`zIndex` values above `lg`'s `8` should never be used to force stacking order — use proper component layering (Modal, Portal-style overlay) instead.
 
@@ -212,6 +213,7 @@ Radius: `md` (8px). Supports optional left/right icon slot and `fullWidth`.
 ### 5.3 Product Components
 
 **ProductCard** — one component, four variants (replaces `ProductCard.tsx`, `LargeProductTile.tsx`, `FlashSaleCard.tsx`, `item_details/ProductCard.tsx`):
+
 - `grid`: square-ish image, compact info block, used in Home/listing grids. Radius `lg`, padding `2`.
 - `list`: wider image, more metadata visible (badges row), used in "large tile" contexts. Radius `lg`.
 - `flashsale`: fixed-width horizontal-scroll card, discount badge top-right, "stock remaining" text, uses `scale`/`moderateScale` per the spacing exception above.
@@ -245,4 +247,7 @@ All variants share: **Price** sub-component (`primary.500`, `bold`, size per var
 
 - **Tokens**: `theme/tokens.js` (plain CommonJS, single source of truth) + `theme/tokens.d.ts` (types) + `theme/index.ts` (TS re-export). `tailwind.config.js` does `require('./theme/tokens')` to extend `colors`/`borderRadius`/`fontFamily`, so `bg-primary-500` and `theme.color.primary.DEFAULT` always resolve to the same value.
 - **Components**: `components/ui/{Button,Input,Badge,StarRating,ProductCard,ScreenHeader,EmptyState,Modal,Skeleton,Toast}.tsx`, barrel-exported via `components/ui/index.ts`. Import via the existing `@/*` path alias, e.g. `import { Button, ProductCard } from '@/components/ui'`.
-- **Migration status**: token layer and components are built and available; existing screens are migrated to consume them incrementally, in this order: Auth → Home & Listing → Product Detail → Cart & Checkout → Profile & Order History. See project plan for per-screen checkpoints. Until a screen is migrated, it continues to use its pre-existing styling — this file describes the target state, not necessarily every screen's current state.
+- **Migration status** (last updated 2026-08): token layer and components are built and available; existing screens are migrated to consume them incrementally, in this order: Auth → Home & Listing → Product Detail → Cart & Checkout → Profile & Order History. Until a screen is migrated, it continues to use its pre-existing styling — this file describes the target state, not necessarily every screen's current state.
+  - **Done**: `ProductCard` (`grid`/`list`/`flashsale` variants) now backs the Home feed and the auth screen's "Top Rated Products" rail, replacing the old `app/components/{ProductCard,LargeProductTile,FlashSaleCard}.tsx` (all three deleted). `ScreenHeader` now backs every settings screen's back-button header, replacing the old copy-pasted `arrow-back` + spacer pattern (also fixes the `arrow-back`/`chevron-back` inconsistency everywhere else in the app — every back icon in the codebase is now `chevron-back`).
+  - **Deliberately not migrated**: `app/components/item_details/ProductCard.tsx` (the product-detail page's card) still has its own implementation. It has real functionality the shared `ProductCard`'s `detail` variant does not — an expandable title, wishlist/share icon buttons, and a returns/warranty info banner. Forcing it onto the shared component as-is would drop that functionality; instead the shared `detail` variant should be extended to support those as optional props, then the screen migrated onto it. Treat this as a scoped follow-up, not an oversight.
+  - **Not yet migrated**: `Button`, `Input`, `Badge` (standalone), `EmptyState`, `AppModal` are not yet adopted outside of `ProductCard`'s internal use of `Badge`/`StarRating`/`Button`. Cart, checkout, auth forms, and the settings/orders/reviews screens still use hand-rolled `TouchableOpacity`/`TextInput` combos. Migrating these needs a visual check against the running app per screen — do it incrementally, one screen at a time, not as a single sweep.

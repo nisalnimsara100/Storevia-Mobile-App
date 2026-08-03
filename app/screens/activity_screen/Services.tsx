@@ -51,7 +51,6 @@ const activities = [
 
 const ActivityCard = ({ item }: { item: any }) => (
   <View style={styles.card}>
-   
     <View style={styles.cardHeader}>
       <View style={styles.iconWrapper}>
         <Ionicons name="notifications" size={18} color="#f39c12" />
@@ -62,7 +61,6 @@ const ActivityCard = ({ item }: { item: any }) => (
       </View>
     </View>
 
-   
     <View style={styles.bodyBox}>
       <Image source={item.image} style={styles.smallImage} />
       <Text style={styles.cardDesc}>{item.desc}</Text>
@@ -122,7 +120,7 @@ const styles = StyleSheet.create({
   smallImage: {
     width: scale(54),
     height: scale(54),
-    borderRadius: scale(27), 
+    borderRadius: scale(27),
     marginRight: scale(10),
   },
   cardTitle: {

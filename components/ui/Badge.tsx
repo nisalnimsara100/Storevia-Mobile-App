@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { theme } from '@/theme';
 
-export type BadgeTone = 'discount' | 'stock' | 'freeDelivery' | 'new' | 'neutral';
+export type BadgeTone =
+  'discount' | 'stock' | 'freeDelivery' | 'new' | 'neutral';
 export type BadgeShape = 'pill' | 'rect';
 
 export interface BadgeProps {
@@ -22,14 +23,23 @@ function getToneColors(tone: BadgeTone) {
     case 'freeDelivery':
       return { bg: theme.color.success.bg, fg: theme.color.success.DEFAULT };
     case 'new':
-      return { bg: theme.color.primary[50] ?? theme.color.primary.DEFAULT, fg: theme.color.primary.DEFAULT };
+      return {
+        bg: theme.color.primary[50] ?? theme.color.primary.DEFAULT,
+        fg: theme.color.primary.DEFAULT,
+      };
     case 'neutral':
     default:
       return { bg: theme.color.neutral[100], fg: theme.color.neutral[700] };
   }
 }
 
-export function Badge({ label, tone = 'neutral', size = 'md', shape = 'rect', style }: BadgeProps) {
+export function Badge({
+  label,
+  tone = 'neutral',
+  size = 'md',
+  shape = 'rect',
+  style,
+}: BadgeProps) {
   const { bg, fg } = getToneColors(tone);
   return (
     <View

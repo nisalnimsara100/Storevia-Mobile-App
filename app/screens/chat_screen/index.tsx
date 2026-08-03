@@ -1,17 +1,24 @@
-import { router, useLocalSearchParams } from 'expo-router'
-import React, { useState } from 'react'
-import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const ChatScreen = () => {
-  const { storeName, productName } = useLocalSearchParams()
+  const { storeName, productName } = useLocalSearchParams();
   const resolvedStoreName =
     typeof storeName === 'string' && storeName.trim().length > 0
       ? storeName.trim()
-      : 'Store'
+      : 'Store';
   const resolvedProductName =
     typeof productName === 'string' && productName.trim().length > 0
       ? productName.trim()
-      : 'Product'
+      : 'Product';
 
   // Mock chat data
   const mockChats = [
@@ -23,14 +30,14 @@ const ChatScreen = () => {
       avatar: '🏪',
       isNew: true,
     },
-  ]
+  ];
   // State to control whether to show chats or empty state
-  const [hasChats, setHasChats] = useState(true) // Set to true to show chat list, false for empty state
-  const [chats, setChats] = useState(mockChats)
+  const [hasChats, setHasChats] = useState(true); // Set to true to show chat list, false for empty state
+  const [chats] = useState(mockChats);
 
   const handleStartShopping = () => {
-    Alert.alert('Shopping', 'Redirecting to shopping...')
-  }
+    Alert.alert('Shopping', 'Redirecting to shopping...');
+  };
 
   const handleChatPress = (chatId: string) => {
     router.push({
@@ -39,18 +46,21 @@ const ChatScreen = () => {
         chatId,
         storeName: resolvedStoreName,
         productName: resolvedProductName,
-      }
-    })
-  }
+      },
+    });
+  };
 
   // Toggle for testing - you can remove this in production
   const toggleChatState = () => {
-    setHasChats(!hasChats)
-  }
+    setHasChats(!hasChats);
+  };
 
   // Render chat list item
-  const renderChatItem = ({ item }: { item: typeof mockChats[0] }) => (
-    <TouchableOpacity style={styles.chatItem} onPress={() => handleChatPress(item.id)}>
+  const renderChatItem = ({ item }: { item: (typeof mockChats)[0] }) => (
+    <TouchableOpacity
+      style={styles.chatItem}
+      onPress={() => handleChatPress(item.id)}
+    >
       <View style={styles.chatTopRow}>
         <View style={styles.chatAvatar}>
           <Text style={styles.chatAvatarText}>{item.avatar}</Text>
@@ -67,7 +77,7 @@ const ChatScreen = () => {
         </Text>
       </View>
     </TouchableOpacity>
-  )
+  );
 
   // Empty state component
   const renderEmptyState = () => (
@@ -82,7 +92,7 @@ const ChatScreen = () => {
               <View style={styles.phoneBody} />
             </View>
           </View>
-          
+
           {/* Question marks around phone */}
           <View style={[styles.questionMark, styles.questionMark1]}>
             <Text style={styles.questionMarkText}>?</Text>
@@ -125,7 +135,10 @@ const ChatScreen = () => {
       </View>
 
       {/* Start Shopping Button */}
-      <TouchableOpacity style={styles.startShoppingButton} onPress={handleStartShopping}>
+      <TouchableOpacity
+        style={styles.startShoppingButton}
+        onPress={handleStartShopping}
+      >
         <Text style={styles.startShoppingText}>START SHOPPING</Text>
       </TouchableOpacity>
 
@@ -134,7 +147,7 @@ const ChatScreen = () => {
         <Text style={styles.toggleButtonText}>Show Chats (Test)</Text>
       </TouchableOpacity>
     </View>
-  )
+  );
 
   return (
     <View style={styles.container}>
@@ -148,7 +161,10 @@ const ChatScreen = () => {
             showsVerticalScrollIndicator={false}
           />
           {/* Toggle button for testing - remove in production */}
-          <TouchableOpacity style={styles.toggleButtonFixed} onPress={toggleChatState}>
+          <TouchableOpacity
+            style={styles.toggleButtonFixed}
+            onPress={toggleChatState}
+          >
             <Text style={styles.toggleButtonText}>Show Empty (Test)</Text>
           </TouchableOpacity>
         </View>
@@ -156,8 +172,8 @@ const ChatScreen = () => {
         renderEmptyState()
       )}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -416,7 +432,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-})
+});
 
-export default ChatScreen
-
+export default ChatScreen;

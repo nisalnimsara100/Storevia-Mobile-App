@@ -1,28 +1,25 @@
-import ProductCard from '@/app/components/item_details/ProductCard'
-import ShopDetails from '@/app/components/item_details/ShopDetails'
-import Vouchers from '@/app/components/item_details/Vouchers'
-import { useLocalSearchParams } from 'expo-router'
-import React from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import ProductCard from '@/app/components/item_details/ProductCard';
+import ShopDetails from '@/app/components/item_details/ShopDetails';
+import Vouchers from '@/app/components/item_details/Vouchers';
+import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 // import { products } from '../../../data/productsData'
-import MoreFromStore from '@/app/components/item_details/MoreFromStore'
-import ProductDetails from '@/app/components/item_details/ProductDetails'
-import Ratings from '@/app/components/item_details/Ratings'
-
+import MoreFromStore from '@/app/components/item_details/MoreFromStore';
+import ProductDetails from '@/app/components/item_details/ProductDetails';
+import Ratings from '@/app/components/item_details/Ratings';
 
 const ItemDetailsScreen = () => {
   // const { itemId } = useLocalSearchParams();
   const { product } = useLocalSearchParams();
-  
-  
-  const parsedProduct = product
-    ? JSON.parse(product as string)
-    : null;
+
+  const parsedProduct = product ? JSON.parse(product as string) : null;
 
   const storeId = parsedProduct?.store_id ?? parsedProduct?.store?.store_id;
   const storeName =
     parsedProduct?.store_name ?? parsedProduct?.store?.store_name ?? 'Store';
-  const productName = parsedProduct?.name ?? parsedProduct?.product_name ?? 'Product';
+  const productName =
+    parsedProduct?.name ?? parsedProduct?.product_name ?? 'Product';
   const productId = parsedProduct?.id ?? parsedProduct?.product_id;
   const productImage =
     typeof parsedProduct?.product_image === 'string'
@@ -32,7 +29,7 @@ const ItemDetailsScreen = () => {
         : typeof parsedProduct?.images?.[0] === 'string'
           ? parsedProduct.images[0]
           : undefined;
-  console.log('Received storeId:', typeof(storeId));
+  console.log('Received storeId:', typeof storeId);
 
   if (!parsedProduct) {
     return (
@@ -41,7 +38,7 @@ const ItemDetailsScreen = () => {
       </View>
     );
   }
-  
+
   return (
     <ScrollView
       style={styles.container}
@@ -78,9 +75,9 @@ const ItemDetailsScreen = () => {
       </View>
     </ScrollView>
   );
-}
+};
 
-export default ItemDetailsScreen
+export default ItemDetailsScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -100,4 +97,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginHorizontal: -20,
   },
-})
+});
