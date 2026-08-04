@@ -125,7 +125,7 @@ const ToReview = ({ onCountChange }: ToReviewProps) => {
   if (loading) {
     return (
       <View style={styles.stateContainer}>
-        <ActivityIndicator size="small" color="#FF5722" />
+        <ActivityIndicator size="small" color="#f97316" />
         <Text style={styles.stateText}>Loading orders...</Text>
       </View>
     );
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 8,
     borderRadius: 6,
-    backgroundColor: '#FF5722',
+    backgroundColor: '#f97316',
   },
   retryButtonText: {
     color: '#FFF',
@@ -278,13 +278,13 @@ const styles = StyleSheet.create({
   },
   reviewBtn: {
     borderWidth: 1,
-    borderColor: '#FF5722',
+    borderColor: '#f97316',
     borderRadius: 4,
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
   reviewBtnText: {
-    color: '#FF5722',
+    color: '#f97316',
     fontWeight: '700',
     fontSize: 13,
   },

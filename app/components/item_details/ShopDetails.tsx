@@ -108,7 +108,7 @@ const ShopDetails = ({
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="small" color="#FF5722" />
+        <ActivityIndicator size="small" color="#f97316" />
       </View>
     );
   }
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -4,
     right: -4,
-    backgroundColor: '#FF5722',
+    backgroundColor: '#f97316',
     width: 18,
     height: 18,
     borderRadius: 9,
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   visitButton: {
-    backgroundColor: '#FF5722',
+    backgroundColor: '#f97316',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 6,
@@ -337,13 +337,13 @@ const styles = StyleSheet.create({
   chatButton: {
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#FF5722',
+    borderColor: '#f97316',
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 6,
   },
   chatButtonText: {
-    color: '#FF5722',
+    color: '#f97316',
     fontWeight: '600',
     fontSize: 13,
   },

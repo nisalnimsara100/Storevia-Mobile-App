@@ -497,7 +497,7 @@ const LoginSignup = ({ onLogin }: Props) => {
           />
           <GridItem icon="flash" color="#ff9800" label="Pay Utilities" />
           <GridItem icon="pricetag" color="#9c27b0" label="Vouchers" />
-          <GridItem icon="location" color="#f36d21" label="Pickup Points" />
+          <GridItem icon="location" color="#f97316" label="Pickup Points" />
           <GridItem icon="card" color="#2ecc71" label="PayLater" />
           <GridItem icon="basket" color="#f1c40f" label="Choice" />
           <GridItem icon="mail" color="#2196F3" label="Messages" />
@@ -546,7 +546,7 @@ const LoginSignup = ({ onLogin }: Props) => {
               >
                 <Text style={styles.inputLabel}>Password</Text>
                 <TouchableOpacity disabled={isLoading}>
-                  <Text style={{ color: '#f36d21', fontSize: 12 }}>
+                  <Text style={{ color: '#f97316', fontSize: 12 }}>
                     Forgot?
                   </Text>
                 </TouchableOpacity>
@@ -626,7 +626,7 @@ const LoginSignup = ({ onLogin }: Props) => {
                   }}
                   disabled={isLoading}
                 >
-                  <Text style={{ color: '#f36d21', fontWeight: 'bold' }}>
+                  <Text style={{ color: '#f97316', fontWeight: 'bold' }}>
                     Sign Up
                   </Text>
                 </TouchableOpacity>
@@ -808,7 +808,7 @@ const LoginSignup = ({ onLogin }: Props) => {
                     }}
                     disabled={isLoading}
                   >
-                    <Text style={{ color: '#f36d21', fontWeight: 'bold' }}>
+                    <Text style={{ color: '#f97316', fontWeight: 'bold' }}>
                       Log In
                     </Text>
                   </TouchableOpacity>
@@ -837,7 +837,7 @@ const LoginSignup = ({ onLogin }: Props) => {
             </TouchableOpacity>
 
             <View style={styles.otpHeader}>
-              <Ionicons name="mail" size={50} color="#f36d21" />
+              <Ionicons name="mail" size={50} color="#f97316" />
             </View>
 
             <Text style={styles.otpTitle}>Verify Your Email</Text>
@@ -902,7 +902,7 @@ const LoginSignup = ({ onLogin }: Props) => {
 // --- SUB-COMPONENTS ---
 const OrderIcon = ({ icon, label }: any) => (
   <View style={styles.orderItem}>
-    <Ionicons name={icon} size={scale(24)} color="#f36d21" />
+    <Ionicons name={icon} size={scale(24)} color="#f97316" />
     <Text style={styles.orderLabel}>{label}</Text>
   </View>
 );
@@ -941,7 +941,7 @@ const styles = StyleSheet.create({
   },
   btnRow: { flexDirection: 'row', gap: scale(15) },
   loginBtn: {
-    backgroundColor: '#f36d21',
+    backgroundColor: '#f97316',
     paddingVertical: scale(12),
     width: screenWidth / 2 - scale(35),
     borderRadius: 8,
@@ -957,7 +957,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loginText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
-  signUpText: { color: '#f36d21', fontWeight: 'bold', fontSize: 15 },
+  signUpText: { color: '#f97316', fontWeight: 'bold', fontSize: 15 },
   promoRow: {
     flexDirection: 'row',
     padding: scale(10),
@@ -979,13 +979,13 @@ const styles = StyleSheet.create({
   promoTitle: { fontSize: 11, fontWeight: 'bold', color: '#333' },
   promoPlaceholder: { width: 50, height: 50, marginVertical: 5 },
   collectBtn: {
-    backgroundColor: '#f36d21',
+    backgroundColor: '#f97316',
     paddingHorizontal: 15,
     paddingVertical: 5,
     borderRadius: 20,
   },
   playBtn: {
-    backgroundColor: '#f36d21',
+    backgroundColor: '#f97316',
     paddingHorizontal: 15,
     paddingVertical: 5,
     borderRadius: 20,
@@ -1158,7 +1158,7 @@ const styles = StyleSheet.create({
   },
   resendText: {
     fontSize: 13,
-    color: '#f36d21',
+    color: '#f97316',
     fontWeight: '600',
   },
 });

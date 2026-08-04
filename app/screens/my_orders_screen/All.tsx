@@ -70,7 +70,7 @@ const All = ({ statusFilter }: AllProps) => {
     if (normalized === 'cancelled' || normalized === 'canceled')
       return '#E53935';
     if (normalized === 'delivered') return '#4CAF50';
-    if (normalized === 'placed') return '#FF5722';
+    if (normalized === 'placed') return '#f97316';
     return '#4A90E2';
   };
 
@@ -141,7 +141,7 @@ const All = ({ statusFilter }: AllProps) => {
   if (loading) {
     return (
       <View style={styles.stateContainer}>
-        <ActivityIndicator size="small" color="#FF5722" />
+        <ActivityIndicator size="small" color="#f97316" />
         <Text style={styles.stateText}>Loading orders...</Text>
       </View>
     );
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 8,
     borderRadius: 6,
-    backgroundColor: '#FF5722',
+    backgroundColor: '#f97316',
   },
   retryButtonText: {
     color: '#FFF',
@@ -411,8 +411,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryButton: {
-    backgroundColor: '#FF5722',
-    borderColor: '#FF5722',
+    backgroundColor: '#f97316',
+    borderColor: '#f97316',
   },
   secondaryButton: {
     backgroundColor: '#FFF',

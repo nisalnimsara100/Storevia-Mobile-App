@@ -283,7 +283,7 @@ const FullReviewItem = ({
           <Ionicons
             name={review.liked ? 'thumbs-up' : 'thumbs-up-outline'}
             size={16}
-            color={review.liked ? '#FF5722' : '#888'}
+            color={review.liked ? '#f97316' : '#888'}
           />
           <Text
             style={[
@@ -298,7 +298,7 @@ const FullReviewItem = ({
           <Ionicons
             name={review.disliked ? 'thumbs-down' : 'thumbs-down-outline'}
             size={16}
-            color={review.disliked ? '#FF5722' : '#888'}
+            color={review.disliked ? '#f97316' : '#888'}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.footerAction}>
@@ -500,7 +500,7 @@ const Ratings = ({ productId }: RatingsProps) => {
         activeOpacity={0.7}
         onPress={() => openReviewsModal('images')}
       >
-        <Ionicons name="image-outline" size={14} color="#FF5722" />
+        <Ionicons name="image-outline" size={14} color="#f97316" />
         <Text style={styles.imagesChipText}>
           With images/videos ({withImagesActualCount})
         </Text>
@@ -509,7 +509,7 @@ const Ratings = ({ productId }: RatingsProps) => {
       {/* Loading / error / preview states */}
       {loading && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color="#FF5722" />
+          <ActivityIndicator size="small" color="#f97316" />
           <Text style={styles.loadingText}>Loading reviews…</Text>
         </View>
       )}
@@ -544,7 +544,7 @@ const Ratings = ({ productId }: RatingsProps) => {
         onPress={() => openReviewsModal()}
       >
         <Text style={styles.seeAllText}>See all {totalReviews} reviews</Text>
-        <Ionicons name="chevron-forward" size={15} color="#FF5722" />
+        <Ionicons name="chevron-forward" size={15} color="#f97316" />
       </TouchableOpacity>
 
       {/* Full ratings & reviews modal */}
@@ -966,7 +966,7 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     fontSize: 12,
     fontWeight: '600',
-    color: '#FF5722',
+    color: '#f97316',
   },
 
   previewCard: {
@@ -1032,7 +1032,7 @@ const styles = StyleSheet.create({
   seeAllText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#FF5722',
+    color: '#f97316',
     marginRight: 4,
   },
 
@@ -1134,7 +1134,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   filterChipActive: {
-    borderColor: '#FF5722',
+    borderColor: '#f97316',
     backgroundColor: '#FFF3E9',
   },
   filterChipText: {
@@ -1143,7 +1143,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   filterChipTextActive: {
-    color: '#FF5722',
+    color: '#f97316',
   },
   categoryChip: {
     flexDirection: 'row',
@@ -1256,7 +1256,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 6,
-    backgroundColor: '#FF5722',
+    backgroundColor: '#f97316',
   },
   retryBtnText: {
     color: '#fff',
@@ -1311,7 +1311,7 @@ const styles = StyleSheet.create({
   },
   moreText: {
     fontSize: 12,
-    color: '#FF5722',
+    color: '#f97316',
     fontWeight: '600',
     marginTop: 2,
   },
@@ -1341,7 +1341,7 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   footerActionTextActive: {
-    color: '#FF5722',
+    color: '#f97316',
   },
   footerActionRight: {
     marginLeft: 'auto',

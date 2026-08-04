@@ -480,8 +480,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   checkboxChecked: {
-    backgroundColor: '#FF5722',
-    borderColor: '#FF5722',
+    backgroundColor: '#f97316',
+    borderColor: '#f97316',
   },
   anonymousText: {
     fontSize: 13,

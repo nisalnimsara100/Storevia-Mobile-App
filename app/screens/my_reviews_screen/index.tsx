@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   },
   activeTabItem: {
     borderBottomWidth: 2,
-    borderBottomColor: '#FF5722',
+    borderBottomColor: '#f97316',
   },
   tabLabelRow: {
     flexDirection: 'row',
@@ -125,12 +125,12 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   activeTabText: {
-    color: '#FF5722',
+    color: '#f97316',
     fontWeight: '600',
   },
   tabBadge: {
     marginLeft: 5,
-    backgroundColor: '#FF5722',
+    backgroundColor: '#f97316',
     borderRadius: 8,
     minWidth: 16,
     height: 16,

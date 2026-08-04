@@ -147,14 +147,14 @@ const styles = StyleSheet.create({
   },
   activeTabItem: {
     borderBottomWidth: 2,
-    borderBottomColor: '#FF5722',
+    borderBottomColor: '#f97316',
   },
   tabText: {
     fontSize: 15,
     color: '#666', // Subtle grey for inactive tabs
   },
   activeTabText: {
-    color: '#FF5722',
+    color: '#f97316',
     fontWeight: '600',
   },
   contentBox: {
