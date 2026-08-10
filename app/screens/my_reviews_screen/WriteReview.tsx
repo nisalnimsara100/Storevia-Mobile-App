@@ -1,9 +1,7 @@
-import { useAuthStore } from '@/app/stores/useAuthStore';
-import { reviewKey, useReviewsStore } from '@/app/stores/useReviewsStore';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   Image,
@@ -16,6 +14,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useAuthStore } from '@/app/stores/useAuthStore';
+import { reviewKey, useReviewsStore } from '@/app/stores/useReviewsStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 

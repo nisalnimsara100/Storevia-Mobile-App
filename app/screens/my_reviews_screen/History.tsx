@@ -1,7 +1,6 @@
-import { useReviewsStore } from '@/app/stores/useReviewsStore';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useReviewsStore } from '@/app/stores/useReviewsStore';
 
 const StarRow = ({ rating }: { rating: number }) => (
   <View style={{ flexDirection: 'row' }}>

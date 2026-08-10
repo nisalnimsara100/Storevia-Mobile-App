@@ -1,5 +1,3 @@
-import React from 'react';
-
 import All from './All';
 
 const ToReceive = () => (

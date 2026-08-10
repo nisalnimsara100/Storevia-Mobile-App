@@ -5,11 +5,14 @@
 - **[CODING_STANDARDS.md](./CODING_STANDARDS.md)** — project-specific conventions on top of ESLint/Prettier: component reuse, styling rules, hooks rules, route hygiene.
 - **[QA_REPORT.md](./QA_REPORT.md)** — the 2026-08 full-codebase audit: what was found, what was fixed, and what's deliberately left as scoped follow-up work.
 - **[THEME_AUDIT.md](./THEME_AUDIT.md)** — follow-up audit focused specifically on theme-token consistency (colors, font sizes, Tailwind config gaps).
+- **[OPTIMIZATION.md](./OPTIMIZATION.md)** — repo/dependency size audit, Biome setup, config fixes, and a routing regression caught and fixed during the pass.
+- **[RESPONSIVE_AUDIT.md](./RESPONSIVE_AUDIT.md)** — cross-device audit: safe-area handling, `Dimensions` vs `useWindowDimensions`, tablet layout gaps.
 
 ## Before opening a PR
 
 ```bash
 npx tsc --noEmit
 npx expo lint
+npx biome check .
 npx prettier --check .
 ```

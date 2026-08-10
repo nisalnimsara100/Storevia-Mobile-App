@@ -1,6 +1,5 @@
-import { useAuthStore } from '@/app/stores/useAuthStore';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -10,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useAuthStore } from '@/app/stores/useAuthStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 

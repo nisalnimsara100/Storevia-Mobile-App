@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TouchableOpacity, Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import CountryFlag from 'react-native-country-flag';
 
 type MenuItemProps = {

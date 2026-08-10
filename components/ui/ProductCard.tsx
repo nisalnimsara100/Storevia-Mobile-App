@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-import { useRouter } from 'expo-router';
 import Swiper from 'react-native-swiper';
 import { theme } from '@/theme';
 import { Badge } from './Badge';
-import { StarRating } from './StarRating';
 import { Button } from './Button';
+import { StarRating } from './StarRating';
 
 export type ProductCardVariant = 'grid' | 'list' | 'flashsale' | 'detail';
 
@@ -42,8 +42,8 @@ function resolveImage(image: string | { uri: string } | undefined) {
 function formatSold(n?: number) {
   if (n === undefined || n === null) return '0';
   if (n < 1000) return String(n);
-  if (n < 1_000_000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + 'k';
-  return (n / 1_000_000).toFixed(1) + 'M';
+  if (n < 1_000_000) return `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k`;
+  return `${(n / 1_000_000).toFixed(1)}M`;
 }
 
 function Price({

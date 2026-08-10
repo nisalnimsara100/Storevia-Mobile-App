@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Image,
   Modal,
@@ -42,7 +42,7 @@ const DESCRIPTION_IMAGE_SOURCES = [
   require('../../../assets/products/tab.jpg'),
   require('../../../assets/products/watch.jpg'),
   require('../../../assets/products/wallet.png'),
-  require('../../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg'),
+  require('../../../assets/products/placeholder.jpg'),
 ];
 
 // Local assets carry their real pixel dimensions, so each image renders at

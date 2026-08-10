@@ -1,22 +1,22 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import All from './All';
 import ToPay from './ToPay';
-import ToShip from './ToShip';
 import ToReceive from './ToReceive';
 import ToReview from './ToReview';
+import ToShip from './ToShip';
 
 const tabs = ['All', 'To Pay', 'To Ship', 'To Receive', 'To Review'];
 

@@ -1,5 +1,5 @@
-import React, { createContext, ReactNode, useState } from 'react';
 import { useRouter } from 'expo-router';
+import { createContext, ReactNode, useState } from 'react';
 import Toast from 'react-native-toast-message';
 import { useAuthStore } from '@/app/stores/useAuthStore';
 
@@ -50,7 +50,6 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       });
 
       const data = await response.json();
-      console.log('Cart Details:', data);
 
       if (Array.isArray(data.cart_items)) {
         setCart(data.cart_items);
@@ -86,7 +85,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       (item) => (item.product_id || item.id) === productId,
     );
 
-    let newCart = [...cart];
+    const newCart = [...cart];
 
     if (existingIndex !== -1) {
       newCart[existingIndex].quantity =
@@ -106,8 +105,6 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   // Save single item to database
   const addCartItemToDatabase = async (item: any) => {
     if (!item || !currentloggedInEmail) return;
-
-    console.log('Saving item to DB:', { item, email: currentloggedInEmail });
 
     try {
       const response = await fetch(`${BASE_URL}/api/save_cart`, {
@@ -137,7 +134,6 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       });
 
       const data = await response.json();
-      console.log('Save Cart Response:', data);
 
       if (!response.ok) {
         console.error('Server Error:', data);
@@ -148,7 +144,6 @@ export const CartProvider = ({ children }: CartProviderProps) => {
           text2: '🛒🛍️',
           position: 'bottom',
         });
-        console.log('Saved item to DB:', data);
       }
     } catch (err) {
       console.error('Error saving item:', err);

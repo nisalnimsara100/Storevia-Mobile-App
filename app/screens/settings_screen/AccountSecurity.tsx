@@ -1,9 +1,10 @@
-import React from 'react';
-import { View, ScrollView, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import MenuItem from '../../components/MenuItem';
+import React from 'react';
+import { RefreshControl, ScrollView, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui';
+import MenuItem from '../../components/MenuItem';
 
 export const AccountSecurity = () => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -16,12 +17,12 @@ export const AccountSecurity = () => {
   }, []);
 
   return (
-    <View className="flex-1 bg-gray-100 mt-[10%]">
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <View className="border-b border-gray-200 bg-white">
         <ScreenHeader title="Privacy Protection" onBack={() => router.back()} />
       </View>
       <ScrollView
-        className="flex-1 mt-5"
+        className="flex-1 mt-5 bg-gray-100"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -62,7 +63,7 @@ export const AccountSecurity = () => {
           />
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

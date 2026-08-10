@@ -9,8 +9,9 @@ import {
   View,
 } from 'react-native';
 import CountryPicker from 'react-native-country-picker-modal';
-import MenuItem from '../../components/MenuItem';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui';
+import MenuItem from '../../components/MenuItem';
 
 const SettingsScreen = () => {
   const [countryCode, setCountryCode] =
@@ -27,13 +28,13 @@ const SettingsScreen = () => {
     }, 2000);
   }, []);
   return (
-    <View className="flex-1 bg-gray-100 mt-[10%]">
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <View className="border-b border-gray-200 bg-white">
         <ScreenHeader title="Settings" onBack={() => router.back()} />
       </View>
 
       <ScrollView
-        className="flex-1 mt-5"
+        className="flex-1 mt-5 bg-gray-100"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -112,7 +113,7 @@ const SettingsScreen = () => {
           <Text className="text-center text-red-500 font-semibold">Logout</Text>
         </TouchableOpacity>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

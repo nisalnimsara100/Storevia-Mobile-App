@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Link, useRouter } from 'expo-router';
+import { setStatusBarStyle } from 'expo-status-bar';
 import * as Icons from 'lucide-react-native';
-import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -19,8 +21,6 @@ import {
 } from 'react-native-safe-area-context';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import Swiper from 'react-native-swiper';
-
-import { Link, useRouter } from 'expo-router';
 
 import { ProductCard } from '@/components/ui';
 
@@ -66,9 +66,18 @@ const Home = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [products, setProducts] = useState<any[]>([]);
+
+  // Tab screens stay mounted when you switch tabs, so a declarative
+  // <StatusBar> only fires once on first visit — set it imperatively on
+  // every focus instead, so switching back from another tab is reliable.
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle('light');
+    }, []),
+  );
+
   useEffect(() => {
     const fetchProducts = async () => {
-      // console.log('Base URL:', BASE_URL);
       const API_URL = `${BASE_URL}/api/products`;
       const res = await fetch(API_URL);
       const data = await res.json();
@@ -80,8 +89,8 @@ const Home = () => {
         const apiProducts = await fetchProducts();
         const mappedProducts = apiProducts.map(mapProductFromApi);
         setProducts(mappedProducts);
-      } catch (e) {
-        console.log('Failed to load products', e);
+      } catch (error) {
+        console.error('Failed to load products:', error);
       }
     };
 
@@ -344,10 +353,7 @@ const Home = () => {
 
                 <View style={styles.voucherDivider} />
 
-                <TouchableOpacity
-                  activeOpacity={0.85}
-                  onPress={() => console.log('Collect all vouchers')}
-                >
+                <TouchableOpacity activeOpacity={0.85} onPress={() => {}}>
                   <LinearGradient
                     colors={['#f97316', '#ec4899']}
                     start={{ x: 0, y: 0 }}

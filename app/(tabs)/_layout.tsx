@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import React from 'react';
 
 // Use fixed brand colors so the active tab icon stays the same on every device,
 // regardless of the device's light/dark color scheme (the dark tint was white,

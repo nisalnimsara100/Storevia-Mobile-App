@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -13,10 +13,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../../firebaseConfig';
-import { useAuthStore } from '../stores/useAuthStore';
-
 // IMPORT THE LOGIN PAGE
 import LoginSignup from '../(auth)/LoginSignup';
+import { useAuthStore } from '../stores/useAuthStore';
 
 const { width: screenWidth } = Dimensions.get('window');
 const scale = (size: number): number => (screenWidth / 375) * size;
@@ -131,7 +130,7 @@ const Account = () => {
   }, [user?.email]);
 
   const handleLogout = () => {
-    signOut(auth).catch((error) => console.log('Error logging out: ', error));
+    signOut(auth).catch((_error) => {});
   };
 
   // IF NOT LOGGED IN, SHOW THE LOGIN PAGE
@@ -169,7 +168,7 @@ const Account = () => {
                     ? { uri: profilePicture }
                     : user?.photoURL
                       ? { uri: user.photoURL }
-                      : require('../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg')
+                      : require('../../assets/products/placeholder.jpg')
                 }
                 style={styles.profilePic}
               />

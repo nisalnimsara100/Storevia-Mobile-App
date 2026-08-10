@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -196,7 +197,7 @@ const Messages: React.FC = () => {
   };
 
   const handleMessagePress = (message: Message): void => {
-    if (!message || !message.title) {
+    if (!message?.title) {
       Alert.alert('Error', 'Invalid message data');
       return;
     }
@@ -399,6 +400,7 @@ const Messages: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
+      <StatusBar style="light" />
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.headerTitle}>Messages</Text>

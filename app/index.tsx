@@ -1,8 +1,7 @@
-import { View, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import '../global.css';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import * as React from 'react';
 
 const Index = () => {
   const router = useRouter();

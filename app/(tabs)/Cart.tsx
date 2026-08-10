@@ -1,21 +1,25 @@
 'use client';
 
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { setStatusBarStyle } from 'expo-status-bar';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Image,
+  Modal,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Modal,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { s, vs } from 'react-native-size-matters';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '../stores/useAuthStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
@@ -38,9 +42,7 @@ const storage = {
   },
 };
 
-const confetti = (options?: any) => {
-  console.log('Confetti effect triggered:', options);
-};
+const confetti = (_options?: any) => {};
 
 interface CartItem {
   id: number;
@@ -87,6 +89,7 @@ const isMeaningfulFeatureValue = (
 };
 
 const Cart = () => {
+  const insets = useSafeAreaInsets();
   const [cartData, setCartData] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [userVouchers, setUserVouchers] = useState<UserVoucher[]>([]);
@@ -161,6 +164,15 @@ const Cart = () => {
       fetchCart();
       fetchUserVouchers();
     }, [fetchCart, fetchUserVouchers]),
+  );
+
+  // Tab screens stay mounted when you switch tabs, so a declarative
+  // <StatusBar> only fires once on first visit — set it imperatively on
+  // every focus instead, so switching back from another tab is reliable.
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle('light');
+    }, []),
   );
 
   /* ---------- GROUP BY STORE ---------- */
@@ -479,15 +491,17 @@ const Cart = () => {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
-      {/* ---------- HEADER ---------- */}
+    <SafeAreaView className="flex-1 bg-gray-100" edges={[]}>
+      <StatusBar style="light" />
+      {/* ---------- HEADER (top-inset padding baked in so the orange extends behind the status bar) ---------- */}
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: '#f97316',
           paddingHorizontal: s(12),
-          paddingVertical: vs(8),
+          paddingTop: insets.top + vs(8),
+          paddingBottom: vs(8),
         }}
       >
         <TouchableOpacity>

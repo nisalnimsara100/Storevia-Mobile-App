@@ -1,8 +1,10 @@
-import React from 'react';
-import { View, Text, ScrollView, RefreshControl, Switch } from 'react-native';
 import { router } from 'expo-router';
-import MenuItem from '../../components/MenuItem';
+import React from 'react';
+import { RefreshControl, ScrollView, Switch, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui';
+import MenuItem from '../../components/MenuItem';
+
 const SectionHeader = ({ title }: { title: string }) => {
   return (
     <View className="px-4 py-3 bg-gray-100">
@@ -41,13 +43,13 @@ export const MessageSettings = () => {
   };
 
   return (
-    <View className="flex-1 bg-gray-100 mt-[10%]">
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <View className="border-b border-gray-200 bg-white">
         <ScreenHeader title="Message Settings" onBack={() => router.back()} />
       </View>
 
       <ScrollView
-        className="flex-1 mt-5"
+        className="flex-1 mt-5 bg-gray-100"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -152,7 +154,7 @@ export const MessageSettings = () => {
           />
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

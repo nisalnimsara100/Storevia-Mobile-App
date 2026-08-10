@@ -3,9 +3,9 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Google from 'expo-auth-session/providers/google';
 import Constants, { AppOwnership } from 'expo-constants';
 import * as Crypto from 'expo-crypto';
-import * as WebBrowser from 'expo-web-browser';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -335,7 +335,10 @@ const LoginSignup = ({ onLogin }: Props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollBody}
+        showsVerticalScrollIndicator={false}
+      >
         {/* --- HEADER (Original UI) --- */}
         <View style={styles.header}>
           <TouchableOpacity
@@ -909,7 +912,7 @@ const OrderIcon = ({ icon, label }: any) => (
 
 const GridItem = ({ icon, color, label }: any) => (
   <View style={styles.gridItem}>
-    <View style={[styles.gridIconCircle, { backgroundColor: color + '15' }]}>
+    <View style={[styles.gridIconCircle, { backgroundColor: `${color}15` }]}>
       <Ionicons name={icon} size={22} color={color} />
     </View>
     <Text style={styles.gridLabel}>{label}</Text>
@@ -917,7 +920,10 @@ const GridItem = ({ icon, color, label }: any) => (
 );
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F1F2F4' },
+  // White to match the header, which sits flush against the top of the
+  // screen (square top corners) — the page's gray lives on `scrollBody`.
+  container: { flex: 1, backgroundColor: '#fff' },
+  scrollBody: { flex: 1, backgroundColor: '#F1F2F4' },
   header: {
     padding: scale(20),
     alignItems: 'center',

@@ -1,6 +1,6 @@
-import { useAuthStore } from '@/app/stores/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useState } from 'react';
 import {
@@ -15,8 +15,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import { useAuthStore } from '@/app/stores/useAuthStore';
 
 interface CartItem {
   id: number;
@@ -111,6 +115,7 @@ const generateOrderNumber = () =>
     .padStart(4, '0')}`;
 
 const CheckoutScreen = () => {
+  const insets = useSafeAreaInsets();
   const { cartItems } = useLocalSearchParams();
   const [items, setItems] = React.useState<CartItem[]>([]);
   const [showAddressModal, setShowAddressModal] = React.useState(false);
@@ -395,8 +400,7 @@ const CheckoutScreen = () => {
         return;
       }
 
-      const data = await response.json();
-      console.log('Order API response:', data);
+      await response.json();
 
       // Navigate to order confirmation screen with real order details
       const shippingTo = selectedAddress
@@ -423,10 +427,16 @@ const CheckoutScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-gray-100" edges={['bottom']}>
+      <StatusBar style="light" />
       <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
+        {/* Header — top-inset padding baked in so the orange extends behind the status bar */}
+        <View
+          style={[
+            styles.header,
+            { paddingTop: insets.top + verticalScale(12) },
+          ]}
+        >
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
@@ -576,27 +586,24 @@ const CheckoutScreen = () => {
                     </Text>
                   </View>
 
-                  {appliedVouchers.length > 0 && (
-                    <>
-                      {appliedVouchers.map((voucher) => (
-                        <View key={voucher.id} style={styles.priceRow}>
-                          <Text style={styles.discountLabel}>
-                            Voucher ({voucher.code})
-                          </Text>
-                          <Text style={styles.discountValue}>
-                            - Rs.{' '}
-                            {voucher.discountType === 'percentage'
-                              ? (
-                                  (parseFloat(calculateSubtotal()) *
-                                    voucher.discount) /
-                                  100
-                                ).toFixed(2)
-                              : voucher.discount.toFixed(2)}
-                          </Text>
-                        </View>
-                      ))}
-                    </>
-                  )}
+                  {appliedVouchers.length > 0 &&
+                    appliedVouchers.map((voucher) => (
+                      <View key={voucher.id} style={styles.priceRow}>
+                        <Text style={styles.discountLabel}>
+                          Voucher ({voucher.code})
+                        </Text>
+                        <Text style={styles.discountValue}>
+                          - Rs.{' '}
+                          {voucher.discountType === 'percentage'
+                            ? (
+                                (parseFloat(calculateSubtotal()) *
+                                  voucher.discount) /
+                                100
+                              ).toFixed(2)
+                            : voucher.discount.toFixed(2)}
+                        </Text>
+                      </View>
+                    ))}
 
                   <View style={styles.priceRow}>
                     <Text style={styles.priceLabel}>Shipping</Text>

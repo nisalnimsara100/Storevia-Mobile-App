@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { theme } from '@/theme';
 
@@ -27,7 +26,6 @@ function getToneColors(tone: BadgeTone) {
         bg: theme.color.primary[50] ?? theme.color.primary.DEFAULT,
         fg: theme.color.primary.DEFAULT,
       };
-    case 'neutral':
     default:
       return { bg: theme.color.neutral[100], fg: theme.color.neutral[700] };
   }

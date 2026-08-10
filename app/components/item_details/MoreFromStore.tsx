@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
 import {
   Image,
   ScrollView,
@@ -103,10 +102,8 @@ const STORE_PRODUCTS: StoreProduct[] = [
   {
     id: 106,
     name: 'Laptop Sleeve 15.6" Water Resistant',
-    image: require('../../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg'),
-    images: [
-      require('../../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg'),
-    ],
+    image: require('../../../assets/products/placeholder.jpg'),
+    images: [require('../../../assets/products/placeholder.jpg')],
     price: 1800,
     stock: 18,
     rating: 4.4,

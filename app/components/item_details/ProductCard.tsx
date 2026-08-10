@@ -1,5 +1,5 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Swiper from 'react-native-swiper';
 
@@ -105,7 +105,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                 ellipsizeMode="tail"
                 onTextLayout={(e) => {
                   const lines = e.nativeEvent?.lines ?? [];
-                  console.log('Text layout lines:', lines.length);
                   if (lines.length > 2) {
                     setShowTitleToggle(true);
                   }

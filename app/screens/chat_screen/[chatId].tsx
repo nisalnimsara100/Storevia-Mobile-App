@@ -1,12 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
@@ -197,8 +191,7 @@ const ChatConversation = () => {
         }),
       });
 
-      const result = await response.json();
-      console.log('Send message response:', result?.status ?? result);
+      await response.json();
 
       if (!response.ok) {
         throw new Error('Failed to send chat message');

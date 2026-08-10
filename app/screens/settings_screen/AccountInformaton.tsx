@@ -1,9 +1,9 @@
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { useAuthStore } from '../../stores/useAuthStore';
+import { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,9 +11,10 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 const AccountInformaton = () => {
   const user = useAuthStore((state) => state.user);
@@ -54,7 +55,7 @@ const AccountInformaton = () => {
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View className="flex-1 bg-gray-100 mt-[10%]">
+      <SafeAreaView className="flex-1 bg-white" edges={['top']}>
         <View className="border-b border-gray-200 bg-white">
           <ScreenHeader
             title="Account Information"
@@ -62,7 +63,7 @@ const AccountInformaton = () => {
           />
         </View>
 
-        <ScrollView className="flex-1 mt-5">
+        <ScrollView className="flex-1 mt-5 bg-gray-100">
           <TouchableOpacity
             className="bg-white flex-row justify-between items-center px-4 py-4 border-b border-gray-200"
             onPress={toggleNameModal}
@@ -103,7 +104,7 @@ const AccountInformaton = () => {
             value={birthday}
             mode="date"
             display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={(event, selectedDate) => {
+            onChange={(_event, selectedDate) => {
               setBirthdayModelOpen(Platform.OS === 'ios');
               if (selectedDate) setBirthday(selectedDate);
             }}
@@ -143,7 +144,7 @@ const AccountInformaton = () => {
             </View>
           </View>
         )}
-      </View>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 };

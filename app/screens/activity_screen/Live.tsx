@@ -1,16 +1,15 @@
 'use client';
 
+import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 import {
+  Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  ScrollView,
-  Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import * as React from 'react';
-import { useState, useEffect } from 'react';
 
 function Countdown({ endsAt }: { endsAt: number }) {
   const [remaining, setRemaining] = useState<number>(

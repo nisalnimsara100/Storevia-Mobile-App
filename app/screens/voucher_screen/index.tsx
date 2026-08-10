@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -11,7 +10,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { useAuthStore } from '../../stores/useAuthStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
@@ -96,6 +98,7 @@ const parseVoucher = (raw: VoucherAPIResponse): Voucher => {
 
 const VoucherScreen = () => {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
 
   const [savingVouchers, setSavingVouchers] = useState<Voucher[]>([]);
@@ -318,10 +321,13 @@ const VoucherScreen = () => {
   );
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-slate-100">
-      {/* Header */}
+    <SafeAreaView edges={[]} className="flex-1 bg-slate-100">
+      {/* Header — top-inset padding baked in so the gradient extends behind the status bar */}
       <LinearGradient colors={['#fde047', '#facc15']}>
-        <View className="flex-row items-center justify-between px-4 py-3">
+        <View
+          className="flex-row items-center justify-between px-4 py-3"
+          style={{ paddingTop: insets.top + 12 }}
+        >
           <View className="flex-row items-center">
             <TouchableOpacity onPress={() => router.back()} className="pr-2">
               <Ionicons name="chevron-back" size={26} color="#111827" />

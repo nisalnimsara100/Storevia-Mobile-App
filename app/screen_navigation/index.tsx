@@ -1,5 +1,4 @@
 import { Link } from 'expo-router';
-import * as React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 const ScreenNavigation = () => {

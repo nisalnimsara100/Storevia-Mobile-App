@@ -1,17 +1,17 @@
 import {
+  createUserWithEmailAndPassword,
   GoogleAuthProvider,
   OAuthProvider,
-  User,
-  createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithCredential,
   signInWithEmailAndPassword,
   signOut,
+  User,
   updateProfile,
 } from 'firebase/auth';
 import React, {
-  ReactNode,
   createContext,
+  ReactNode,
   useContext,
   useEffect,
   useState,
@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // 🔐 Fetch initial user data (cart count, followed stores, etc.)
-  const fetchInitialUserData = async (email: string, token: string) => {
+  const fetchInitialUserData = async (email: string, _token: string) => {
     if (!email) return;
 
     try {
@@ -83,7 +83,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (result.success && result.data) {
         const cartCount = Number(result.data.cart_count) || 0;
-        console.log('✅ Fetched cart count and email:', cartCount, email);
 
         useAuthStore.getState().setCartCount(cartCount);
 
@@ -92,7 +91,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             .getState()
             .setFollowedStoreIds(result.data.followed_stores);
         }
-        console.log('📦 Zustand Store Updated:', useAuthStore.getState());
       } else {
         useAuthStore.getState().setCartCount(0);
       }
@@ -101,9 +99,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         '⚠️ Error fetching initial user data (API may be offline):',
         error,
       );
-      console.log(
-        '✅ User can still use app with Firebase auth, backend is optional',
-      );
       // Set default values if API is unavailable
       useAuthStore.getState().setCartCount(0);
     }
@@ -111,6 +106,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // 🔐 Listen to Firebase Auth State
   useEffect(() => {
+    if (!auth) {
+      // Firebase failed to initialize (see firebaseConfig.ts) — most likely
+      // missing/invalid EXPO_PUBLIC_FIREBASE_* env vars in this build.
+      // Degrade to a logged-out state instead of crashing on a null `auth`.
+      console.error(
+        '❌ Firebase auth is unavailable — check EXPO_PUBLIC_FIREBASE_* env vars for this build.',
+      );
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {
@@ -118,7 +124,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
           // 🕐 Check if session has expired (3 weeks)
           if (useAuthStore.getState().isSessionExpired()) {
-            console.log('⏰ Session Expired! Logging out user.');
             await signOut(auth);
             setFirebaseUser(null);
             useAuthStore.getState().logOut();
@@ -155,7 +160,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                   name: userName, // Ensure name is not 'unknown user'
                 },
               });
-              console.log('✅ User authenticated with backend:', data);
             } else {
               throw new Error('Backend authentication failed');
             }
@@ -235,8 +239,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             },
           });
           useAuthStore.getState().setAuthToken(token);
-          console.log('✅ Login successful:', data);
-          console.log('🔐 Zustand Store State:', useAuthStore.getState());
         } else {
           throw new Error('Backend authentication failed');
         }
@@ -257,8 +259,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           },
         });
         useAuthStore.getState().setAuthToken(token);
-        console.log('✅ Login successful (Firebase only)');
-        console.log('🔐 Zustand Store State:', useAuthStore.getState());
       }
 
       // Fetch initial user data
@@ -279,7 +279,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     password: string,
     firstName: string,
     lastName: string,
-    phone: string,
+    _phone: string,
   ): Promise<AuthResult> => {
     try {
       const trimmedFirstName = firstName.trim();
@@ -331,8 +331,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             },
           });
           useAuthStore.getState().setAuthToken(token);
-          console.log('✅ Sign up successful:', data);
-          console.log('🔐 Zustand Store State:', useAuthStore.getState());
         } else {
           throw new Error('Backend authentication failed');
         }
@@ -352,8 +350,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           },
         });
         useAuthStore.getState().setAuthToken(token);
-        console.log('✅ Sign up successful (Firebase only)');
-        console.log('🔐 Zustand Store State:', useAuthStore.getState());
       }
 
       // Fetch initial user data
@@ -409,8 +405,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             },
           });
           useAuthStore.getState().setAuthToken(token);
-          console.log('✅ Google Login successful:', data);
-          console.log('🔐 Zustand Store State:', useAuthStore.getState());
         } else {
           throw new Error('Backend authentication failed');
         }
@@ -430,8 +424,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           },
         });
         useAuthStore.getState().setAuthToken(token);
-        console.log('✅ Google Login successful (Firebase only)');
-        console.log('🔐 Zustand Store State:', useAuthStore.getState());
       }
 
       // Fetch initial user data
@@ -497,8 +489,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             },
           });
           useAuthStore.getState().setAuthToken(token);
-          console.log('✅ Apple Login successful:', data);
-          console.log('🔐 Zustand Store State:', useAuthStore.getState());
         } else {
           throw new Error('Backend authentication failed');
         }
@@ -518,8 +508,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           },
         });
         useAuthStore.getState().setAuthToken(token);
-        console.log('✅ Apple Login successful (Firebase only)');
-        console.log('🔐 Zustand Store State:', useAuthStore.getState());
       }
 
       // Fetch initial user data
@@ -540,7 +528,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await signOut(auth);
       setFirebaseUser(null);
       useAuthStore.getState().logOut();
-      console.log('✅ Logged out successfully');
     } catch (error) {
       console.error('❌ Logout error:', error);
     }

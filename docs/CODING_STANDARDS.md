@@ -1,6 +1,15 @@
 # Coding Standards
 
-Project-specific conventions, on top of what ESLint/Prettier already enforce automatically. Run `npx expo lint` and `npx prettier --check .` before opening a PR — CI/hooks assume both pass.
+Project-specific conventions, on top of what the toolchain already enforces automatically. Run all three before opening a PR — CI/hooks assume they pass:
+
+```bash
+npx tsc --noEmit
+npx expo lint
+npx biome check .
+npx prettier --check .
+```
+
+**Why three linters:** each catches something the others don't. `eslint-config-expo` has the React Native/Expo/`react-hooks` rules (the ones that caught a real hooks-rules-violation bug in this codebase — Biome doesn't have an RN-aware hooks plugin, so `useExhaustiveDependencies`/`useHookAtTopLevel` are turned off in `biome.json` to avoid duplicate/conflicting reports). Biome is much faster and catches things ESLint's default config doesn't emphasize as strongly — unused imports/variables, stray `console.log`s, dynamic namespace access. Prettier remains the formatter (including Tailwind class sorting via `prettier-plugin-tailwindcss`); Biome's own formatter is disabled in `biome.json` for that reason — two formatters fighting over the same files is worse than one.
 
 ## Component reuse
 
@@ -26,4 +35,8 @@ Project-specific conventions, on top of what ESLint/Prettier already enforce aut
 
 ## Routes
 
-- A screen under `app/screens/` only exists if something links to it. When you delete or rename a screen, `grep -rn "router.push\|Link href"` for its old path across `app/` and update/remove the callers — an orphaned route file is not caught by the compiler or linter, only by a user hitting a dead end at runtime (or a future audit).
+- A screen under `app/` only exists if something links to it. Before deleting or renaming a screen, search for **every** way its path could be referenced, not just quoted string literals — `router.push('/path')`, `Link href="/path"`, **and** template-literal forms like ``router.push(`/path?param=${x}`)``, which a plain string grep misses. This is not hypothetical: `app/search/index.tsx` was deleted as "orphaned" during an earlier cleanup because a grep for quoted `'/search'` found nothing — but `Home.tsx` and `search_screen/index.tsx` both navigated to it via ``router.push(`/search?param=...`)``, a template literal the grep never matched. The route was broken until the next `tsc` run caught the resulting type error (`expo-router`'s typed routes flagged the now-nonexistent path) and it had to be restored. Prefer `grep -rn "/search"` (the bare path, no quote characters) over a quote-anchored pattern, and always re-run `tsc --noEmit` after removing a route — typed routes will catch what a grep misses.
+
+## Tooling notes
+
+- `tsconfig.json` uses `"jsx": "react-jsx"` (the automatic runtime), matching `babel-preset-expo`'s actual default at bundle time. `import React from 'react'` is only needed in a file if it calls `React.something` directly (e.g. `React.useState`, `React.Fragment`) — not just to make JSX compile.

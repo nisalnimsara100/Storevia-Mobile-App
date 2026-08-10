@@ -1,6 +1,6 @@
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -14,8 +14,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useAuthStore } from '../../stores/useAuthStore';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 const baseUrl2 =
   process.env.EXPO_PUBLIC_APP_BASE_URL || 'http://localhost:3000';
@@ -93,7 +94,6 @@ const AddressBook = () => {
         { method: 'GET', headers: { Accept: 'application/json' } },
       );
       const data = await response.json();
-      console.log('address data:', data);
       setAddresses(Array.isArray(data.allAddresses) ? data.allAddresses : []);
     } catch (error) {
       console.error('Error fetching shipping data:', error);
@@ -197,7 +197,6 @@ const AddressBook = () => {
       });
 
       const data = await res.json();
-      console.log('save address response:', data);
 
       if (data.status !== 'success') {
         Alert.alert(
@@ -248,8 +247,6 @@ const AddressBook = () => {
       useAsBilling: form.useAsBilling,
     };
 
-    console.log('new Address', newAddress);
-
     const formData = new FormData();
     formData.append('address', JSON.stringify(newAddress));
 
@@ -261,7 +258,6 @@ const AddressBook = () => {
       });
 
       const result = await response.json();
-      console.log(result);
 
       if (result.status === 'success') {
         // Update UI locally
@@ -298,8 +294,6 @@ const AddressBook = () => {
 
   // ─── Set default shipping address ─────────────────────────────────────────
   const handleToggleBillingAddress = async (index: number, id: number) => {
-    console.log('default address id ', id);
-
     const formData = new FormData();
     const currentloggedInEmail = user?.email;
 
@@ -313,10 +307,8 @@ const AddressBook = () => {
       });
 
       const result = await response.json();
-      console.log(result);
 
       if (result.status === 'success') {
-        console.log(result.message);
       }
     } catch (err) {
       console.error('Error saving address:', err);
@@ -349,13 +341,16 @@ const AddressBook = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
-      <View className="flex-1 bg-gray-50">
+      <SafeAreaView className="flex-1 bg-white" edges={['top']}>
         {/* Header */}
-        <View className="border-b border-gray-200 bg-white mt-[10%]">
+        <View className="border-b border-gray-200 bg-white">
           <ScreenHeader title="My Address" onBack={() => router.back()} />
         </View>
 
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <ScrollView
+          className="flex-1 bg-gray-50"
+          showsVerticalScrollIndicator={false}
+        >
           <View className="w-full px-4 pt-4 bg-gray-50">
             {/* Add Address Button */}
             <TouchableOpacity
@@ -499,7 +494,7 @@ const AddressBook = () => {
               ))}
           </View>
         </ScrollView>
-      </View>
+      </SafeAreaView>
 
       {/* ── Add / Edit Address Modal ──────────────────────────────────────── */}
       <Modal visible={modalOpen} transparent animationType="slide">

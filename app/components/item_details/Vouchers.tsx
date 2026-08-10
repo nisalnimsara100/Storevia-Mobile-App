@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   ScrollView,
@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
 import { s, vs } from 'react-native-size-matters';
+import Svg, { Circle } from 'react-native-svg';
 import { useAuthStore } from '../../stores/useAuthStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;

@@ -1,13 +1,12 @@
-import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import {
   Dimensions,
   FlatList,
+  Image,
   StyleSheet,
   Text,
   View,
-  Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
 const { width: screenWidth } = Dimensions.get('window');
 

@@ -24,7 +24,7 @@ export const products = [
     image: require('../assets/products/laptop.jpg'),
     images: [
       require('../assets/products/laptop.jpg'),
-      require('../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg'),
+      require('../assets/products/placeholder.jpg'),
       require('../assets/products/phone.jpg')
     ],
     price: 99,

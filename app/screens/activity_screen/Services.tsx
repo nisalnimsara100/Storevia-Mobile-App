@@ -1,13 +1,12 @@
-import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import {
   Dimensions,
   FlatList,
+  Image,
   StyleSheet,
   Text,
   View,
-  Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -24,28 +23,28 @@ const activities = [
     title: 'Your order has arrived! Need assistance? Tap here.',
     date: '20/09/2025',
     desc: 'Great news! Your order has been delivered successfully. We hope you enjoy your purchase. Thank you for shopping with Storevia.',
-    image: require('../../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg'),
+    image: require('../../../assets/products/placeholder.jpg'),
   },
   {
     id: '2',
     title: 'Your order has arrived! Need assistance? Tap here.',
     date: '20/09/2025',
     desc: 'Great news! Your order has been delivered successfully. We hope you enjoy your purchase. Thank you for shopping with Storevia.',
-    image: require('../../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg'),
+    image: require('../../../assets/products/placeholder.jpg'),
   },
   {
     id: '3',
     title: 'Your order has arrived! Need assistance? Tap here.',
     date: '20/09/2025',
     desc: 'Great news! Your order has been delivered successfully. We hope you enjoy your purchase. Thank you for shopping with Storevia.',
-    image: require('../../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg'),
+    image: require('../../../assets/products/placeholder.jpg'),
   },
   {
     id: '4',
     title: 'Your order has arrived! Need assistance? Tap here.',
     date: '20/09/2025',
     desc: 'Great news! Your order has been delivered successfully. We hope you enjoy your purchase. Thank you for shopping with Storevia.',
-    image: require('../../../assets/products/WhatsApp Image 2025-08-02 at 13.31.12_cfe1f534.jpg'),
+    image: require('../../../assets/products/placeholder.jpg'),
   },
 ];
 

@@ -1,13 +1,12 @@
-import ProductCard from '@/app/components/item_details/ProductCard';
-import ShopDetails from '@/app/components/item_details/ShopDetails';
-import Vouchers from '@/app/components/item_details/Vouchers';
 import { useLocalSearchParams } from 'expo-router';
-import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 // import { products } from '../../../data/productsData'
 import MoreFromStore from '@/app/components/item_details/MoreFromStore';
+import ProductCard from '@/app/components/item_details/ProductCard';
 import ProductDetails from '@/app/components/item_details/ProductDetails';
 import Ratings from '@/app/components/item_details/Ratings';
+import ShopDetails from '@/app/components/item_details/ShopDetails';
+import Vouchers from '@/app/components/item_details/Vouchers';
 
 const ItemDetailsScreen = () => {
   // const { itemId } = useLocalSearchParams();
@@ -29,7 +28,6 @@ const ItemDetailsScreen = () => {
         : typeof parsedProduct?.images?.[0] === 'string'
           ? parsedProduct.images[0]
           : undefined;
-  console.log('Received storeId:', typeof storeId);
 
   if (!parsedProduct) {
     return (

@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Stack, router } from 'expo-router';
-import React from 'react';
+import { router, Stack } from 'expo-router';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 export default function ChatLayout() {

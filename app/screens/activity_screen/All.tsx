@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 

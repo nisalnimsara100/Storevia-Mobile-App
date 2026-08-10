@@ -61,12 +61,6 @@ export const useAuthStore = create<AuthState>()(
             }
           : null;
 
-        console.log('🔐 User Auth Store Updated:', {
-          user: userData,
-          cartCount: data?.cart_count,
-          followedStoreIds: data?.followed_store_ids,
-        });
-
         return set((state) => ({
           user: userData,
           cartCount:
@@ -111,18 +105,10 @@ export const useAuthStore = create<AuthState>()(
         const currentTime = Date.now();
         const elapsed = currentTime - sessionStartTime;
 
-        console.log('⏱️ Session Check:', {
-          sessionStartTime: new Date(sessionStartTime).toISOString(),
-          currentTime: new Date(currentTime).toISOString(),
-          elapsedDays: Math.floor(elapsed / (24 * 60 * 60 * 1000)),
-          isExpired: elapsed > THREE_WEEKS_MS,
-        });
-
         return elapsed > THREE_WEEKS_MS;
       },
 
       logOut: () => {
-        console.log('🚪 User Logged Out - Auth Store Cleared');
         return set({
           user: null,
           cartCount: 0,
