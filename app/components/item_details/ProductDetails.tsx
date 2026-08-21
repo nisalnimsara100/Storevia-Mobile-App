@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
     marginBottom: 14,
   },
@@ -185,6 +186,7 @@ const styles = StyleSheet.create({
   specsLabel: {
     fontSize: 14,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
   },
   specsRight: {
@@ -207,11 +209,12 @@ const styles = StyleSheet.create({
   subTitle: {
     fontSize: 14,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
     marginBottom: 10,
   },
   highlightText: {
-    fontSize: 13.5,
+    fontSize: 14,
     color: '#444',
     lineHeight: 21,
     marginBottom: 12,
@@ -235,6 +238,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#666',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     marginRight: 4,
   },
 
@@ -264,6 +268,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 17,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
   },
   modalCloseBtn: {
@@ -275,6 +280,7 @@ const styles = StyleSheet.create({
   specItemLabel: {
     fontSize: 14,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
     marginBottom: 6,
   },
@@ -283,7 +289,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   specItemBullet: {
-    fontSize: 8,
+    fontSize: 12,
     color: '#999',
     marginRight: 8,
     marginTop: 5,

@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#000',
   },
   tabBar: {
@@ -127,6 +128,7 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: '#f97316',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   tabBadge: {
     marginLeft: 5,
@@ -142,6 +144,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 10,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
   },
   contentBox: {
     flex: 1,

@@ -137,7 +137,7 @@ const SearchResultsScreen = () => {
             }}
           >
             <Text
-              className="text-white font-semibold"
+              className="text-white font-poppinsSemiBold"
               style={{ fontSize: moderateScale(13) }}
             >
               Search
@@ -149,14 +149,14 @@ const SearchResultsScreen = () => {
         <View className="flex-row items-center px-4 py-2 border-b border-gray-100">
           <TouchableOpacity onPress={() => setSelectedTab('Best Match')}>
             <Text
-              className={`${selectedTab === 'Best Match' ? 'text-orange-500 font-semibold' : 'text-gray-700'} mr-6 text-sm`}
+              className={`${selectedTab === 'Best Match' ? 'text-orange-500 font-poppinsSemiBold' : 'text-gray-700'} mr-6 text-sm`}
             >
               Best Match
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setSelectedTab('Top Sales')}>
             <Text
-              className={`${selectedTab === 'Top Sales' ? 'text-orange-500 font-semibold' : 'text-gray-700'} mr-6 text-sm`}
+              className={`${selectedTab === 'Top Sales' ? 'text-orange-500 font-poppinsSemiBold' : 'text-gray-700'} mr-6 text-sm`}
             >
               Top Sales
             </Text>

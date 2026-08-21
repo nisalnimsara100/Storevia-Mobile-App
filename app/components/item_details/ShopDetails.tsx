@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -136,7 +137,11 @@ const ShopDetails = ({
             onPress={toggleFollow}
             activeOpacity={0.8}
           >
-            <Text style={styles.addBadgeText}>{isFollowing ? '✓' : '+'}</Text>
+            <Ionicons
+              name={isFollowing ? 'checkmark' : 'add'}
+              size={12}
+              color="#fff"
+            />
           </TouchableOpacity>
         </View>
 
@@ -273,13 +278,6 @@ const styles = StyleSheet.create({
   addBadgeActive: {
     backgroundColor: '#4CAF50',
   },
-  addBadgeText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
-    marginTop: -2,
-    textAlign: 'center',
-  },
   infoContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -287,6 +285,7 @@ const styles = StyleSheet.create({
   shopName: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#333',
     marginBottom: 4,
   },
@@ -305,6 +304,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 10,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
   storeTypeTag: {
     borderWidth: 1,
@@ -318,6 +318,7 @@ const styles = StyleSheet.create({
     color: '#4A148C',
     fontSize: 10,
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
   },
   actionButtons: {
     alignItems: 'flex-end',
@@ -332,6 +333,7 @@ const styles = StyleSheet.create({
   visitButtonText: {
     color: '#fff',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     fontSize: 14,
   },
   chatButton: {
@@ -345,6 +347,7 @@ const styles = StyleSheet.create({
   chatButtonText: {
     color: '#f97316',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     fontSize: 13,
   },
 
@@ -370,6 +373,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     color: '#333',
     marginRight: 6,
   },
@@ -381,6 +385,7 @@ const styles = StyleSheet.create({
   dynamicBadgeText: {
     fontSize: 10,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   statLabel: {
     fontSize: 12,

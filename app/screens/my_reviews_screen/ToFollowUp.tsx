@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 14,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#555',
     textAlign: 'center',
   },

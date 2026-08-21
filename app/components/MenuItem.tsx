@@ -28,7 +28,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
       )}
 
       <View>
-        <Text className="text-base font-medium text-black">{title}</Text>
+        <Text className="text-base font-poppinsMedium text-black">{title}</Text>
         {subtitle && (
           <Text className="text-xs text-gray-500 mt-1">{subtitle}</Text>
         )}

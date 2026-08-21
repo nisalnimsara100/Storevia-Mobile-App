@@ -8,7 +8,7 @@ import MenuItem from '../../components/MenuItem';
 const SectionHeader = ({ title }: { title: string }) => {
   return (
     <View className="px-4 py-3 bg-gray-100">
-      <Text className="text-sm font-semibold text-gray-400 uppercase">
+      <Text className="text-sm font-poppinsSemiBold text-gray-400 uppercase">
         {title}
       </Text>
     </View>

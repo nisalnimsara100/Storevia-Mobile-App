@@ -206,7 +206,7 @@ const SearchScreen = () => {
           }}
         >
           <Text
-            className="text-white font-semibold"
+            className="text-white font-poppinsSemiBold"
             style={{ fontSize: moderateScale(13) }}
           >
             Search
@@ -252,7 +252,7 @@ const SearchScreen = () => {
                 />
               )}
               <Text
-                className="text-gray-700 font-medium flex-1"
+                className="text-gray-700 font-poppinsMedium flex-1"
                 style={{ fontSize: moderateScale(14) }}
                 numberOfLines={2}
               >
@@ -273,8 +273,8 @@ const SearchScreen = () => {
                 <Text
                   className={
                     activeTab === 'history'
-                      ? 'text-black font-bold'
-                      : 'text-gray-400 font-semibold'
+                      ? 'text-black font-poppinsBold'
+                      : 'text-gray-400 font-poppinsSemiBold'
                   }
                   style={{ fontSize: moderateScale(14) }}
                 >
@@ -288,8 +288,8 @@ const SearchScreen = () => {
                 <Text
                   className={
                     activeTab === 'image'
-                      ? 'text-black font-bold'
-                      : 'text-gray-400 font-semibold'
+                      ? 'text-black font-poppinsBold'
+                      : 'text-gray-400 font-poppinsSemiBold'
                   }
                   style={{ fontSize: moderateScale(14) }}
                 >
@@ -378,7 +378,7 @@ const SearchScreen = () => {
           {/* Search discovery */}
           <View className="flex-row items-center justify-between mb-3">
             <Text
-              className="text-black font-bold"
+              className="text-black font-poppinsBold"
               style={{ fontSize: moderateScale(14) }}
             >
               Search Discovery

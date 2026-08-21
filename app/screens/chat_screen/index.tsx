@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -27,7 +28,6 @@ const ChatScreen = () => {
       username: resolvedStoreName,
       date: '01/02/2025',
       message: `Chat about ${resolvedProductName}`,
-      avatar: '🏪',
       isNew: true,
     },
   ];
@@ -63,7 +63,7 @@ const ChatScreen = () => {
     >
       <View style={styles.chatTopRow}>
         <View style={styles.chatAvatar}>
-          <Text style={styles.chatAvatarText}>{item.avatar}</Text>
+          <Ionicons name="storefront" size={20} color="#f97316" />
         </View>
         <View style={styles.chatContent}>
           <Text style={styles.chatUsername}>{item.username}</Text>
@@ -71,7 +71,12 @@ const ChatScreen = () => {
         </View>
       </View>
       <View style={styles.chatMessageContainer}>
-        <Text style={styles.chatMessageIcon}>💬</Text>
+        <Ionicons
+          name="chatbubble-outline"
+          size={12}
+          color="#999999"
+          style={styles.chatMessageIcon}
+        />
         <Text style={styles.chatMessage} numberOfLines={1}>
           {item.message}
         </Text>
@@ -251,6 +256,7 @@ const styles = StyleSheet.create({
   questionMarkText: {
     fontSize: 18,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     color: '#f97316',
   },
   mascotContainer: {
@@ -317,6 +323,7 @@ const styles = StyleSheet.create({
   mascotLogoText: {
     fontSize: 14,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     color: '#f97316',
   },
   textContainer: {
@@ -340,6 +347,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     textAlign: 'center',
   },
   // Chat List Styles
@@ -378,9 +386,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#f97316',
   },
-  chatAvatarText: {
-    fontSize: 16,
-  },
   chatContent: {
     marginLeft: 12,
     flex: 1,
@@ -388,6 +393,7 @@ const styles = StyleSheet.create({
   chatUsername: {
     fontSize: 16,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#333333',
     marginBottom: 2,
   },
@@ -402,7 +408,6 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   chatMessageIcon: {
-    fontSize: 12,
     marginRight: 6,
   },
   chatMessage: {
@@ -431,6 +436,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 12,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
 });
 

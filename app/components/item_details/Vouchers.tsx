@@ -373,6 +373,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#000',
     paddingLeft: 14,
   },
@@ -383,6 +384,7 @@ const styles = StyleSheet.create({
   arrow: {
     fontSize: 28,
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
     marginTop: -6,
     color: '#666',
   },
@@ -413,13 +415,15 @@ const styles = StyleSheet.create({
   },
   labelText: {
     color: '#FFF',
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     textTransform: 'uppercase',
   },
   amount: {
     fontSize: 20,
     fontWeight: '900',
+    fontFamily: 'PoppinsBold',
     marginBottom: 4,
     letterSpacing: -0.5,
   },
@@ -434,6 +438,7 @@ const styles = StyleSheet.create({
   codeText: {
     fontSize: 10,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
@@ -441,12 +446,14 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#555',
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
     marginBottom: 4,
   },
   dateRange: {
-    fontSize: 9,
+    fontSize: 10,
     color: '#888',
     fontWeight: '400',
+    fontFamily: 'PoppinsRegular',
   },
 
   /* --- DIVIDER & NOTCH LOGIC --- */
@@ -499,6 +506,7 @@ const styles = StyleSheet.create({
   collectText: {
     color: '#FFF',
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
     fontSize: 12,
   },
 });

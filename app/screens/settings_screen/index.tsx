@@ -110,7 +110,9 @@ const SettingsScreen = () => {
             alert('Logged out');
           }}
         >
-          <Text className="text-center text-red-500 font-semibold">Logout</Text>
+          <Text className="text-center text-red-500 font-poppinsSemiBold">
+            Logout
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

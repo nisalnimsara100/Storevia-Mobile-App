@@ -207,7 +207,7 @@ const VoucherScreen = () => {
         <Text
           numberOfLines={1}
           style={{ color: t.watermark }}
-          className="absolute top-3 right-2 text-3xl font-extrabold"
+          className="absolute top-3 right-2 text-3xl font-poppinsBold"
         >
           {voucher.voucherType === 'shipping'
             ? 'FREE SHIPPING'
@@ -227,7 +227,7 @@ const VoucherScreen = () => {
           >
             <View className="flex-row items-baseline">
               <Text
-                className="text-2xl font-extrabold"
+                className="text-2xl font-poppinsBold"
                 style={{ color: accent }}
               >
                 {voucher.amountLabel}
@@ -235,7 +235,7 @@ const VoucherScreen = () => {
             </View>
             <Text className="text-[11px] text-gray-500 mt-1">
               Min. Spend{' '}
-              <Text className="font-bold text-gray-700">
+              <Text className="font-poppinsBold text-gray-700">
                 Rs.{Math.floor(voucher.minSpend)}
               </Text>
             </Text>
@@ -246,7 +246,7 @@ const VoucherScreen = () => {
             <View className="flex-row justify-between items-start">
               <View className="flex-1 pr-2">
                 <Text
-                  className="text-base font-bold"
+                  className="text-base font-poppinsBold"
                   style={{ color: '#1f2937' }}
                   numberOfLines={2}
                 >
@@ -277,7 +277,10 @@ const VoucherScreen = () => {
                     color={accent}
                     style={{ marginRight: 4 }}
                   />
-                  <Text className="font-bold text-sm" style={{ color: accent }}>
+                  <Text
+                    className="font-poppinsBold text-sm"
+                    style={{ color: accent }}
+                  >
                     Collected
                   </Text>
                 </View>
@@ -290,7 +293,9 @@ const VoucherScreen = () => {
                   className="px-5 py-2 rounded-lg"
                   style={{ backgroundColor: accent }}
                 >
-                  <Text className="font-bold text-sm text-white">Collect</Text>
+                  <Text className="font-poppinsBold text-sm text-white">
+                    Collect
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -316,7 +321,7 @@ const VoucherScreen = () => {
       >
         <Ionicons name={icon} size={16} color="#fff" />
       </View>
-      <Text className="text-lg font-bold text-gray-900">{title}</Text>
+      <Text className="text-lg font-poppinsBold text-gray-900">{title}</Text>
     </View>
   );
 
@@ -332,7 +337,7 @@ const VoucherScreen = () => {
             <TouchableOpacity onPress={() => router.back()} className="pr-2">
               <Ionicons name="chevron-back" size={26} color="#111827" />
             </TouchableOpacity>
-            <Text className="text-xl font-bold text-gray-900">
+            <Text className="text-xl font-poppinsBold text-gray-900">
               Voucher Center
             </Text>
           </View>

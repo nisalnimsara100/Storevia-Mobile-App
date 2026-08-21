@@ -13,6 +13,7 @@ export default function ChatLayout() {
         headerTintColor: '#333333',
         headerTitleStyle: {
           fontWeight: 'bold',
+          fontFamily: 'PoppinsBold',
           fontSize: 18,
         },
         headerShadowVisible: false,
@@ -43,6 +44,7 @@ export default function ChatLayout() {
                     style={{
                       fontSize: 18,
                       fontWeight: 'bold',
+                      fontFamily: 'PoppinsBold',
                       color: '#333333',
                     }}
                   >

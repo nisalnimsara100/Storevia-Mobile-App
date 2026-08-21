@@ -22,6 +22,10 @@ module.exports = {
       },
       borderRadius: tokens.radius,
       fontFamily: {
+        // Overrides Tailwind's default sans stack so any className with no
+        // explicit font-poppinsX utility (or using font-sans) still renders
+        // in Poppins instead of falling back to the OS system font.
+        sans: [tokens.font.family.regular, 'sans-serif'],
         poppinsRegular: [tokens.font.family.regular, 'sans-serif'],
         poppinsMedium: [tokens.font.family.medium, 'sans-serif'],
         poppinsSemiBold: [tokens.font.family.semibold, 'sans-serif'],

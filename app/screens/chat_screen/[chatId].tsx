@@ -501,6 +501,7 @@ const styles = StyleSheet.create({
   productPreviewTitle: {
     fontSize: 14,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#333333',
   },
   productPreviewStore: {

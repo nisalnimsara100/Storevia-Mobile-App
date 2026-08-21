@@ -56,7 +56,7 @@ const ChatSettings = () => {
       {/* User Profile Section */}
       <TouchableOpacity style={styles.userSection} onPress={handleUserProfile}>
         <View style={styles.userAvatar}>
-          <Text style={styles.userAvatarText}>🏪</Text>
+          <Ionicons name="storefront" size={24} color="#f97316" />
         </View>
         <View style={styles.userTextGroup}>
           <Text style={styles.username}>{resolvedStoreName}</Text>
@@ -126,12 +126,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#f97316',
   },
-  userAvatarText: {
-    fontSize: 24,
-  },
   username: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#333333',
   },
   userTextGroup: {

@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
   freeBadgeText: {
     color: '#fff',
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     letterSpacing: -0.5,
     fontSize: 12,
   },
@@ -274,6 +275,7 @@ const styles = StyleSheet.create({
   voucherText: {
     color: '#fff',
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     fontSize: 12,
   },
   photoCountWrapper: {
@@ -291,6 +293,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   infoContainer: {
     padding: 16,
@@ -300,6 +303,7 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
     lineHeight: 18,
     flex: 1,
@@ -386,6 +390,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     marginBottom: 4,
   },
   infoCardSubtitle: {
@@ -400,6 +405,7 @@ const styles = StyleSheet.create({
   infoCardRightPrice: {
     fontSize: 14,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#333',
     marginBottom: 2,
   },
@@ -420,6 +426,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#2e7d32',
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -429,6 +436,7 @@ const styles = StyleSheet.create({
   rating: {
     fontSize: 14,
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
     color: '#333',
     marginLeft: 3,
   },
@@ -450,6 +458,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 20,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     color: '#e53935',
     marginRight: 8,
   },
@@ -463,6 +472,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#43a047',
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
   stock: {
     fontSize: 14,
@@ -472,6 +482,7 @@ const styles = StyleSheet.create({
   descriptionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     color: '#333',
     marginBottom: 8,
   },
@@ -492,5 +503,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
 });

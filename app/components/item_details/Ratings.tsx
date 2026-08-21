@@ -934,6 +934,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
   },
   headerRight: {
@@ -943,6 +944,7 @@ const styles = StyleSheet.create({
   headerRating: {
     fontSize: 15,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
     marginRight: 6,
   },
@@ -960,6 +962,7 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     fontSize: 12,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#f97316',
   },
 
@@ -1015,6 +1018,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
   },
 
   seeAllBtn: {
@@ -1026,6 +1030,7 @@ const styles = StyleSheet.create({
   seeAllText: {
     fontSize: 13,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#f97316',
     marginRight: 4,
   },
@@ -1054,6 +1059,7 @@ const styles = StyleSheet.create({
   modalHeaderTitle: {
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
   },
   modalListContent: {
@@ -1072,6 +1078,7 @@ const styles = StyleSheet.create({
   summaryRatingNum: {
     fontSize: 28,
     fontWeight: '800',
+    fontFamily: 'PoppinsBold',
     color: '#222',
     marginRight: 10,
   },
@@ -1102,15 +1109,17 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     fontSize: 13,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#4A148C',
   },
   aiSummaryBadge: {
     fontSize: 10,
     color: '#7C4DFF',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   aiSummaryText: {
-    fontSize: 12.5,
+    fontSize: 13,
     color: '#4a3f66',
     lineHeight: 18,
   },
@@ -1135,6 +1144,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   filterChipTextActive: {
     color: '#f97316',
@@ -1153,6 +1163,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     marginRight: 4,
   },
 
@@ -1203,6 +1214,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#4CAF50',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   sortRow: {
     flexDirection: 'row',
@@ -1212,6 +1224,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     marginRight: 4,
   },
 
@@ -1256,6 +1269,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 13,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   fullReviewCard: {
     paddingHorizontal: 16,
@@ -1277,6 +1291,7 @@ const styles = StyleSheet.create({
   avatarText: {
     color: '#fff',
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     fontSize: 14,
   },
   avatarImage: {
@@ -1291,6 +1306,7 @@ const styles = StyleSheet.create({
   fullReviewName: {
     fontSize: 14,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
   },
   fullReviewMeta: {
@@ -1299,7 +1315,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   fullReviewText: {
-    fontSize: 13.5,
+    fontSize: 14,
     color: '#333',
     lineHeight: 20,
   },
@@ -1307,6 +1323,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#f97316',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     marginTop: 2,
   },
   fullReviewImagesRow: {
@@ -1364,6 +1381,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   viewerImageWrap: {
     width: SCREEN_WIDTH,
@@ -1383,6 +1401,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     marginTop: 6,
   },
   viewerCaptionText: {
@@ -1395,6 +1414,7 @@ const styles = StyleSheet.create({
     color: '#FF8A65',
     fontSize: 12,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     marginTop: 2,
   },
   viewerActionsRow: {

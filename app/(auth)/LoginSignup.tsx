@@ -334,7 +334,10 @@ const LoginSignup = ({ onLogin }: Props) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    // Only the top edge is inset: this screen renders inside the tab navigator,
+    // which already reserves space for the tab bar. Applying the bottom inset too
+    // left a white strip of `container` padding showing above the tab bar.
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView
         style={styles.scrollBody}
         showsVerticalScrollIndicator={false}
@@ -490,7 +493,7 @@ const LoginSignup = ({ onLogin }: Props) => {
           </ScrollView>
         </View>
 
-        {/* --- TOOLS GRID (Updated UI) --- */}
+        {/* --- TOOLS GRID (hidden for now) ---
         <View style={styles.gridContainer}>
           <GridItem icon="tree" color="#4CAF50" label="Storevia Land" />
           <GridItem
@@ -505,6 +508,7 @@ const LoginSignup = ({ onLogin }: Props) => {
           <GridItem icon="basket" color="#f1c40f" label="Choice" />
           <GridItem icon="mail" color="#2196F3" label="Messages" />
         </View>
+        */}
         {/* <View style={{ height: 40 }} /> */}
       </ScrollView>
 
@@ -629,7 +633,13 @@ const LoginSignup = ({ onLogin }: Props) => {
                   }}
                   disabled={isLoading}
                 >
-                  <Text style={{ color: '#f97316', fontWeight: 'bold' }}>
+                  <Text
+                    style={{
+                      color: '#f97316',
+                      fontFamily: 'PoppinsBold',
+                      fontWeight: 'bold',
+                    }}
+                  >
                     Sign Up
                   </Text>
                 </TouchableOpacity>
@@ -811,7 +821,13 @@ const LoginSignup = ({ onLogin }: Props) => {
                     }}
                     disabled={isLoading}
                   >
-                    <Text style={{ color: '#f97316', fontWeight: 'bold' }}>
+                    <Text
+                      style={{
+                        color: '#f97316',
+                        fontFamily: 'PoppinsBold',
+                        fontWeight: 'bold',
+                      }}
+                    >
                       Log In
                     </Text>
                   </TouchableOpacity>
@@ -846,7 +862,9 @@ const LoginSignup = ({ onLogin }: Props) => {
             <Text style={styles.otpTitle}>Verify Your Email</Text>
             <Text style={styles.otpSubtitle}>
               We&lsquo;ve sent a verification code to {'\n'}
-              <Text style={{ fontWeight: 'bold' }}>{signUpEmail}</Text>
+              <Text style={{ fontFamily: 'PoppinsBold', fontWeight: 'bold' }}>
+                {signUpEmail}
+              </Text>
             </Text>
 
             <Text style={styles.inputLabel}>Enter OTP</Text>
@@ -944,6 +962,7 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 20,
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
   },
   btnRow: { flexDirection: 'row', gap: scale(15) },
   loginBtn: {
@@ -962,8 +981,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
-  loginText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
-  signUpText: { color: '#f97316', fontWeight: 'bold', fontSize: 15 },
+  loginText: {
+    color: '#fff',
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  signUpText: {
+    color: '#f97316',
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
   promoRow: {
     flexDirection: 'row',
     padding: scale(10),
@@ -982,7 +1011,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 5,
   },
-  promoTitle: { fontSize: 11, fontWeight: 'bold', color: '#333' },
+  promoTitle: {
+    fontSize: 11,
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+    color: '#333',
+  },
   promoPlaceholder: { width: 50, height: 50, marginVertical: 5 },
   collectBtn: {
     backgroundColor: '#f97316',
@@ -996,7 +1030,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 20,
   },
-  btnText: { color: '#fff', fontSize: 10, fontWeight: 'bold' },
+  btnText: {
+    color: '#fff',
+    fontSize: 10,
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+  },
   sectionCard: {
     backgroundColor: '#fff',
     margin: scale(10),
@@ -1008,7 +1047,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 15,
   },
-  sectionTitle: { fontSize: 14, fontWeight: 'bold', color: '#1a1c1e' },
+  sectionTitle: {
+    fontSize: 14,
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+    color: '#1a1c1e',
+  },
   viewAllText: { fontSize: 11, color: '#999' },
   orderIconsRow: { flexDirection: 'row', justifyContent: 'space-between' },
   orderItem: { alignItems: 'center', width: '20%' },
@@ -1047,7 +1091,12 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   closeBtn: { alignSelf: 'flex-end' },
-  popupTitle: { fontSize: 24, fontWeight: 'bold', color: '#1a1c1e' },
+  popupTitle: {
+    fontSize: 24,
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+    color: '#1a1c1e',
+  },
   popupSubtitle: {
     fontSize: 13,
     color: '#777',
@@ -1057,6 +1106,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 12,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     color: '#555',
     marginBottom: 5,
   },
@@ -1087,7 +1137,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#cccccc',
     opacity: 0.6,
   },
-  orangeActionText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  orangeActionText: {
+    color: '#fff',
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
   socialBtnsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -1137,6 +1192,7 @@ const styles = StyleSheet.create({
   otpTitle: {
     fontSize: 22,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     color: '#1a1c1e',
     marginTop: 15,
   },
@@ -1151,6 +1207,7 @@ const styles = StyleSheet.create({
     letterSpacing: 5,
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     backgroundColor: '#f5f5f5',
   },
   otpFooter: {
@@ -1166,6 +1223,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#f97316',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
 });
 

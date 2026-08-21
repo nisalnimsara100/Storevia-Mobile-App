@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -33,7 +34,7 @@ const PromoCard = ({ item }: { item: any }) => {
             <View className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
           </View>
           <View className="flex-1">
-            <Text className="font-bold text-lg">{item.title}</Text>
+            <Text className="font-poppinsBold text-lg">{item.title}</Text>
             <Text className="text-sm text-gray-500 mt-1">{item.time}</Text>
           </View>
         </View>
@@ -57,16 +58,18 @@ const PromoCard = ({ item }: { item: any }) => {
 };
 
 const PromosScreen = () => {
+  const router = useRouter();
+
   return (
     // Keep the top safe area white so status bar and header appear on white
     <SafeAreaView edges={['top']} className="flex-1 bg-white">
       {/* Header stays on the white safe area to match the design */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200 bg-white">
-        <TouchableOpacity className="p-1">
+        <TouchableOpacity className="p-1" onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={24} color="#111827" />
         </TouchableOpacity>
 
-        <Text className="text-lg font-semibold">Promos</Text>
+        <Text className="text-lg font-poppinsSemiBold">Promos</Text>
 
         <TouchableOpacity className="p-1">
           <Ionicons name="settings-outline" size={22} color="#111827" />

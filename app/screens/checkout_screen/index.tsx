@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useState } from 'react';
 import {
@@ -428,7 +427,6 @@ const CheckoutScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={['bottom']}>
-      <StatusBar style="light" />
       <View style={styles.container}>
         {/* Header — top-inset padding baked in so the orange extends behind the status bar */}
         <View
@@ -1135,6 +1133,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: moderateScale(16),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#fff',
   },
   scrollView: {
@@ -1154,6 +1153,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: moderateScale(14),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#1a1a1a',
     marginLeft: scale(8),
   },
@@ -1191,6 +1191,7 @@ const styles = StyleSheet.create({
   discountText: {
     fontSize: moderateScale(10),
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#fff',
   },
   productDetails: {
@@ -1199,6 +1200,7 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: moderateScale(13),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#1a1a1a',
     marginBottom: verticalScale(6),
   },
@@ -1210,6 +1212,7 @@ const styles = StyleSheet.create({
   currentPrice: {
     fontSize: moderateScale(14),
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#f97316',
   },
   originalPrice: {
@@ -1237,11 +1240,13 @@ const styles = StyleSheet.create({
   quantityValue: {
     fontSize: moderateScale(11),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#1a1a1a',
   },
   itemTotal: {
     fontSize: moderateScale(12),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#f97316',
   },
   divider: {
@@ -1280,6 +1285,7 @@ const styles = StyleSheet.create({
   infoValue: {
     fontSize: moderateScale(13),
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
     color: '#f97316',
   },
   priceBreakdown: {
@@ -1301,16 +1307,19 @@ const styles = StyleSheet.create({
   priceValue: {
     fontSize: moderateScale(13),
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
     color: '#1a1a1a',
   },
   discountLabel: {
     fontSize: moderateScale(13),
     color: '#27AE60',
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
   },
   discountValue: {
     fontSize: moderateScale(13),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#27AE60',
   },
   totalDivider: {
@@ -1327,11 +1336,13 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: moderateScale(14),
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#1a1a1a',
   },
   totalValue: {
     fontSize: moderateScale(16),
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#f97316',
   },
   savingsContainer: {
@@ -1346,6 +1357,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(12),
     color: '#27AE60',
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
     marginLeft: scale(8),
   },
   ctaContainer: {
@@ -1365,6 +1377,7 @@ const styles = StyleSheet.create({
   proceedButtonText: {
     fontSize: moderateScale(14),
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#fff',
   },
   continueShoppingButton: {
@@ -1378,6 +1391,7 @@ const styles = StyleSheet.create({
   continueShoppingText: {
     fontSize: moderateScale(14),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#f97316',
   },
   emptyContainer: {
@@ -1389,6 +1403,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: moderateScale(18),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#999',
     marginTop: verticalScale(16),
   },
@@ -1424,6 +1439,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: moderateScale(16),
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#1a1a1a',
   },
   modalBody: {
@@ -1459,10 +1475,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: moderateScale(11),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   addressName: {
     fontSize: moderateScale(14),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#1a1a1a',
     marginBottom: verticalScale(4),
   },
@@ -1479,6 +1497,7 @@ const styles = StyleSheet.create({
   addressCity: {
     fontSize: moderateScale(12),
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
     color: '#f97316',
   },
   addNewAddressButton: {
@@ -1495,6 +1514,7 @@ const styles = StyleSheet.create({
   addNewAddressText: {
     fontSize: moderateScale(14),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#f97316',
     marginLeft: scale(8),
   },
@@ -1505,6 +1525,7 @@ const styles = StyleSheet.create({
   formTitle: {
     fontSize: moderateScale(16),
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#1a1a1a',
     marginBottom: verticalScale(16),
   },
@@ -1567,6 +1588,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(13),
     color: '#1a1a1a',
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
   },
   saveAddressButton: {
     backgroundColor: '#f97316',
@@ -1579,6 +1601,7 @@ const styles = StyleSheet.create({
   saveAddressButtonText: {
     fontSize: moderateScale(14),
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#fff',
   },
   backButton2: {
@@ -1592,6 +1615,7 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: moderateScale(14),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#f97316',
   },
   // Voucher Card styles
@@ -1621,6 +1645,7 @@ const styles = StyleSheet.create({
   voucherCode: {
     fontSize: moderateScale(14),
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#f97316',
     marginLeft: scale(8),
   },
@@ -1651,12 +1676,14 @@ const styles = StyleSheet.create({
   discountPercent: {
     fontSize: moderateScale(18),
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#fff',
   },
   discountOff: {
     fontSize: moderateScale(10),
     color: '#fff',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   removeVoucherButton: {
     flexDirection: 'row',
@@ -1672,6 +1699,7 @@ const styles = StyleSheet.create({
   removeVoucherText: {
     fontSize: moderateScale(14),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#f97316',
     marginLeft: scale(8),
   },
@@ -1687,6 +1715,7 @@ const styles = StyleSheet.create({
   doneButtonText: {
     fontSize: moderateScale(16),
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#fff',
   },
 });

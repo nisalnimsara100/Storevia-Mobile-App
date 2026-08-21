@@ -140,8 +140,12 @@ const Account = () => {
 
   // IF LOGGED IN, SHOW THE FULL PROFILE
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* --- HEADER SECTION --- */}
         <View style={styles.headerContainer}>
           <View style={styles.topIcons}>
@@ -205,7 +209,13 @@ const Account = () => {
               <View style={{ flex: 1 }}>
                 <Text style={styles.promoSubText}>
                   Enjoy{' '}
-                  <Text style={{ color: '#f97316', fontWeight: 'bold' }}>
+                  <Text
+                    style={{
+                      color: '#f97316',
+                      fontFamily: 'PoppinsBold',
+                      fontWeight: 'bold',
+                    }}
+                  >
                     60% OFF
                   </Text>
                   {'\n'}with Gems
@@ -235,7 +245,13 @@ const Account = () => {
               <View style={{ flex: 1 }}>
                 <Text style={styles.promoSubText}>
                   Share, Invite &{'\n'}Win{' '}
-                  <Text style={{ color: '#f97316', fontWeight: 'bold' }}>
+                  <Text
+                    style={{
+                      color: '#f97316',
+                      fontFamily: 'PoppinsBold',
+                      fontWeight: 'bold',
+                    }}
+                  >
                     Free Prizes!
                   </Text>
                 </Text>
@@ -381,8 +397,6 @@ const Account = () => {
             </ScrollView>
           </View>
         )}
-
-        <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -433,6 +447,7 @@ const ProductCard = ({ img, title, price, oldPrice, discount }: any) => (
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#fff' },
   container: { flex: 1, backgroundColor: '#F1F2F4' },
+  scrollContent: { flexGrow: 1, backgroundColor: '#F1F2F4', paddingBottom: 16 },
   headerContainer: { backgroundColor: '#fff', padding: scale(15) },
   topIcons: { flexDirection: 'row', justifyContent: 'flex-end' },
   profileRow: {
@@ -459,14 +474,15 @@ const styles = StyleSheet.create({
   usernameText: {
     fontSize: responsiveFontSize(18),
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     color: '#1a1c1e',
   },
   statsText: {
-    fontSize: responsiveFontSize(10),
+    fontSize: responsiveFontSize(12),
     color: '#888',
     marginTop: scale(2),
   },
-  boldStat: { color: '#333', fontWeight: 'bold' },
+  boldStat: { color: '#333', fontFamily: 'PoppinsBold', fontWeight: 'bold' },
   promoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -486,14 +502,18 @@ const styles = StyleSheet.create({
     marginBottom: scale(8),
   },
   smallIcon: { width: scale(14), height: scale(14) },
-  promoTitle: { fontWeight: 'bold', fontSize: responsiveFontSize(11) },
+  promoTitle: {
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+    fontSize: responsiveFontSize(12),
+  },
   promoContentRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   promoSubText: {
-    fontSize: responsiveFontSize(9),
+    fontSize: responsiveFontSize(12),
     color: '#333',
     marginBottom: scale(8),
   },
@@ -514,8 +534,9 @@ const styles = StyleSheet.create({
   },
   btnText: {
     color: '#fff',
-    fontSize: responsiveFontSize(9),
+    fontSize: responsiveFontSize(11),
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
   sectionCard: {
     backgroundColor: '#fff',
@@ -531,12 +552,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: scale(12),
   },
-  sectionTitle: { fontWeight: 'bold', fontSize: responsiveFontSize(13) },
-  viewAll: { fontSize: responsiveFontSize(10), color: '#999' },
+  sectionTitle: {
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+    fontSize: responsiveFontSize(13),
+  },
+  viewAll: { fontSize: responsiveFontSize(12), color: '#999' },
   orderIconsRow: { flexDirection: 'row', justifyContent: 'space-between' },
   orderItem: { alignItems: 'center', width: '19%' },
   orderLabel: {
-    fontSize: responsiveFontSize(8.5),
+    fontSize: responsiveFontSize(10),
     textAlign: 'center',
     marginTop: scale(5),
     color: '#333',
@@ -552,7 +577,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  badgeText: { color: 'white', fontSize: scale(8), fontWeight: 'bold' },
+  badgeText: {
+    color: 'white',
+    fontSize: scale(9),
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+  },
   reviewBanner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -568,11 +598,12 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   reviewText: {
-    fontSize: responsiveFontSize(11),
+    fontSize: responsiveFontSize(12),
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     color: '#333',
   },
-  reviewSubText: { color: '#999', fontSize: responsiveFontSize(9) },
+  reviewSubText: { color: '#999', fontSize: responsiveFontSize(12) },
   reviewBtn: {
     borderWidth: 1,
     borderColor: '#f97316',
@@ -582,8 +613,9 @@ const styles = StyleSheet.create({
   },
   reviewBtnText: {
     color: '#f97316',
-    fontSize: responsiveFontSize(9),
+    fontSize: responsiveFontSize(11),
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
   bannerWrapper: { marginHorizontal: scale(10), marginBottom: scale(10) },
   adBanner: { width: '100%', height: scale(150), borderRadius: scale(8) },
@@ -618,14 +650,15 @@ const styles = StyleSheet.create({
   },
   discountText: {
     color: '#fff',
-    fontSize: responsiveFontSize(8),
+    fontSize: responsiveFontSize(10),
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
   productInfo: {
     padding: scale(8),
   },
   productTitle: {
-    fontSize: responsiveFontSize(10),
+    fontSize: responsiveFontSize(11),
     color: '#333',
     marginBottom: scale(4),
     lineHeight: scale(14),
@@ -636,13 +669,14 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   priceText: {
-    fontSize: responsiveFontSize(11),
+    fontSize: responsiveFontSize(12),
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     color: '#f97316',
     marginRight: scale(4),
   },
   oldPriceText: {
-    fontSize: responsiveFontSize(9),
+    fontSize: responsiveFontSize(10),
     color: '#999',
     textDecorationLine: 'line-through',
   },

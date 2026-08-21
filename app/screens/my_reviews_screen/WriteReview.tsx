@@ -334,6 +334,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 17,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#000',
   },
   scrollContent: {
@@ -361,6 +362,7 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 14,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#222',
     lineHeight: 19,
   },
@@ -377,6 +379,7 @@ const styles = StyleSheet.create({
   ratingLabel: {
     fontSize: 15,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
   },
   starsRow: {
@@ -398,13 +401,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   hintText: {
-    fontSize: 12.5,
+    fontSize: 13,
     color: '#999',
   },
   gemsHint: {
-    fontSize: 12.5,
+    fontSize: 13,
     color: '#FFA000',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   textArea: {
     borderWidth: 1,
@@ -509,12 +513,14 @@ const styles = StyleSheet.create({
   gemsProgressText: {
     fontSize: 15,
     fontWeight: '800',
+    fontFamily: 'PoppinsBold',
     color: '#FFA000',
     marginRight: 5,
   },
   gemsProgressMax: {
     fontSize: 12,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#999',
   },
   progressTrack: {
@@ -537,6 +543,7 @@ const styles = StyleSheet.create({
   submitBtnText: {
     color: '#fff',
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     fontSize: 14,
   },
 });

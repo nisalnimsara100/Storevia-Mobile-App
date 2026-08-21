@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   productName: {
-    fontSize: 13.5,
+    fontSize: 14,
     color: '#222',
     marginBottom: 6,
   },
@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#e53935',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   date: {
     fontSize: 11,

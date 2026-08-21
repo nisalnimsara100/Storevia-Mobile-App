@@ -104,5 +104,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 10,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
 });

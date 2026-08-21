@@ -358,7 +358,7 @@ const AddressBook = () => {
               onPress={openAddModal}
             >
               <Ionicons name="add-circle-outline" size={20} color="#3b82f6" />
-              <Text className="text-base font-light text-blue-600 ml-2">
+              <Text className="text-base font-poppinsLight text-blue-600 ml-2">
                 Add New Address
               </Text>
             </TouchableOpacity>
@@ -377,7 +377,7 @@ const AddressBook = () => {
             {!loading && addresses.length === 0 && (
               <View className="flex-1 items-center justify-center py-16">
                 <Ionicons name="location-outline" size={48} color="#d1d5db" />
-                <Text className="text-gray-400 text-base mt-3 font-medium">
+                <Text className="text-gray-400 text-base mt-3 font-poppinsMedium">
                   No addresses found
                 </Text>
                 <Text className="text-gray-300 text-sm mt-1">
@@ -403,7 +403,7 @@ const AddressBook = () => {
                           addr.useAsBilling ? 'bg-amber-400' : 'bg-blue-500'
                         }`}
                       />
-                      <Text className="text-sm font-semibold text-gray-500 uppercase">
+                      <Text className="text-sm font-poppinsSemiBold text-gray-500 uppercase">
                         {addr.useAsBilling ? 'Default Address' : 'Address'}
                       </Text>
                     </View>
@@ -422,7 +422,7 @@ const AddressBook = () => {
 
                   {/* Name & Phone */}
                   <View className="flex-row justify-between items-center mb-3">
-                    <Text className="text-base font-bold text-gray-900">
+                    <Text className="text-base font-poppinsBold text-gray-900">
                       {[addr.firstName, addr.lastName]
                         .filter(Boolean)
                         .join(' ') ||
@@ -436,7 +436,7 @@ const AddressBook = () => {
                           size={14}
                           color="#6b7280"
                         />
-                        <Text className="text-sm text-gray-600 font-medium ml-1">
+                        <Text className="text-sm text-gray-600 font-poppinsMedium ml-1">
                           {addr.phone}
                         </Text>
                       </View>
@@ -464,7 +464,7 @@ const AddressBook = () => {
                       {addr.useAsBilling && (
                         <View className="bg-amber-50 border border-amber-300 rounded-full px-3 py-1 flex-row items-center gap-1">
                           <Ionicons name="star" size={10} color="#d97706" />
-                          <Text className="text-amber-700 font-semibold text-xs">
+                          <Text className="text-amber-700 font-poppinsSemiBold text-xs">
                             DEFAULT SHIPPING
                           </Text>
                         </View>
@@ -484,7 +484,7 @@ const AddressBook = () => {
                           size={12}
                           color="#d97706"
                         />
-                        <Text className="text-amber-700 font-medium text-xs ml-1">
+                        <Text className="text-amber-700 font-poppinsMedium text-xs ml-1">
                           Set as Default
                         </Text>
                       </TouchableOpacity>
@@ -515,7 +515,7 @@ const AddressBook = () => {
           >
             {/* Modal Header */}
             <View className="flex-row justify-between items-center px-5 pt-5 pb-3 border-b border-gray-100">
-              <Text className="text-lg font-bold text-gray-900">
+              <Text className="text-lg font-poppinsBold text-gray-900">
                 {isEditMode ? 'Edit Address' : 'Add New Address'}
               </Text>
               <TouchableOpacity onPress={closeModal}>
@@ -532,7 +532,7 @@ const AddressBook = () => {
               {/* Row: First / Last name */}
               <View className="flex-row gap-3 mt-4">
                 <View className="flex-1">
-                  <Text className="text-xs text-gray-500 mb-1 font-medium">
+                  <Text className="text-xs text-gray-500 mb-1 font-poppinsMedium">
                     First Name *
                   </Text>
                   <TextInput
@@ -544,7 +544,7 @@ const AddressBook = () => {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-xs text-gray-500 mb-1 font-medium">
+                  <Text className="text-xs text-gray-500 mb-1 font-poppinsMedium">
                     Last Name *
                   </Text>
                   <TextInput
@@ -559,7 +559,7 @@ const AddressBook = () => {
 
               {/* Phone */}
               <View className="mt-4">
-                <Text className="text-xs text-gray-500 mb-1 font-medium">
+                <Text className="text-xs text-gray-500 mb-1 font-poppinsMedium">
                   Phone Number *
                 </Text>
                 <TextInput
@@ -574,7 +574,7 @@ const AddressBook = () => {
 
               {/* Address */}
               <View className="mt-4">
-                <Text className="text-xs text-gray-500 mb-1 font-medium">
+                <Text className="text-xs text-gray-500 mb-1 font-poppinsMedium">
                   Street Address *
                 </Text>
                 <TextInput
@@ -590,7 +590,7 @@ const AddressBook = () => {
 
               {/* City */}
               <View className="mt-4">
-                <Text className="text-xs text-gray-500 mb-1 font-medium">
+                <Text className="text-xs text-gray-500 mb-1 font-poppinsMedium">
                   City *
                 </Text>
                 <TextInput
@@ -604,7 +604,7 @@ const AddressBook = () => {
 
               {/* Province picker */}
               <View className="mt-4">
-                <Text className="text-xs text-gray-500 mb-1 font-medium">
+                <Text className="text-xs text-gray-500 mb-1 font-poppinsMedium">
                   Province *
                 </Text>
                 <TouchableOpacity
@@ -639,7 +639,7 @@ const AddressBook = () => {
                         }}
                       >
                         <Text
-                          className={`text-sm ${form.province === p ? 'text-blue-600 font-semibold' : 'text-gray-700'}`}
+                          className={`text-sm ${form.province === p ? 'text-blue-600 font-poppinsSemiBold' : 'text-gray-700'}`}
                         >
                           {p}
                         </Text>
@@ -658,7 +658,7 @@ const AddressBook = () => {
 
               {/* Postal Code */}
               <View className="mt-4">
-                <Text className="text-xs text-gray-500 mb-1 font-medium">
+                <Text className="text-xs text-gray-500 mb-1 font-poppinsMedium">
                   Postal Code
                 </Text>
                 <TextInput
@@ -674,7 +674,7 @@ const AddressBook = () => {
               {/* Use as Billing */}
               <View className="flex-row justify-between items-center mt-5 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
                 <View className="flex-1 pr-4">
-                  <Text className="text-sm font-semibold text-gray-800">
+                  <Text className="text-sm font-poppinsSemiBold text-gray-800">
                     Use as billing address
                   </Text>
                   <Text className="text-xs text-gray-400 mt-0.5">
@@ -698,7 +698,7 @@ const AddressBook = () => {
                 {isSaving ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text className="text-white font-bold text-base">
+                  <Text className="text-white font-poppinsBold text-base">
                     {isEditMode ? 'Update Address' : 'Save Address'}
                   </Text>
                 )}

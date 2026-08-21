@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: '#F99414',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
 
   contentBox: {

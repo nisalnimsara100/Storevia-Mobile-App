@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { setStatusBarStyle } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Image,
@@ -164,15 +163,6 @@ const Cart = () => {
       fetchCart();
       fetchUserVouchers();
     }, [fetchCart, fetchUserVouchers]),
-  );
-
-  // Tab screens stay mounted when you switch tabs, so a declarative
-  // <StatusBar> only fires once on first visit — set it imperatively on
-  // every focus instead, so switching back from another tab is reliable.
-  useFocusEffect(
-    useCallback(() => {
-      setStatusBarStyle('light');
-    }, []),
   );
 
   /* ---------- GROUP BY STORE ---------- */
@@ -492,7 +482,6 @@ const Cart = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={[]}>
-      <StatusBar style="light" />
       {/* ---------- HEADER (top-inset padding baked in so the orange extends behind the status bar) ---------- */}
       <View
         style={{
@@ -532,7 +521,14 @@ const Cart = () => {
               borderRadius: s(6),
             }}
           >
-            <Text style={{ color: '#fff', fontSize: s(12), fontWeight: '600' }}>
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: s(12),
+                fontFamily: 'PoppinsSemiBold',
+                fontWeight: '600',
+              }}
+            >
               Search
             </Text>
           </TouchableOpacity>
@@ -546,7 +542,14 @@ const Cart = () => {
             borderRadius: s(6),
           }}
         >
-          <Text style={{ color: '#fff', fontSize: s(12), fontWeight: '600' }}>
+          <Text
+            style={{
+              color: '#fff',
+              fontSize: s(12),
+              fontFamily: 'PoppinsSemiBold',
+              fontWeight: '600',
+            }}
+          >
             Pay
           </Text>
         </TouchableOpacity>
@@ -579,6 +582,7 @@ const Cart = () => {
             style={{
               fontSize: s(20),
               fontWeight: 'bold',
+              fontFamily: 'PoppinsBold',
               color: '#1f2937',
               marginBottom: vs(8),
             }}
@@ -611,7 +615,14 @@ const Cart = () => {
                 : router.push('/(tabs)/Account')
             }
           >
-            <Text style={{ color: '#fff', fontSize: s(15), fontWeight: '700' }}>
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: s(15),
+                fontFamily: 'PoppinsBold',
+                fontWeight: '700',
+              }}
+            >
               {user ? 'Start Shopping' : 'Login First'}
             </Text>
           </TouchableOpacity>
@@ -634,7 +645,12 @@ const Cart = () => {
             }}
           >
             <Text
-              style={{ fontSize: s(20), fontWeight: 'bold', color: '#1f2937' }}
+              style={{
+                fontSize: s(20),
+                fontFamily: 'PoppinsBold',
+                fontWeight: 'bold',
+                color: '#1f2937',
+              }}
             >
               My Cart
             </Text>
@@ -645,6 +661,7 @@ const Cart = () => {
                     color: '#ef4444',
                     fontSize: s(13),
                     fontWeight: '600',
+                    fontFamily: 'PoppinsSemiBold',
                   }}
                 >
                   Clear All
@@ -681,15 +698,22 @@ const Cart = () => {
                 }}
               >
                 <CheckBox checked={items.every((item) => item.selected)} />
+                <Ionicons
+                  name="storefront-outline"
+                  size={s(14)}
+                  color="#1f2937"
+                  style={{ marginLeft: s(8) }}
+                />
                 <Text
                   style={{
-                    marginLeft: s(8),
+                    marginLeft: s(4),
                     fontSize: s(13),
                     fontWeight: '600',
+                    fontFamily: 'PoppinsSemiBold',
                     color: '#1f2937',
                   }}
                 >
-                  🏪 {storeName}
+                  {storeName}
                 </Text>
               </TouchableOpacity>
 
@@ -723,6 +747,7 @@ const Cart = () => {
                       style={{
                         fontSize: s(12),
                         fontWeight: '500',
+                        fontFamily: 'PoppinsMedium',
                         color: '#1f2937',
                       }}
                       numberOfLines={2}
@@ -774,6 +799,7 @@ const Cart = () => {
                         style={{
                           color: '#f97316',
                           fontWeight: 'bold',
+                          fontFamily: 'PoppinsBold',
                           fontSize: s(12),
                           marginRight: s(8),
                         }}
@@ -882,6 +908,7 @@ const Cart = () => {
                 style={{
                   fontSize: s(14),
                   fontWeight: 'bold',
+                  fontFamily: 'PoppinsBold',
                   color: '#1f2937',
                   marginBottom: vs(8),
                 }}
@@ -911,6 +938,7 @@ const Cart = () => {
                         style={{
                           fontSize: s(12),
                           fontWeight: 'bold',
+                          fontFamily: 'PoppinsBold',
                           color: isSelected ? '#ea580c' : '#374151',
                         }}
                       >
@@ -928,7 +956,7 @@ const Cart = () => {
                       </Text>
                       <Text
                         style={{
-                          fontSize: s(9),
+                          fontSize: s(12),
                           color: '#9ca3af',
                           marginTop: vs(2),
                         }}
@@ -973,7 +1001,9 @@ const Cart = () => {
           <View style={{ flex: 1, marginRight: s(10), marginLeft: s(12) }}>
             <Text style={{ fontSize: s(11), color: '#1f2937' }}>
               Subtotal:{' '}
-              <Text style={{ fontWeight: '600' }}>
+              <Text
+                style={{ fontFamily: 'PoppinsSemiBold', fontWeight: '600' }}
+              >
                 Rs. {subtotal.toFixed(2)}
               </Text>
             </Text>
@@ -995,6 +1025,7 @@ const Cart = () => {
                 fontSize: s(12),
                 color: '#1f2937',
                 fontWeight: 'bold',
+                fontFamily: 'PoppinsBold',
                 marginTop: vs(2),
               }}
             >
@@ -1013,7 +1044,14 @@ const Cart = () => {
             onPress={handleCheckout}
             disabled={checkoutLoading}
           >
-            <Text style={{ color: '#fff', fontWeight: '600', fontSize: s(12) }}>
+            <Text
+              style={{
+                color: '#fff',
+                fontFamily: 'PoppinsSemiBold',
+                fontWeight: '600',
+                fontSize: s(12),
+              }}
+            >
               {checkoutLoading ? '...' : `Checkout (${selectedItems.length})`}
             </Text>
           </TouchableOpacity>
@@ -1051,6 +1089,7 @@ const Cart = () => {
               style={{
                 fontSize: s(16),
                 fontWeight: 'bold',
+                fontFamily: 'PoppinsBold',
                 color: '#1f2937',
                 marginTop: vs(10),
                 textAlign: 'center',
@@ -1089,7 +1128,13 @@ const Cart = () => {
                   alignItems: 'center',
                 }}
               >
-                <Text style={{ color: '#374151', fontWeight: '600' }}>
+                <Text
+                  style={{
+                    color: '#374151',
+                    fontFamily: 'PoppinsSemiBold',
+                    fontWeight: '600',
+                  }}
+                >
                   Cancel
                 </Text>
               </TouchableOpacity>
@@ -1103,7 +1148,15 @@ const Cart = () => {
                   alignItems: 'center',
                 }}
               >
-                <Text style={{ color: '#fff', fontWeight: '600' }}>Remove</Text>
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontFamily: 'PoppinsSemiBold',
+                    fontWeight: '600',
+                  }}
+                >
+                  Remove
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

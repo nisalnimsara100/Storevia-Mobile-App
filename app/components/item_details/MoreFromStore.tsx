@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
   },
   viewAllBtn: {
@@ -251,10 +252,11 @@ const styles = StyleSheet.create({
   tagBadgeText: {
     fontSize: 10,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#222',
   },
   name: {
-    fontSize: 12.5,
+    fontSize: 13,
     color: '#333',
     marginTop: 8,
     lineHeight: 17,
@@ -268,6 +270,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 15,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#e53935',
   },
   oldPriceRow: {
@@ -285,6 +288,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#43a047',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   ratingRow: {
     flexDirection: 'row',

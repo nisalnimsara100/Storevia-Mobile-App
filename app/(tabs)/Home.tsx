@@ -1,10 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useRouter } from 'expo-router';
-import { setStatusBarStyle } from 'expo-status-bar';
 import * as Icons from 'lucide-react-native';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -38,6 +36,9 @@ const CATEGORY_COLORS: { bg: string; icon: string }[] = [
   { bg: '#fef2f2', icon: '#ef4444' }, // red
 ];
 
+// categoryTile width + marginRight — the row always snaps back to a full card on the left edge
+const CATEGORY_TILE_INTERVAL = scale(60) + scale(8);
+
 const DEFAULT_CATEGORIES = [
   {
     id: 1,
@@ -66,15 +67,6 @@ const Home = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [products, setProducts] = useState<any[]>([]);
-
-  // Tab screens stay mounted when you switch tabs, so a declarative
-  // <StatusBar> only fires once on first visit — set it imperatively on
-  // every focus instead, so switching back from another tab is reliable.
-  useFocusEffect(
-    useCallback(() => {
-      setStatusBarStyle('light');
-    }, []),
-  );
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -266,7 +258,7 @@ const Home = () => {
         return (
           <View style={styles.content}>
             <View className="flex-row justify-between items-center mb-3">
-              <Text className="text-lg font-bold text-gray-700">
+              <Text className="text-lg font-poppinsBold text-gray-700">
                 Shop by Categories
               </Text>
               <Text className="text-sm text-orange-500">See All ›</Text>
@@ -277,6 +269,10 @@ const Home = () => {
               keyExtractor={(item) => item.id.toString()}
               horizontal
               showsHorizontalScrollIndicator={false}
+              snapToInterval={CATEGORY_TILE_INTERVAL}
+              snapToAlignment="start"
+              decelerationRate="fast"
+              disableIntervalMomentum
               renderItem={({ item, index }) => {
                 const IconComponent = item.icon;
                 const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
@@ -372,7 +368,7 @@ const Home = () => {
         return (
           <View style={styles.saleContent}>
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-lg font-bold text-gray-700">
+              <Text className="text-lg font-poppinsBold text-gray-700">
                 Best Selling
               </Text>
               <Text className="text-sm text-orange-500">Shop More ›</Text>
@@ -465,6 +461,7 @@ const styles = StyleSheet.create({
   searchButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     fontSize: moderateScale(12),
   },
   payButton: {
@@ -476,6 +473,7 @@ const styles = StyleSheet.create({
   payText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     fontSize: moderateScale(12),
   },
   swiperWrapper: {
@@ -508,6 +506,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: moderateScale(16),
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
   bannerSubText: {
     color: '#fff',
@@ -544,7 +543,7 @@ const styles = StyleSheet.create({
   categoryTile: {
     alignItems: 'center',
     width: scale(60),
-    marginRight: scale(4),
+    marginRight: scale(8),
   },
   categoryIconCircle: {
     width: scale(48),
@@ -556,6 +555,7 @@ const styles = StyleSheet.create({
   categoryLabel: {
     fontSize: moderateScale(10),
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#4b5563',
     marginTop: verticalScale(5),
     textAlign: 'center',
@@ -579,6 +579,7 @@ const styles = StyleSheet.create({
   voucherHeaderTitle: {
     fontSize: moderateScale(14),
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     color: '#1f2937',
   },
   voucherMore: {
@@ -597,6 +598,7 @@ const styles = StyleSheet.create({
   voucherValue: {
     fontSize: moderateScale(15),
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
   voucherLabel: {
     fontSize: moderateScale(11),
@@ -619,6 +621,7 @@ const styles = StyleSheet.create({
   collectAllText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
     fontSize: moderateScale(13),
   },
 });

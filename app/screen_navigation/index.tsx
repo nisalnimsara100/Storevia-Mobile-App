@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 const ScreenNavigation = () => {
   return (
     <View className="flex-1 mt-[80px] items-center">
-      <Text className="font-bold text-2xl">Screen Navigation</Text>
+      <Text className="font-poppinsBold text-2xl">Screen Navigation</Text>
 
       <Link href={'/screens/chat_screen' as any} asChild>
         <TouchableOpacity className="bg-blue-500 px-4 py-2 rounded-md mt-4 w-[200px] items-center">

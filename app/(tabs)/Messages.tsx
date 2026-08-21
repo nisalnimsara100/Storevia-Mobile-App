@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -400,7 +399,6 @@ const Messages: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={[]}>
-      <StatusBar style="light" />
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.headerTitle}>Messages</Text>
@@ -469,6 +467,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#ffffff',
   },
   markAsReadText: {
@@ -528,6 +527,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6b7280',
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -571,6 +571,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
   },
   noMessagesContainer: {
     padding: 32,
@@ -595,6 +596,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 10,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
   },
   // Promotion styles
   promoMessageContainer: {
@@ -625,6 +627,7 @@ const styles = StyleSheet.create({
   promoTitle: {
     fontSize: 13,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#111827',
     flex: 1,
   },
@@ -637,6 +640,7 @@ const styles = StyleSheet.create({
   promoContent: {
     fontSize: 15,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     color: '#ffffff',
     marginBottom: 10,
   },
@@ -651,6 +655,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 12,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
   },
   promoFooter: {
     paddingHorizontal: 12,
@@ -689,6 +694,7 @@ const styles = StyleSheet.create({
   orderTitle: {
     fontSize: 13,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#111827',
     flex: 1,
   },
@@ -726,6 +732,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#f97316',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   // Delivery styles
   deliveryMessageContainer: {
@@ -758,6 +765,7 @@ const styles = StyleSheet.create({
   deliveryTitle: {
     fontSize: 13,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     color: '#111827',
     flex: 1,
   },
@@ -790,6 +798,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#22c55e',
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
     marginBottom: 2,
   },
   deliveryTime: {

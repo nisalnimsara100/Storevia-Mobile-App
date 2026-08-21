@@ -77,7 +77,7 @@ const Policies = () => {
             }`}
           >
             <Text
-              className={`text-center font-semibold ${
+              className={`text-center font-poppinsSemiBold ${
                 activeTab === 'privacy' ? 'text-black' : 'text-gray-500'
               }`}
             >
@@ -92,7 +92,7 @@ const Policies = () => {
             }`}
           >
             <Text
-              className={`text-center font-semibold ${
+              className={`text-center font-poppinsSemiBold ${
                 activeTab === 'terms' ? 'text-black' : 'text-gray-500'
               }`}
             >
@@ -107,7 +107,7 @@ const Policies = () => {
             <ActivityIndicator size="large" />
           ) : (
             <>
-              <Text className="text-2xl font-extrabold text-center mb-4">
+              <Text className="text-2xl font-poppinsBold text-center mb-4">
                 {policy?.title}
               </Text>
 

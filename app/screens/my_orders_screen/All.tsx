@@ -307,6 +307,7 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: '#FFF',
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     fontSize: 13,
   },
   orderCard: {
@@ -327,11 +328,13 @@ const styles = StyleSheet.create({
   shopName: {
     fontSize: 15,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     marginHorizontal: 6,
   },
   statusText: {
     fontSize: 13,
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
   },
   productSection: {
     flexDirection: 'row',
@@ -379,10 +382,12 @@ const styles = StyleSheet.create({
   priceText: {
     fontSize: 15,
     fontWeight: '600',
+    fontFamily: 'PoppinsSemiBold',
   },
   qtyText: {
     fontSize: 14,
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
   },
   totalRow: {
     alignItems: 'flex-end',
@@ -395,6 +400,7 @@ const styles = StyleSheet.create({
   totalAmount: {
     fontSize: 17,
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
   buttonGroup: {
     flexDirection: 'row',
@@ -421,10 +427,12 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: '#FFF',
     fontWeight: 'bold',
+    fontFamily: 'PoppinsBold',
   },
   secondaryButtonText: {
     color: '#333',
     fontWeight: '500',
+    fontFamily: 'PoppinsMedium',
   },
   buttonText: {
     fontSize: 14,

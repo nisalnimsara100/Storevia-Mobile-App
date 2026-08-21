@@ -192,7 +192,12 @@ const ToReview = ({ onCountChange }: ToReviewProps) => {
               </View>
 
               <View style={styles.gemsBanner}>
-                <Text style={styles.gemsIcon}>💎</Text>
+                <Ionicons
+                  name="diamond"
+                  size={13}
+                  color="#7c3aed"
+                  style={styles.gemsIcon}
+                />
                 <Text style={styles.gemsText}>
                   Earn max <Text style={styles.gemsBold}>600</Text> Gems (Rs. 6)
                   by writing a review!
@@ -236,6 +241,7 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: '#FFF',
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     fontSize: 13,
   },
   orderCard: {
@@ -251,6 +257,7 @@ const styles = StyleSheet.create({
   shopName: {
     fontSize: 15,
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     marginHorizontal: 6,
   },
   itemBlock: {
@@ -272,7 +279,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   productName: {
-    fontSize: 13.5,
+    fontSize: 14,
     lineHeight: 18,
     color: '#222',
   },
@@ -286,6 +293,7 @@ const styles = StyleSheet.create({
   reviewBtnText: {
     color: '#f97316',
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
     fontSize: 13,
   },
   gemsBanner: {
@@ -298,7 +306,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   gemsIcon: {
-    fontSize: 13,
     marginRight: 6,
   },
   gemsText: {
@@ -309,5 +316,6 @@ const styles = StyleSheet.create({
   gemsBold: {
     color: '#e53935',
     fontWeight: '700',
+    fontFamily: 'PoppinsBold',
   },
 });

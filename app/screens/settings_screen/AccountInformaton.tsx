@@ -93,7 +93,7 @@ const AccountInformaton = () => {
             onPress={handleLogout}
           >
             <Ionicons name="log-out-outline" size={20} color="#ef4444" />
-            <Text className="text-md font-semibold text-red-500 ml-2">
+            <Text className="text-md font-poppinsSemiBold text-red-500 ml-2">
               Log Out
             </Text>
           </TouchableOpacity>
@@ -115,7 +115,9 @@ const AccountInformaton = () => {
         {nameModelOpen && (
           <View className="absolute bottom-0 left-0 right-0 h-[60%] bg-white border-t border-gray-200 shadow-xl">
             <View className="flex flex-row justify-between items-center py-5 px-5 ">
-              <Text className="font-semibold text-lg">Edit Full Name</Text>
+              <Text className="font-poppinsSemiBold text-lg">
+                Edit Full Name
+              </Text>
               <AntDesign
                 name="close"
                 size={20}
@@ -137,7 +139,7 @@ const AccountInformaton = () => {
                   toggleNameModal();
                 }}
               >
-                <Text className="text-white text-center font-bold">
+                <Text className="text-white text-center font-poppinsBold">
                   Confirm
                 </Text>
               </TouchableOpacity>

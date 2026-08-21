@@ -41,7 +41,7 @@ const OrderConfirmationScreen = () => {
 
         {/* Success Message */}
         <View className="flex items-center justify-center mb-2">
-          <Text className="text-3xl font-bold text-gray-900 text-center">
+          <Text className="text-3xl font-poppinsBold text-gray-900 text-center">
             Order Confirmed!
           </Text>
         </View>
@@ -61,7 +61,7 @@ const OrderConfirmationScreen = () => {
             </View>
             <View className="flex-1">
               <Text className="text-gray-600 text-sm mb-1">Order Number</Text>
-              <Text className="text-gray-900 font-semibold text-base">
+              <Text className="text-gray-900 font-poppinsSemiBold text-base">
                 {typeof orderNumber === 'string' && orderNumber.length > 0
                   ? orderNumber
                   : '#ORD-0000'}
@@ -78,7 +78,7 @@ const OrderConfirmationScreen = () => {
               <Text className="text-gray-600 text-sm mb-1">
                 Estimated Delivery
               </Text>
-              <Text className="text-gray-900 font-semibold text-base">
+              <Text className="text-gray-900 font-poppinsSemiBold text-base">
                 {typeof deliveryDate === 'string' && deliveryDate.length > 0
                   ? deliveryDate
                   : 'N/A'}
@@ -93,7 +93,7 @@ const OrderConfirmationScreen = () => {
             </View>
             <View className="flex-1">
               <Text className="text-gray-600 text-sm mb-1">Shipping To</Text>
-              <Text className="text-gray-900 font-semibold text-base">
+              <Text className="text-gray-900 font-poppinsSemiBold text-base">
                 {typeof shippingTo === 'string' && shippingTo.length > 0
                   ? shippingTo
                   : 'Not available'}
@@ -112,7 +112,7 @@ const OrderConfirmationScreen = () => {
           >
             <View className="flex-row items-center gap-2">
               <Ionicons name="bag-add" size={18} color="white" />
-              <Text className="text-white font-semibold text-base">
+              <Text className="text-white font-poppinsSemiBold text-base">
                 Continue Shopping
               </Text>
             </View>
@@ -126,7 +126,7 @@ const OrderConfirmationScreen = () => {
           >
             <View className="flex-row items-center gap-2">
               <Ionicons name="cube" size={18} color="#f97316" />
-              <Text className="text-orange-500 font-semibold text-base">
+              <Text className="text-orange-500 font-poppinsSemiBold text-base">
                 View Orders
               </Text>
             </View>
