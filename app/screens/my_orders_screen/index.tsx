@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import {
   Pressable,
@@ -13,15 +13,27 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import All from './All';
+import Returns from './Returns';
 import ToPay from './ToPay';
 import ToReceive from './ToReceive';
 import ToReview from './ToReview';
 import ToShip from './ToShip';
 
-const tabs = ['All', 'To Pay', 'To Ship', 'To Receive', 'To Review'];
+const tabs = [
+  'All',
+  'To Pay',
+  'To Ship',
+  'To Receive',
+  'To Review',
+  'Returns',
+];
 
 const MyOrdersScreen = () => {
-  const [activeTab, setActiveTab] = useState('All');
+  // Callers (the Account screen's order icons) deep-link straight to a tab.
+  const { tab } = useLocalSearchParams<{ tab?: string }>();
+  const [activeTab, setActiveTab] = useState(() =>
+    tab && tabs.includes(tab) ? tab : 'All',
+  );
 
   const renderContent = () => {
     switch (activeTab) {
@@ -35,6 +47,8 @@ const MyOrdersScreen = () => {
         return <ToReceive />;
       case 'To Review':
         return <ToReview />;
+      case 'Returns':
+        return <Returns />;
       default:
         return <All />;
     }
@@ -52,7 +66,7 @@ const MyOrdersScreen = () => {
         <View style={styles.searchContainer}>
           <Ionicons name="search-outline" size={18} color="#999" />
           <TextInput
-            placeholder="Search by seller na..."
+            placeholder="Search by seller name"
             style={styles.searchInput}
             placeholderTextColor="#999"
           />
@@ -125,6 +139,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 5,
     color: '#000',
+    fontFamily: 'PoppinsRegular',
+    letterSpacing: 0,
+    includeFontPadding: false,
   },
   filterBtn: {
     flexDirection: 'row',

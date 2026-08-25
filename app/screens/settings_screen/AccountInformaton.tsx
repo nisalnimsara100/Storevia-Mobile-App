@@ -3,6 +3,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -14,16 +15,19 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui';
+import { useAuth } from '../../context/authContext';
 import { useAuthStore } from '../../stores/useAuthStore';
 
 const AccountInformaton = () => {
   const user = useAuthStore((state) => state.user);
+  const { resetPassword } = useAuth();
 
   const [birthdayModelOpen, setBirthdayModelOpen] = useState(false);
   const [birthday, setBirthday] = useState(new Date('2000-01-01'));
   const [nameModelOpen, setNameModelOpen] = useState(false);
   const [fullName, setFullName] = useState(user?.name || 'Guest User');
   const [keepUpdatedName, setKeepUpdatedName] = useState('');
+  const [isSendingReset, setIsSendingReset] = useState(false);
 
   // Logout Logic
   const handleLogout = () => {
@@ -47,6 +51,38 @@ const AccountInformaton = () => {
   const updateName = () => {
     if (keepUpdatedName.trim() !== '') {
       setFullName(keepUpdatedName.trim());
+    }
+  };
+
+  // Reuses the same resetPassword flow as the login screen's "Forgot
+  // Password" sheet, but skips the email-entry step since we already know
+  // the signed-in user's email.
+  const handleForgotPassword = async () => {
+    const email = user?.email;
+    if (!email) {
+      Alert.alert(
+        'No Email Found',
+        'We could not find an email address on your account.',
+      );
+      return;
+    }
+
+    setIsSendingReset(true);
+    try {
+      const result = await resetPassword(email);
+      if (result.success) {
+        Alert.alert(
+          'Check Your Inbox',
+          `If an account exists for ${email}, we've sent a link to reset your password. It may take a minute to arrive — remember to check spam.`,
+        );
+      } else {
+        Alert.alert(
+          'Reset Failed',
+          result.error || 'Could not send reset email.',
+        );
+      }
+    } finally {
+      setIsSendingReset(false);
     }
   };
 
@@ -86,6 +122,19 @@ const AccountInformaton = () => {
               </Text>
               <Ionicons name="chevron-forward" size={20} color="#999" />
             </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="bg-white flex-row justify-between items-center px-4 py-4 border-b border-gray-200"
+            onPress={handleForgotPassword}
+            disabled={isSendingReset}
+          >
+            <Text className="text-md text-gray-800">Forgot Password</Text>
+            {isSendingReset ? (
+              <ActivityIndicator size="small" color="#999" />
+            ) : (
+              <Ionicons name="chevron-forward" size={20} color="#999" />
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity

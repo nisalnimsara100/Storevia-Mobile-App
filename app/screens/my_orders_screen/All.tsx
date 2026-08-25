@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     color: '#444',
   },
   totalAmount: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: 'bold',
     fontFamily: 'PoppinsBold',
   },

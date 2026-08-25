@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import * as React from 'react';
 import { useState } from 'react';
 import {
+  Alert,
   RefreshControl,
   ScrollView,
   Text,
@@ -75,7 +76,7 @@ const SettingsScreen = () => {
             onSelect={(country) => {
               setCountryCode(country.cca2);
               setVisible(false);
-              alert(`Country changed to ${country.name}`);
+              Alert.alert('Country Updated', `Country changed to ${country.name}`);
             }}
             onClose={() => setVisible(false)}
           />
@@ -107,7 +108,7 @@ const SettingsScreen = () => {
         <TouchableOpacity
           className="py-4 mt-1.5 bg-white border-t border-b border-gray-200"
           onPress={() => {
-            alert('Logged out');
+            Alert.alert('Logged Out', 'You have been logged out.');
           }}
         >
           <Text className="text-center text-red-500 font-poppinsSemiBold">

@@ -1539,6 +1539,9 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(12),
     fontSize: moderateScale(13),
     color: '#1a1a1a',
+    fontFamily: 'PoppinsRegular',
+    letterSpacing: 0,
+    includeFontPadding: false,
   },
   dropdownField: {
     marginBottom: verticalScale(12),

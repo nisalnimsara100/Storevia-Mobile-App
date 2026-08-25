@@ -16,21 +16,17 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
-  type TextInputProps,
-  type TextStyle,
   TouchableOpacity,
   View,
-  type ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ProductCard } from '@/components/ui';
+import { Input, ProductCard } from '@/components/ui';
+import { scale } from '@/theme';
 import { useAuth } from '../context/authContext';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const { width: screenWidth } = Dimensions.get('window');
-const scale = (size: number) => (screenWidth / 375) * size;
 // Single shared gap used between every section on this page, so spacing
 // stays consistent throughout instead of each section picking its own value.
 const SECTION_GAP = scale(6);
@@ -589,7 +585,9 @@ const LoginSignup = ({ onLogin }: Props) => {
                   Log in to your Storevia account
                 </Text>
 
-                <AuthField
+                <Input
+                  variant="filled"
+                  containerStyle={styles.fieldGroup}
                   label="Email"
                   placeholder="Enter your email"
                   value={loginEmail}
@@ -601,18 +599,20 @@ const LoginSignup = ({ onLogin }: Props) => {
                   returnKeyType="next"
                 />
 
-                <AuthField
+                <Input
+                  variant="filled"
+                  containerStyle={styles.fieldGroup}
                   label="Password"
                   placeholder="Enter your password"
                   value={loginPassword}
                   onChangeText={setLoginPassword}
                   editable={!isLoading}
-                  secure
+                  secureToggle
                   autoCapitalize="none"
                   autoComplete="password"
                   returnKeyType="go"
                   onSubmitEditing={handleLogin}
-                  accessory={
+                  labelAccessory={
                     <TouchableOpacity
                       onPress={openForgotPassword}
                       disabled={isLoading}
@@ -719,8 +719,9 @@ const LoginSignup = ({ onLogin }: Props) => {
                 </Text>
 
                 <View style={styles.nameRow}>
-                  <AuthField
-                    style={styles.nameField}
+                  <Input
+                    variant="filled"
+                    containerStyle={styles.nameField}
                     label="First Name"
                     placeholder="First name"
                     value={signUpFirstName}
@@ -730,8 +731,9 @@ const LoginSignup = ({ onLogin }: Props) => {
                     autoComplete="given-name"
                     returnKeyType="next"
                   />
-                  <AuthField
-                    style={styles.nameField}
+                  <Input
+                    variant="filled"
+                    containerStyle={styles.nameField}
                     label="Last Name"
                     placeholder="Last name"
                     value={signUpLastName}
@@ -743,7 +745,9 @@ const LoginSignup = ({ onLogin }: Props) => {
                   />
                 </View>
 
-                <AuthField
+                <Input
+                  variant="filled"
+                  containerStyle={styles.fieldGroup}
                   label="Email"
                   placeholder="Enter your email address"
                   value={signUpEmail}
@@ -755,7 +759,9 @@ const LoginSignup = ({ onLogin }: Props) => {
                   returnKeyType="next"
                 />
 
-                <AuthField
+                <Input
+                  variant="filled"
+                  containerStyle={styles.fieldGroup}
                   label="Phone Number"
                   placeholder="Enter your phone number"
                   value={signUpPhone}
@@ -766,25 +772,29 @@ const LoginSignup = ({ onLogin }: Props) => {
                   returnKeyType="next"
                 />
 
-                <AuthField
+                <Input
+                  variant="filled"
+                  containerStyle={styles.fieldGroup}
                   label="Password"
                   placeholder="Create a password (min 6 chars)"
                   value={signUpPassword}
                   onChangeText={setSignUpPassword}
                   editable={!isLoading}
-                  secure
+                  secureToggle
                   autoCapitalize="none"
                   autoComplete="password-new"
                   returnKeyType="next"
                 />
 
-                <AuthField
+                <Input
+                  variant="filled"
+                  containerStyle={styles.fieldGroup}
                   label="Confirm Password"
                   placeholder="Confirm your password"
                   value={signUpConfirmPassword}
                   onChangeText={setSignUpConfirmPassword}
                   editable={!isLoading}
-                  secure
+                  secureToggle
                   autoCapitalize="none"
                   autoComplete="password-new"
                   returnKeyType="go"
@@ -929,7 +939,9 @@ const LoginSignup = ({ onLogin }: Props) => {
                       link to set a new password.
                     </Text>
 
-                    <AuthField
+                    <Input
+                      variant="filled"
+                      containerStyle={styles.fieldGroup}
                       label="Email"
                       placeholder="Enter your email"
                       value={forgotEmail}
@@ -1011,8 +1023,9 @@ const LoginSignup = ({ onLogin }: Props) => {
                 </Text>
               </Text>
 
-              <AuthField
-                style={styles.otpField}
+              <Input
+                variant="filled"
+                containerStyle={styles.otpField}
                 label="Enter OTP"
                 placeholder="6-digit code"
                 value={otp}
@@ -1025,7 +1038,7 @@ const LoginSignup = ({ onLogin }: Props) => {
                 returnKeyType="go"
                 onSubmitEditing={handleVerifyOtp}
                 inputStyle={styles.otpInput}
-                wrapperStyle={styles.otpInputWrapper}
+                fieldStyle={styles.otpInputWrapper}
               />
 
               <TouchableOpacity
@@ -1070,64 +1083,6 @@ const LoginSignup = ({ onLogin }: Props) => {
 };
 
 // --- SUB-COMPONENTS ---
-
-interface AuthFieldProps
-  extends Omit<TextInputProps, 'style' | 'secureTextEntry'> {
-  label: string;
-  /** Renders a masked input with a built-in show/hide toggle. */
-  secure?: boolean;
-  /** Optional control shown on the right of the label row (e.g. "Forgot?"). */
-  accessory?: React.ReactNode;
-  style?: ViewStyle;
-  wrapperStyle?: ViewStyle;
-  inputStyle?: TextStyle;
-}
-
-// One field = label row + boxed input, so every form on this screen gets the
-// same metrics. The show/hide state lives here rather than in the screen so
-// adding a password field doesn't mean adding another piece of screen state.
-const AuthField = ({
-  label,
-  secure = false,
-  accessory,
-  style,
-  wrapperStyle,
-  inputStyle,
-  ...inputProps
-}: AuthFieldProps) => {
-  const [revealed, setRevealed] = useState(false);
-
-  return (
-    <View style={[styles.fieldGroup, style]}>
-      <View style={styles.fieldLabelRow}>
-        <Text style={styles.inputLabel}>{label}</Text>
-        {accessory}
-      </View>
-      <View style={[styles.inputWrapper, wrapperStyle]}>
-        <TextInput
-          {...inputProps}
-          style={[styles.textInput, inputStyle]}
-          placeholderTextColor="#9aa3ad"
-          secureTextEntry={secure && !revealed}
-        />
-        {secure && (
-          <TouchableOpacity
-            style={styles.eyeBtn}
-            onPress={() => setRevealed((visible) => !visible)}
-            disabled={inputProps.editable === false}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Ionicons
-              name={revealed ? 'eye' : 'eye-off-outline'}
-              size={18}
-              color="#6b7280"
-            />
-          </TouchableOpacity>
-        )}
-      </View>
-    </View>
-  );
-};
 
 const OrderIcon = ({ icon, label }: any) => (
   <View style={styles.orderItem}>
@@ -1265,7 +1220,12 @@ const styles = StyleSheet.create({
   viewAllText: { fontSize: 11, color: '#999' },
   orderIconsRow: { flexDirection: 'row', justifyContent: 'space-between' },
   orderItem: { alignItems: 'center', width: '20%' },
-  orderLabel: { fontSize: 9, color: '#444', marginTop: 8, textAlign: 'center' },
+  orderLabel: {
+    fontSize: 10,
+    color: '#444',
+    marginTop: 8,
+    textAlign: 'center',
+  },
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -1326,47 +1286,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   fieldGroup: { marginBottom: 14 },
-  fieldLabelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  inputLabel: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    fontFamily: 'PoppinsBold',
-    color: '#555',
-  },
   forgotText: {
     fontSize: 12,
     color: '#f97316',
     fontFamily: 'PoppinsSemiBold',
     fontWeight: '600',
   },
-  // The box lives on the wrapper, not the TextInput, so the eye toggle can sit
-  // inside it on the same row instead of being pushed underneath the field.
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f4f8',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-  },
-  textInput: {
-    flex: 1,
-    paddingVertical: 12,
-    fontSize: 14,
-    // Both are explicit: without a fontFamily the input falls back to the OS
-    // font, and without letterSpacing: 0 some Android keyboards/fonts render
-    // the placeholder with visible gaps between every glyph.
-    fontFamily: 'PoppinsRegular',
-    letterSpacing: 0,
-    includeFontPadding: false,
-    color: '#333',
-  },
-  eyeBtn: { paddingLeft: 10, paddingVertical: 8 },
-  nameRow: { flexDirection: 'row', gap: 12 },
+  nameRow: { flexDirection: 'row', gap: 12, marginBottom: 14 },
   nameField: { flex: 1 },
   orangeActionBtn: {
     backgroundColor: '#ff6600',
@@ -1456,7 +1382,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   otpTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     fontFamily: 'PoppinsBold',
     color: '#1a1c1e',
@@ -1469,7 +1395,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  otpField: { alignSelf: 'stretch' },
+  otpField: { alignSelf: 'stretch', marginBottom: 14 },
   otpInputWrapper: { backgroundColor: '#f5f5f5' },
   otpInput: {
     letterSpacing: 5,

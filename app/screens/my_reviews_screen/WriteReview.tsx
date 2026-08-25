@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '700',
     fontFamily: 'PoppinsBold',
     color: '#000',
@@ -419,6 +419,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#222',
     marginBottom: 22,
+    fontFamily: 'PoppinsRegular',
+    letterSpacing: 0,
+    includeFontPadding: false,
   },
   mediaRow: {
     flexDirection: 'row',

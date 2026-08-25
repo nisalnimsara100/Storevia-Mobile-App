@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Dimensions,
   FlatList,
   Image,
   StyleSheet,
@@ -10,16 +9,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { responsiveFontSize, scale } from '@/theme';
 
 const BASE_URL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 
-const { width: screenWidth } = Dimensions.get('window');
 
-const scale = (size: number): number => (screenWidth / 375) * size;
-const responsiveFontSize = (size: number): number => {
-  const newSize = size * (screenWidth / 375);
-  return Math.max(newSize, size * 0.85);
-};
 
 interface ActivityBanner {
   id: number;

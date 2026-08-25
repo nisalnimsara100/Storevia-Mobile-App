@@ -3,4 +3,5 @@ import tokens from './tokens';
 
 export const theme: DesignTokens = tokens;
 export type { DesignTokens };
+export { responsiveFontSize, scale } from './responsive';
 export default theme;

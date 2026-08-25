@@ -75,6 +75,10 @@ module.exports = {
       bold: 'PoppinsBold',
     },
     size: {
+      // 3xs/2xs exist for badge counts, chips and micro-captions — the app
+      // used 10 and 11 in ~40 places before they were part of the scale.
+      '3xs': 10,
+      '2xs': 11,
       xs: 12,
       sm: 13,
       base: 14,
@@ -92,6 +96,8 @@ module.exports = {
       bold: '700',
     },
     lineHeight: {
+      '3xs': 14,
+      '2xs': 15,
       xs: 16,
       sm: 18,
       base: 20,

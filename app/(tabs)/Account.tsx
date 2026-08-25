@@ -3,7 +3,6 @@ import { router } from 'expo-router';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { useCallback, useEffect, useState } from 'react';
 import {
-  Dimensions,
   Image,
   ScrollView,
   StyleSheet,
@@ -12,17 +11,13 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { responsiveFontSize, scale } from '@/theme';
 import { auth } from '../../firebaseConfig';
 // IMPORT THE LOGIN PAGE
 import LoginSignup from '../(auth)/LoginSignup';
+import { useOrderCounts } from '../hooks/useOrderCounts';
 import { useAuthStore } from '../stores/useAuthStore';
 
-const { width: screenWidth } = Dimensions.get('window');
-const scale = (size: number): number => (screenWidth / 375) * size;
-const responsiveFontSize = (size: number): number => {
-  const newSize = size * (screenWidth / 375);
-  return Math.max(newSize, size * 0.85);
-};
 const BASEURL = process.env.EXPO_PUBLIC_APP_BASE_URL;
 const Account = () => {
   // STATE TO CHECK LOGIN
@@ -32,6 +27,15 @@ const Account = () => {
   const [collectedVoucherCount, setCollectedVoucherCount] = useState(0);
   const profilePicture = useAuthStore((state) => state.user?.profilePicture);
   const [personalizedProducts, setPersonalizedProducts] = useState<any[]>([]);
+  const { counts: orderCounts } = useOrderCounts();
+
+  // Each order icon deep-links to its own tab; without the param every one of
+  // them dropped the user on "All".
+  const openOrders = (tab: string) =>
+    router.push({
+      pathname: '/screens/my_orders_screen',
+      params: { tab },
+    });
 
   //GET STATS OF USER
   const getStats = useCallback(async (email: string) => {
@@ -195,78 +199,6 @@ const Account = () => {
           </View>
         </View>
 
-        {/* --- PROMO SECTION --- */}
-        <View style={styles.promoRow}>
-          <View style={styles.promoCard}>
-            <View style={styles.promoHeader}>
-              <Image
-                source={{ uri: 'https://img.icons8.com/color/48/ruby.png' }}
-                style={styles.smallIcon}
-              />
-              <Text style={styles.promoTitle}> Storevia Gems</Text>
-            </View>
-            <View style={styles.promoContentRow}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.promoSubText}>
-                  Enjoy{' '}
-                  <Text
-                    style={{
-                      color: '#f97316',
-                      fontFamily: 'PoppinsBold',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    60% OFF
-                  </Text>
-                  {'\n'}with Gems
-                </Text>
-                <TouchableOpacity style={styles.collectBtn}>
-                  <Text style={styles.btnText}>Collect</Text>
-                </TouchableOpacity>
-              </View>
-              <Image
-                source={{
-                  uri: 'https://img.icons8.com/fluency/96/diamond.png',
-                }}
-                style={styles.promoImage}
-              />
-            </View>
-          </View>
-
-          <View style={styles.promoCard}>
-            <View style={styles.promoHeader}>
-              <Image
-                source={{ uri: 'https://img.icons8.com/color/48/gift--v1.png' }}
-                style={styles.smallIcon}
-              />
-              <Text style={styles.promoTitle}> Storevia Freebie</Text>
-            </View>
-            <View style={styles.promoContentRow}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.promoSubText}>
-                  Share, Invite &{'\n'}Win{' '}
-                  <Text
-                    style={{
-                      color: '#f97316',
-                      fontFamily: 'PoppinsBold',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Free Prizes!
-                  </Text>
-                </Text>
-                <TouchableOpacity style={styles.playBtn}>
-                  <Text style={styles.btnText}>Play</Text>
-                </TouchableOpacity>
-              </View>
-              <Image
-                source={{ uri: 'https://img.icons8.com/fluency/96/gift.png' }}
-                style={styles.promoImage}
-              />
-            </View>
-          </View>
-        </View>
-
         {/* --- ORDERS SECTION --- */}
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeader}>
@@ -281,59 +213,60 @@ const Account = () => {
             <OrderItem
               icon="wallet-outline"
               label="To Pay"
-              onPress={() => router.push('/screens/my_orders_screen')}
+              badge={orderCounts.toPay}
+              onPress={() => openOrders('To Pay')}
             />
             <OrderItem
               icon="archive-outline"
               label="To Ship"
-              onPress={() => router.push('/screens/my_orders_screen')}
+              badge={orderCounts.toShip}
+              onPress={() => openOrders('To Ship')}
             />
             <OrderItem
               icon="bus-outline"
               label="To Receive"
-              onPress={() => router.push('/screens/my_orders_screen')}
+              badge={orderCounts.toReceive}
+              onPress={() => openOrders('To Receive')}
             />
             <OrderItem
               icon="chatbox-ellipses-outline"
               label="To Review"
-              badge={1}
+              badge={orderCounts.toReview}
               onPress={() => router.push('/screens/my_reviews_screen')}
             />
             <OrderItem
               icon="refresh-circle-outline"
               label="Returns"
-              onPress={() => router.push('/screens/my_orders_screen')}
+              badge={orderCounts.returns}
+              onPress={() => openOrders('Returns')}
             />
           </View>
 
-          {/* Review Banner */}
-          <TouchableOpacity
-            style={styles.reviewBanner}
-            onPress={() => router.push('/screens/my_reviews_screen')}
-          >
-            <Image
-              source={{ uri: 'https://img.icons8.com/fluency/96/box.png' }}
-              style={styles.reviewThumb}
-            />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.reviewText}>Review your purchase today!</Text>
-              <Text style={styles.reviewSubText}>
-                Share your review with others...
-              </Text>
-            </View>
-            <View style={styles.reviewBtn}>
-              <Text style={styles.reviewBtnText}>Review Now</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* --- AD BANNER --- */}
-        <View style={styles.bannerWrapper}>
-          <Image
-            source={require('../../assets/banners/banner2.jpg')}
-            style={styles.adBanner}
-            resizeMode="stretch"
-          />
+          {/* Review Banner — only when something is actually waiting. */}
+          {orderCounts.toReview > 0 ? (
+            <TouchableOpacity
+              style={styles.reviewBanner}
+              onPress={() => router.push('/screens/my_reviews_screen')}
+            >
+              <Image
+                source={{ uri: 'https://img.icons8.com/fluency/96/box.png' }}
+                style={styles.reviewThumb}
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.reviewText}>
+                  Review your purchase today!
+                </Text>
+                <Text style={styles.reviewSubText}>
+                  {orderCounts.toReview === 1
+                    ? '1 item is waiting for your review'
+                    : `${orderCounts.toReview} items are waiting for your review`}
+                </Text>
+              </View>
+              <View style={styles.reviewBtn}>
+                <Text style={styles.reviewBtnText}>Review Now</Text>
+              </View>
+            </TouchableOpacity>
+          ) : null}
         </View>
 
         {/* --- RECENTLY VIEWED --- */}
@@ -407,11 +340,11 @@ const OrderItem = ({ icon, label, badge, onPress }: any) => (
   <TouchableOpacity style={styles.orderItem} onPress={onPress}>
     <View>
       <Ionicons name={icon} size={scale(24)} color="#f97316" />
-      {badge && (
+      {badge > 0 ? (
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>{badge}</Text>
+          <Text style={styles.badgeText}>{badge > 99 ? '99+' : badge}</Text>
         </View>
-      )}
+      ) : null}
     </View>
     <Text style={styles.orderLabel}>{label}</Text>
   </TouchableOpacity>
@@ -448,7 +381,13 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#fff' },
   container: { flex: 1, backgroundColor: '#F1F2F4' },
   scrollContent: { flexGrow: 1, backgroundColor: '#F1F2F4', paddingBottom: 16 },
-  headerContainer: { backgroundColor: '#fff', padding: scale(15) },
+  headerContainer: {
+    backgroundColor: '#fff',
+    padding: scale(15),
+    // The removed promo row used to supply this gap between the white header
+    // and the first section card.
+    marginBottom: scale(10),
+  },
   topIcons: { flexDirection: 'row', justifyContent: 'flex-end' },
   profileRow: {
     flexDirection: 'row',
@@ -483,67 +422,11 @@ const styles = StyleSheet.create({
     marginTop: scale(2),
   },
   boldStat: { color: '#333', fontFamily: 'PoppinsBold', fontWeight: 'bold' },
-  promoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: scale(10),
-  },
-  promoCard: {
-    backgroundColor: '#fff',
-    width: '49%',
-    borderRadius: scale(10),
-    borderWidth: 1,
-    borderColor: '#e8e8e8',
-    padding: scale(10),
-  },
-  promoHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: scale(8),
-  },
-  smallIcon: { width: scale(14), height: scale(14) },
-  promoTitle: {
-    fontFamily: 'PoppinsBold',
-    fontWeight: 'bold',
-    fontSize: responsiveFontSize(12),
-  },
-  promoContentRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  promoSubText: {
-    fontSize: responsiveFontSize(12),
-    color: '#333',
-    marginBottom: scale(8),
-  },
-  promoImage: { width: scale(45), height: scale(45), marginLeft: 5 },
-  collectBtn: {
-    backgroundColor: '#f97316',
-    paddingHorizontal: scale(10),
-    paddingVertical: scale(3),
-    borderRadius: scale(15),
-    alignSelf: 'flex-start',
-  },
-  playBtn: {
-    backgroundColor: '#f97316',
-    paddingHorizontal: scale(12),
-    paddingVertical: scale(3),
-    borderRadius: scale(15),
-    alignSelf: 'flex-start',
-  },
-  btnText: {
-    color: '#fff',
-    fontSize: responsiveFontSize(11),
-    fontWeight: 'bold',
-    fontFamily: 'PoppinsBold',
-  },
+  // Full-bleed white band, matching headerContainer. No side margins, no
+  // radius and no box border — the gray page background showing through the
+  // bottom margin is what separates one section from the next.
   sectionCard: {
     backgroundColor: '#fff',
-    marginHorizontal: scale(10),
-    borderRadius: scale(10),
-    borderWidth: 1,
-    borderColor: '#e8e8e8',
     padding: scale(12),
     marginBottom: scale(10),
   },
@@ -579,7 +462,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     color: 'white',
-    fontSize: scale(9),
+    fontSize: scale(10),
     fontFamily: 'PoppinsBold',
     fontWeight: 'bold',
   },
@@ -617,8 +500,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'PoppinsBold',
   },
-  bannerWrapper: { marginHorizontal: scale(10), marginBottom: scale(10) },
-  adBanner: { width: '100%', height: scale(150), borderRadius: scale(8) },
   productCard: {
     width: scale(120),
     marginRight: scale(12),

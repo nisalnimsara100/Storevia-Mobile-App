@@ -1,20 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import {
-  Dimensions,
   FlatList,
   Image,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { responsiveFontSize, scale } from '@/theme';
 
-const { width: screenWidth } = Dimensions.get('window');
 
-const scale = (size: number): number => (screenWidth / 375) * size;
-const responsiveFontSize = (size: number): number => {
-  const newSize = size * (screenWidth / 375);
-  return Math.max(newSize, size * 0.85);
-};
 
 const activities = [
   {

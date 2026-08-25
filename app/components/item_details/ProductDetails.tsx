@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   modalTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '700',
     fontFamily: 'PoppinsBold',
     color: '#222',

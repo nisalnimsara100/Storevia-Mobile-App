@@ -49,6 +49,8 @@ export interface DesignTokens {
       bold: string;
     };
     size: {
+      '3xs': number;
+      '2xs': number;
       xs: number;
       sm: number;
       base: number;
@@ -66,6 +68,8 @@ export interface DesignTokens {
       bold: '700';
     };
     lineHeight: {
+      '3xs': number;
+      '2xs': number;
       xs: number;
       sm: number;
       base: number;

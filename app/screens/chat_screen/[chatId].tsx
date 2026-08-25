@@ -622,6 +622,9 @@ const styles = StyleSheet.create({
     maxHeight: 100,
     backgroundColor: '#F8F8F8',
     marginHorizontal: 8,
+    fontFamily: 'PoppinsRegular',
+    letterSpacing: 0,
+    includeFontPadding: false,
   },
   sendButton: {
     width: 36,

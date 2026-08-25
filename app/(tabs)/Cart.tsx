@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
   Image,
   Modal,
   ScrollView,
@@ -376,7 +377,8 @@ const Cart = () => {
     }
     const minSpend = parseFloat(voucher.voucher_minimumSpend);
     if (subtotal < minSpend) {
-      alert(
+      Alert.alert(
+        'Voucher Not Applicable',
         `Minimum spend of Rs. ${minSpend.toLocaleString()} is required to use this voucher.`,
       );
       return;
@@ -511,7 +513,14 @@ const Cart = () => {
           <TextInput
             placeholder="Storevia"
             placeholderTextColor="#aaa"
-            style={{ flex: 1, fontSize: s(14), paddingVertical: vs(8) }}
+            style={{
+              flex: 1,
+              fontSize: s(14),
+              paddingVertical: vs(8),
+              fontFamily: 'PoppinsRegular',
+              letterSpacing: 0,
+              includeFontPadding: false,
+            }}
           />
           <TouchableOpacity
             style={{
