@@ -16,5 +16,15 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
   . "$NVM_DIR/nvm.sh"
 fi
 
+# Guards only protect the repo if they run. The typography and design-system
+# suites fail on regressions that are invisible in a normal diff review.
+# Runs before the env sync so a failure aborts without staging anything.
+if ! npm test --silent; then
+  echo ""
+  echo "Tests failed - commit aborted. Run 'npm test' to see the failures."
+  echo "To commit anyway: git commit --no-verify"
+  exit 1
+fi
+
 node scripts/sync-env.js to-text
 git add env.text
