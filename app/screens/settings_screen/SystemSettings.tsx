@@ -31,7 +31,7 @@ export const SystemSettings = () => {
         <ScreenHeader title="System Settings" onBack={() => router.back()} />
       </View>
       <ScrollView
-        className="flex-1 mt-5 bg-gray-100"
+        className="flex-1 mt-1.5 bg-gray-100"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }

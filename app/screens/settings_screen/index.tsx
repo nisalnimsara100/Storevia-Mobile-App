@@ -34,7 +34,7 @@ const SettingsScreen = () => {
       </View>
 
       <ScrollView
-        className="flex-1 mt-5 bg-gray-100"
+        className="flex-1 mt-1.5 bg-gray-100"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -94,18 +94,18 @@ const SettingsScreen = () => {
           title="Policies"
           onPress={() => router.push('/screens/settings_screen/Policies')}
         />
-        <MenuItem
+        {/* <MenuItem
           title="Help"
           onPress={() => router.push('/screens/settings_screen/Help')}
         />
         <MenuItem
           title="Feedback"
           onPress={() => router.push('/screens/settings_screen/Feedback')}
-        />
+        /> */}
 
         {/* Logout */}
         <TouchableOpacity
-          className="py-4 mt-7 bg-white border-t border-b border-gray-200"
+          className="py-4 mt-1.5 bg-white border-t border-b border-gray-200"
           onPress={() => {
             alert('Logged out');
           }}

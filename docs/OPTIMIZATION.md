@@ -17,7 +17,8 @@ What actually matters — the tracked repo (what gets cloned, and roughly what's
 
 ## Dependencies removed (confirmed zero imports, not an Expo config plugin, not a babel-registered plugin)
 
-`expo-symbols`, `expo-status-bar`, `expo-linking` (default Expo-template dependencies, never imported, not used as config plugins), `react-native-dotenv` (babel plugin never registered in `babel.config.js` — this app uses Expo's native `EXPO_PUBLIC_*` env var mechanism instead), `react-native-radio-buttons-group` (unused UI lib), `react-hot-toast` (a **web** toast library — wrong platform for this app; `react-native-toast-message` is the one actually used, via `components/ui/Toast.ts`), `lucide-react` (the web version of the icon library — `lucide-react-native`, the correct RN version, is what's actually imported).
+`expo-symbols`, `expo-status-bar`, `expo-linking` (default Expo
+-template dependencies, never imported, not used as config plugins), `react-native-dotenv` (babel plugin never registered in `babel.config.js` — this app uses Expo's native `EXPO_PUBLIC_*` env var mechanism instead), `react-native-radio-buttons-group` (unused UI lib), `react-hot-toast` (a **web** toast library — wrong platform for this app; `react-native-toast-message` is the one actually used, via `components/ui/Toast.ts`), `lucide-react` (the web version of the icon library — `lucide-react-native`, the correct RN version, is what's actually imported).
 
 > **Correction (later the same 2026-08 session):** `expo-status-bar` was reinstalled. "Zero imports anywhere" was true at the time this was written, but it turned out to be the actual, correct fix for a real status-bar-icon-color bug — see `UI_AND_RELEASE_FIXES.md`. The lesson: a dependency audit needs to be re-run (or at least re-questioned) after later work changes what the app actually needs, not treated as a one-time, permanently-valid finding. The other five removed here remain correctly unused.
 

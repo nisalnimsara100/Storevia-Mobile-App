@@ -63,7 +63,7 @@ const AccountInformaton = () => {
           />
         </View>
 
-        <ScrollView className="flex-1 mt-5 bg-gray-100">
+        <ScrollView className="flex-1 mt-1.5 bg-gray-100">
           <TouchableOpacity
             className="bg-white flex-row justify-between items-center px-4 py-4 border-b border-gray-200"
             onPress={toggleNameModal}
@@ -89,7 +89,7 @@ const AccountInformaton = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="bg-white flex-row items-center justify-center px-4 py-4 mt-8 border-y border-gray-200"
+            className="bg-white flex-row items-center justify-center px-4 py-4 mt-1.5 border-y border-gray-200"
             onPress={handleLogout}
           >
             <Ionicons name="log-out-outline" size={20} color="#ef4444" />

@@ -17,8 +17,11 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  type TextInputProps,
+  type TextStyle,
   TouchableOpacity,
   View,
+  type ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProductCard } from '@/components/ui';
@@ -28,13 +31,23 @@ WebBrowser.maybeCompleteAuthSession();
 
 const { width: screenWidth } = Dimensions.get('window');
 const scale = (size: number) => (screenWidth / 375) * size;
+// Single shared gap used between every section on this page, so spacing
+// stays consistent throughout instead of each section picking its own value.
+const SECTION_GAP = scale(6);
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 interface Props {
   onLogin: () => void;
 }
 
 const LoginSignup = ({ onLogin }: Props) => {
-  const { signIn, signUp, signInWithGoogle, signInWithApple } = useAuth();
+  const {
+    signIn,
+    signUp,
+    signInWithGoogle,
+    signInWithApple,
+    resetPassword,
+  } = useAuth();
 
   const [loginVisible, setLoginVisible] = useState(false);
   const [signUpVisible, setSignUpVisible] = useState(false);
@@ -43,7 +56,6 @@ const LoginSignup = ({ onLogin }: Props) => {
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [loginPasswordVisible, setLoginPasswordVisible] = useState(false);
 
   // Sign up form state
   const [signUpFirstName, setSignUpFirstName] = useState('');
@@ -52,9 +64,12 @@ const LoginSignup = ({ onLogin }: Props) => {
   const [signUpPhone, setSignUpPhone] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
   const [signUpConfirmPassword, setSignUpConfirmPassword] = useState('');
-  const [signUpPasswordVisible, setSignUpPasswordVisible] = useState(false);
-  const [signUpConfirmPasswordVisible, setSignUpConfirmPasswordVisible] =
-    useState(false);
+
+  // Forgot password state
+  const [forgotVisible, setForgotVisible] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [isSendingReset, setIsSendingReset] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   // OTP Verification state
   const [showOtpModal, setShowOtpModal] = useState(false);
@@ -104,6 +119,40 @@ const LoginSignup = ({ onLogin }: Props) => {
 
     fetchTopRatedProducts();
   }, [baseUrl]);
+
+  // 🔑 Open the reset sheet, pre-filled with whatever is already typed in the
+  // login form so the common case is one tap.
+  const openForgotPassword = () => {
+    setForgotEmail(loginEmail);
+    setResetSent(false);
+    setLoginVisible(false);
+    setForgotVisible(true);
+  };
+
+  const closeForgotPassword = () => {
+    setForgotVisible(false);
+    setLoginVisible(true);
+  };
+
+  const handleForgotPassword = async () => {
+    const email = forgotEmail.trim();
+    if (!EMAIL_PATTERN.test(email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    setIsSendingReset(true);
+    try {
+      const result = await resetPassword(email);
+      if (result.success) {
+        setResetSent(true);
+      } else {
+        alert(`❌ Could not send reset email: ${result.error}`);
+      }
+    } finally {
+      setIsSendingReset(false);
+    }
+  };
 
   // 🔐 Handle Email/Password Login
   const handleLogin = async () => {
@@ -371,9 +420,10 @@ const LoginSignup = ({ onLogin }: Props) => {
           </View>
         </View>
 
-        {/* --- PROMO SECTION (Updated UI) --- */}
+        {/* --- PROMO SECTION (hidden for now) --- */}
+        {/*
         <View style={styles.promoRow}>
-          <View style={styles.promoCard}>
+          <View style={[styles.promoCard, styles.promoCardDivider]}>
             <View style={styles.promoHeader}>
               <Ionicons name="diamond-sharp" size={14} color="#C71585" />
               <Text style={styles.promoTitle}> Storevia Gems</Text>
@@ -403,6 +453,7 @@ const LoginSignup = ({ onLogin }: Props) => {
             </TouchableOpacity>
           </View>
         </View>
+        */}
 
         {/* --- MY ORDERS SECTION (hidden for now) --- */}
         {/*
@@ -516,134 +567,126 @@ const LoginSignup = ({ onLogin }: Props) => {
       <Modal visible={loginVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <KeyboardAvoidingView
+            style={styles.modalKeyboardView}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
             <View style={styles.authPopupCard}>
-              <TouchableOpacity
-                style={styles.closeBtn}
-                onPress={() => setLoginVisible(false)}
-                disabled={isLoading}
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={styles.authPopupScrollBody}
               >
-                <Ionicons name="close" size={24} color="#999" />
-              </TouchableOpacity>
-
-              <Text style={styles.popupTitle}>Welcome Back</Text>
-              <Text style={styles.popupSubtitle}>
-                Log in to your Storevia account
-              </Text>
-
-              <Text style={styles.inputLabel}>Email</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Enter your email"
-                placeholderTextColor="#999"
-                value={loginEmail}
-                onChangeText={setLoginEmail}
-                editable={!isLoading}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginTop: 15,
-                }}
-              >
-                <Text style={styles.inputLabel}>Password</Text>
-                <TouchableOpacity disabled={isLoading}>
-                  <Text style={{ color: '#f97316', fontSize: 12 }}>
-                    Forgot?
-                  </Text>
+                <TouchableOpacity
+                  style={styles.closeBtn}
+                  onPress={() => setLoginVisible(false)}
+                  disabled={isLoading}
+                >
+                  <Ionicons name="close" size={24} color="#999" />
                 </TouchableOpacity>
-              </View>
-              <View style={styles.passInputWrapper}>
-                <TextInput
-                  style={styles.textInput}
-                  secureTextEntry={!loginPasswordVisible}
+
+                <Text style={styles.popupTitle}>Welcome Back</Text>
+                <Text style={styles.popupSubtitle}>
+                  Log in to your Storevia account
+                </Text>
+
+                <AuthField
+                  label="Email"
+                  placeholder="Enter your email"
+                  value={loginEmail}
+                  onChangeText={setLoginEmail}
+                  editable={!isLoading}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  returnKeyType="next"
+                />
+
+                <AuthField
+                  label="Password"
                   placeholder="Enter your password"
-                  placeholderTextColor="#999"
                   value={loginPassword}
                   onChangeText={setLoginPassword}
                   editable={!isLoading}
+                  secure
+                  autoCapitalize="none"
+                  autoComplete="password"
+                  returnKeyType="go"
+                  onSubmitEditing={handleLogin}
+                  accessory={
+                    <TouchableOpacity
+                      onPress={openForgotPassword}
+                      disabled={isLoading}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                      <Text style={styles.forgotText}>Forgot?</Text>
+                    </TouchableOpacity>
+                  }
                 />
+
                 <TouchableOpacity
-                  onPress={() => setLoginPasswordVisible(!loginPasswordVisible)}
+                  style={[
+                    styles.orangeActionBtn,
+                    isLoading && styles.disabledBtn,
+                  ]}
+                  onPress={handleLogin}
                   disabled={isLoading}
                 >
-                  <Ionicons
-                    name={loginPasswordVisible ? 'eye' : 'eye-off-outline'}
-                    size={18}
-                    color="#800"
-                    style={styles.eyeIcon}
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <TouchableOpacity
-                style={[
-                  styles.orangeActionBtn,
-                  isLoading && styles.disabledBtn,
-                ]}
-                onPress={handleLogin}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.orangeActionText}>LOGIN</Text>
-                )}
-              </TouchableOpacity>
-
-              {/* Social Login Options */}
-              <View style={styles.socialBtnsRow}>
-                <TouchableOpacity
-                  style={styles.socialCircleBtn}
-                  onPress={() => promptAsync()}
-                  disabled={isLoading}
-                >
-                  <Image
-                    source={{
-                      uri: 'https://img.icons8.com/color/48/google-logo.png',
-                    }}
-                    style={{ width: 24, height: 24 }}
-                  />
+                  {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.orangeActionText}>LOGIN</Text>
+                  )}
                 </TouchableOpacity>
 
-                {Platform.OS === 'ios' && (
+                {/* Social Login Options */}
+                <View style={styles.socialBtnsRow}>
                   <TouchableOpacity
                     style={styles.socialCircleBtn}
-                    onPress={handleAppleLogin}
+                    onPress={() => promptAsync()}
                     disabled={isLoading}
                   >
-                    <Ionicons name="logo-apple" size={24} color="#000" />
+                    <Image
+                      source={{
+                        uri: 'https://img.icons8.com/color/48/google-logo.png',
+                      }}
+                      style={{ width: 24, height: 24 }}
+                    />
                   </TouchableOpacity>
-                )}
-              </View>
 
-              <View style={styles.popupFooter}>
-                <Text style={styles.footerGray}>
-                  Don&lsquo;t have an account?{' '}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setLoginVisible(false);
-                    setSignUpVisible(true);
-                  }}
-                  disabled={isLoading}
-                >
-                  <Text
-                    style={{
-                      color: '#f97316',
-                      fontFamily: 'PoppinsBold',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Sign Up
+                  {Platform.OS === 'ios' && (
+                    <TouchableOpacity
+                      style={styles.socialCircleBtn}
+                      onPress={handleAppleLogin}
+                      disabled={isLoading}
+                    >
+                      <Ionicons name="logo-apple" size={24} color="#000" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+
+                <View style={styles.popupFooter}>
+                  <Text style={styles.footerGray}>
+                    Don&lsquo;t have an account?{' '}
                   </Text>
-                </TouchableOpacity>
-              </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setLoginVisible(false);
+                      setSignUpVisible(true);
+                    }}
+                    disabled={isLoading}
+                  >
+                    <Text
+                      style={{
+                        color: '#f97316',
+                        fontFamily: 'PoppinsBold',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      Sign Up
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
             </View>
           </KeyboardAvoidingView>
         </View>
@@ -653,10 +696,15 @@ const LoginSignup = ({ onLogin }: Props) => {
       <Modal visible={signUpVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <KeyboardAvoidingView
+            style={styles.modalKeyboardView}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
-            <View style={[styles.authPopupCard, { maxHeight: '90%' }]}>
-              <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={styles.authPopupCard}>
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={styles.authPopupScrollBody}
+              >
                 <TouchableOpacity
                   style={styles.closeBtn}
                   onPress={() => setSignUpVisible(false)}
@@ -670,104 +718,78 @@ const LoginSignup = ({ onLogin }: Props) => {
                   Create your account to start shopping
                 </Text>
 
-                <Text style={styles.inputLabel}>First Name</Text>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Enter your first name"
-                  placeholderTextColor="#999"
-                  value={signUpFirstName}
-                  onChangeText={setSignUpFirstName}
-                  editable={!isLoading}
-                />
+                <View style={styles.nameRow}>
+                  <AuthField
+                    style={styles.nameField}
+                    label="First Name"
+                    placeholder="First name"
+                    value={signUpFirstName}
+                    onChangeText={setSignUpFirstName}
+                    editable={!isLoading}
+                    autoCapitalize="words"
+                    autoComplete="given-name"
+                    returnKeyType="next"
+                  />
+                  <AuthField
+                    style={styles.nameField}
+                    label="Last Name"
+                    placeholder="Last name"
+                    value={signUpLastName}
+                    onChangeText={setSignUpLastName}
+                    editable={!isLoading}
+                    autoCapitalize="words"
+                    autoComplete="family-name"
+                    returnKeyType="next"
+                  />
+                </View>
 
-                <Text style={styles.inputLabel}>Last Name</Text>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Enter your last name"
-                  placeholderTextColor="#999"
-                  value={signUpLastName}
-                  onChangeText={setSignUpLastName}
-                  editable={!isLoading}
-                />
-
-                <Text style={styles.inputLabel}>Email</Text>
-                <TextInput
-                  style={styles.textInput}
+                <AuthField
+                  label="Email"
                   placeholder="Enter your email address"
-                  placeholderTextColor="#999"
                   value={signUpEmail}
                   onChangeText={setSignUpEmail}
-                  keyboardType="email-address"
                   editable={!isLoading}
+                  keyboardType="email-address"
                   autoCapitalize="none"
+                  autoComplete="email"
+                  returnKeyType="next"
                 />
 
-                <Text style={styles.inputLabel}>Phone Number</Text>
-                <TextInput
-                  style={styles.textInput}
+                <AuthField
+                  label="Phone Number"
                   placeholder="Enter your phone number"
-                  placeholderTextColor="#999"
                   value={signUpPhone}
                   onChangeText={setSignUpPhone}
-                  keyboardType="phone-pad"
                   editable={!isLoading}
+                  keyboardType="phone-pad"
+                  autoComplete="tel"
+                  returnKeyType="next"
                 />
 
-                <Text style={styles.inputLabel}>Password</Text>
-                <View style={styles.passInputWrapper}>
-                  <TextInput
-                    style={styles.textInput}
-                    secureTextEntry={!signUpPasswordVisible}
-                    placeholder="Create a password (min 6 chars)"
-                    placeholderTextColor="#999"
-                    value={signUpPassword}
-                    onChangeText={setSignUpPassword}
-                    editable={!isLoading}
-                  />
-                  <TouchableOpacity
-                    onPress={() =>
-                      setSignUpPasswordVisible(!signUpPasswordVisible)
-                    }
-                    disabled={isLoading}
-                  >
-                    <Ionicons
-                      name={signUpPasswordVisible ? 'eye' : 'eye-off-outline'}
-                      size={18}
-                      color="#800"
-                      style={styles.eyeIcon}
-                    />
-                  </TouchableOpacity>
-                </View>
+                <AuthField
+                  label="Password"
+                  placeholder="Create a password (min 6 chars)"
+                  value={signUpPassword}
+                  onChangeText={setSignUpPassword}
+                  editable={!isLoading}
+                  secure
+                  autoCapitalize="none"
+                  autoComplete="password-new"
+                  returnKeyType="next"
+                />
 
-                <Text style={styles.inputLabel}>Confirm Password</Text>
-                <View style={styles.passInputWrapper}>
-                  <TextInput
-                    style={styles.textInput}
-                    secureTextEntry={!signUpConfirmPasswordVisible}
-                    placeholder="Confirm your password"
-                    placeholderTextColor="#999"
-                    value={signUpConfirmPassword}
-                    onChangeText={setSignUpConfirmPassword}
-                    editable={!isLoading}
-                  />
-                  <TouchableOpacity
-                    onPress={() =>
-                      setSignUpConfirmPasswordVisible(
-                        !signUpConfirmPasswordVisible,
-                      )
-                    }
-                    disabled={isLoading}
-                  >
-                    <Ionicons
-                      name={
-                        signUpConfirmPasswordVisible ? 'eye' : 'eye-off-outline'
-                      }
-                      size={18}
-                      color="#800"
-                      style={styles.eyeIcon}
-                    />
-                  </TouchableOpacity>
-                </View>
+                <AuthField
+                  label="Confirm Password"
+                  placeholder="Confirm your password"
+                  value={signUpConfirmPassword}
+                  onChangeText={setSignUpConfirmPassword}
+                  editable={!isLoading}
+                  secure
+                  autoCapitalize="none"
+                  autoComplete="password-new"
+                  returnKeyType="go"
+                  onSubmitEditing={handleSignUp}
+                />
 
                 <TouchableOpacity
                   style={[
@@ -838,82 +860,209 @@ const LoginSignup = ({ onLogin }: Props) => {
         </View>
       </Modal>
 
+      {/* --- FORGOT PASSWORD MODAL --- */}
+      <Modal visible={forgotVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <KeyboardAvoidingView
+            style={styles.modalKeyboardView}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          >
+            <View style={styles.authPopupCard}>
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={styles.authPopupScrollBody}
+              >
+                <TouchableOpacity
+                  style={styles.closeBtn}
+                  onPress={closeForgotPassword}
+                  disabled={isSendingReset}
+                >
+                  <Ionicons name="close" size={24} color="#999" />
+                </TouchableOpacity>
+
+                {resetSent ? (
+                  <>
+                    <View style={styles.resetSuccessIcon}>
+                      <Ionicons
+                        name="mail-open-outline"
+                        size={40}
+                        color="#f97316"
+                      />
+                    </View>
+                    <Text style={styles.popupTitle}>Check Your Inbox</Text>
+                    <Text style={styles.popupSubtitle}>
+                      If an account exists for{' '}
+                      <Text style={styles.resetEmailHighlight}>
+                        {forgotEmail.trim()}
+                      </Text>
+                      , we&lsquo;ve sent a link to reset your password. It may
+                      take a minute to arrive — remember to check spam.
+                    </Text>
+
+                    <TouchableOpacity
+                      style={styles.orangeActionBtn}
+                      onPress={closeForgotPassword}
+                    >
+                      <Text style={styles.orangeActionText}>
+                        BACK TO LOGIN
+                      </Text>
+                    </TouchableOpacity>
+
+                    <View style={styles.popupFooter}>
+                      <Text style={styles.footerGray}>Didn&lsquo;t get it? </Text>
+                      <TouchableOpacity
+                        onPress={handleForgotPassword}
+                        disabled={isSendingReset}
+                      >
+                        <Text style={styles.resendText}>
+                          {isSendingReset ? 'Sending...' : 'Resend email'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.popupTitle}>Reset Password</Text>
+                    <Text style={styles.popupSubtitle}>
+                      Enter the email on your account and we&lsquo;ll send you a
+                      link to set a new password.
+                    </Text>
+
+                    <AuthField
+                      label="Email"
+                      placeholder="Enter your email"
+                      value={forgotEmail}
+                      onChangeText={setForgotEmail}
+                      editable={!isSendingReset}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoComplete="email"
+                      returnKeyType="go"
+                      onSubmitEditing={handleForgotPassword}
+                    />
+
+                    <TouchableOpacity
+                      style={[
+                        styles.orangeActionBtn,
+                        isSendingReset && styles.disabledBtn,
+                      ]}
+                      onPress={handleForgotPassword}
+                      disabled={isSendingReset}
+                    >
+                      {isSendingReset ? (
+                        <ActivityIndicator color="#fff" />
+                      ) : (
+                        <Text style={styles.orangeActionText}>
+                          SEND RESET LINK
+                        </Text>
+                      )}
+                    </TouchableOpacity>
+
+                    <View style={styles.popupFooter}>
+                      <Text style={styles.footerGray}>
+                        Remembered your password?{' '}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={closeForgotPassword}
+                        disabled={isSendingReset}
+                      >
+                        <Text style={styles.footerLink}>Log In</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                )}
+              </ScrollView>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </Modal>
+
       {/* --- OTP VERIFICATION MODAL --- */}
       <Modal visible={showOtpModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
-          <View style={styles.otpModalCard}>
-            <TouchableOpacity
-              style={styles.closeBtn}
-              onPress={() => {
-                if (!isVerifyingOtp && !isSendingOtp) {
-                  setShowOtpModal(false);
-                  setSignUpVisible(true); // Show signup modal to try again
-                }
-              }}
-              disabled={isVerifyingOtp || isSendingOtp}
-            >
-              <Ionicons name="close" size={24} color="#999" />
-            </TouchableOpacity>
-
-            <View style={styles.otpHeader}>
-              <Ionicons name="mail" size={50} color="#f97316" />
-            </View>
-
-            <Text style={styles.otpTitle}>Verify Your Email</Text>
-            <Text style={styles.otpSubtitle}>
-              We&lsquo;ve sent a verification code to {'\n'}
-              <Text style={{ fontFamily: 'PoppinsBold', fontWeight: 'bold' }}>
-                {signUpEmail}
-              </Text>
-            </Text>
-
-            <Text style={styles.inputLabel}>Enter OTP</Text>
-            <TextInput
-              style={[styles.textInput, styles.otpInput]}
-              placeholder="Enter 6-digit OTP"
-              placeholderTextColor="#999"
-              value={otp}
-              onChangeText={setOtp}
-              keyboardType="number-pad"
-              maxLength={6}
-              editable={!isVerifyingOtp}
-              textAlign="center"
-            />
-
-            <TouchableOpacity
-              style={[
-                styles.orangeActionBtn,
-                (isVerifyingOtp || isSendingOtp) && styles.disabledBtn,
-              ]}
-              onPress={handleVerifyOtp}
-              disabled={isVerifyingOtp || isSendingOtp}
-            >
-              {isVerifyingOtp ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.orangeActionText}>VERIFY</Text>
-              )}
-            </TouchableOpacity>
-
-            <View style={styles.otpFooter}>
-              <Text style={styles.otpFooterText}>
-                Didn&lsquo;t receive the code?
-              </Text>
+          <KeyboardAvoidingView
+            style={styles.modalKeyboardView}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          >
+            <View style={styles.otpModalCard}>
               <TouchableOpacity
-                onPress={handleSignUp}
+                style={styles.closeBtn}
+                onPress={() => {
+                  if (!isVerifyingOtp && !isSendingOtp) {
+                    setShowOtpModal(false);
+                    setSignUpVisible(true); // Show signup modal to try again
+                  }
+                }}
                 disabled={isVerifyingOtp || isSendingOtp}
               >
-                <Text
-                  style={[
-                    styles.resendText,
-                    (isVerifyingOtp || isSendingOtp) && { opacity: 0.5 },
-                  ]}
-                >
-                  {isSendingOtp ? 'Sending...' : 'Resend OTP'}
-                </Text>
+                <Ionicons name="close" size={24} color="#999" />
               </TouchableOpacity>
+
+              <View style={styles.otpHeader}>
+                <Ionicons name="mail" size={50} color="#f97316" />
+              </View>
+
+              <Text style={styles.otpTitle}>Verify Your Email</Text>
+              <Text style={styles.otpSubtitle}>
+                We&lsquo;ve sent a verification code to {'\n'}
+                <Text style={{ fontFamily: 'PoppinsBold', fontWeight: 'bold' }}>
+                  {signUpEmail}
+                </Text>
+              </Text>
+
+              <AuthField
+                style={styles.otpField}
+                label="Enter OTP"
+                placeholder="6-digit code"
+                value={otp}
+                onChangeText={setOtp}
+                editable={!isVerifyingOtp}
+                keyboardType="number-pad"
+                maxLength={6}
+                textAlign="center"
+                autoComplete="sms-otp"
+                returnKeyType="go"
+                onSubmitEditing={handleVerifyOtp}
+                inputStyle={styles.otpInput}
+                wrapperStyle={styles.otpInputWrapper}
+              />
+
+              <TouchableOpacity
+                style={[
+                  styles.orangeActionBtn,
+                  (isVerifyingOtp || isSendingOtp) && styles.disabledBtn,
+                ]}
+                onPress={handleVerifyOtp}
+                disabled={isVerifyingOtp || isSendingOtp}
+              >
+                {isVerifyingOtp ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.orangeActionText}>VERIFY</Text>
+                )}
+              </TouchableOpacity>
+
+              <View style={styles.otpFooter}>
+                <Text style={styles.otpFooterText}>
+                  Didn&lsquo;t receive the code?
+                </Text>
+                <TouchableOpacity
+                  onPress={handleSignUp}
+                  disabled={isVerifyingOtp || isSendingOtp}
+                >
+                  <Text
+                    style={[
+                      styles.resendText,
+                      (isVerifyingOtp || isSendingOtp) && { opacity: 0.5 },
+                    ]}
+                  >
+                    {isSendingOtp ? 'Sending...' : 'Resend OTP'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          </KeyboardAvoidingView>
         </View>
       </Modal>
     </SafeAreaView>
@@ -921,6 +1070,65 @@ const LoginSignup = ({ onLogin }: Props) => {
 };
 
 // --- SUB-COMPONENTS ---
+
+interface AuthFieldProps
+  extends Omit<TextInputProps, 'style' | 'secureTextEntry'> {
+  label: string;
+  /** Renders a masked input with a built-in show/hide toggle. */
+  secure?: boolean;
+  /** Optional control shown on the right of the label row (e.g. "Forgot?"). */
+  accessory?: React.ReactNode;
+  style?: ViewStyle;
+  wrapperStyle?: ViewStyle;
+  inputStyle?: TextStyle;
+}
+
+// One field = label row + boxed input, so every form on this screen gets the
+// same metrics. The show/hide state lives here rather than in the screen so
+// adding a password field doesn't mean adding another piece of screen state.
+const AuthField = ({
+  label,
+  secure = false,
+  accessory,
+  style,
+  wrapperStyle,
+  inputStyle,
+  ...inputProps
+}: AuthFieldProps) => {
+  const [revealed, setRevealed] = useState(false);
+
+  return (
+    <View style={[styles.fieldGroup, style]}>
+      <View style={styles.fieldLabelRow}>
+        <Text style={styles.inputLabel}>{label}</Text>
+        {accessory}
+      </View>
+      <View style={[styles.inputWrapper, wrapperStyle]}>
+        <TextInput
+          {...inputProps}
+          style={[styles.textInput, inputStyle]}
+          placeholderTextColor="#9aa3ad"
+          secureTextEntry={secure && !revealed}
+        />
+        {secure && (
+          <TouchableOpacity
+            style={styles.eyeBtn}
+            onPress={() => setRevealed((visible) => !visible)}
+            disabled={inputProps.editable === false}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons
+              name={revealed ? 'eye' : 'eye-off-outline'}
+              size={18}
+              color="#6b7280"
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
+};
+
 const OrderIcon = ({ icon, label }: any) => (
   <View style={styles.orderItem}>
     <Ionicons name={icon} size={scale(24)} color="#f97316" />
@@ -995,15 +1203,17 @@ const styles = StyleSheet.create({
   },
   promoRow: {
     flexDirection: 'row',
-    padding: scale(10),
-    justifyContent: 'space-between',
+    paddingTop: SECTION_GAP,
   },
   promoCard: {
     backgroundColor: '#fff',
-    width: '48%',
-    borderRadius: 10,
+    width: '50%',
     padding: 10,
     alignItems: 'center',
+  },
+  promoCardDivider: {
+    borderRightWidth: 1,
+    borderRightColor: '#eee',
   },
   promoHeader: {
     flexDirection: 'row',
@@ -1038,8 +1248,7 @@ const styles = StyleSheet.create({
   },
   sectionCard: {
     backgroundColor: '#fff',
-    margin: scale(10),
-    borderRadius: 10,
+    marginTop: SECTION_GAP,
     padding: 15,
   },
   sectionHeader: {
@@ -1083,13 +1292,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  // The card's maxHeight is a percentage, so its parent needs a resolved
+  // height — without flex:1 here the percentage collapses and the card's
+  // ScrollView is clipped instead of scrolling (social buttons cut off).
+  modalKeyboardView: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   authPopupCard: {
     backgroundColor: '#fff',
     width: screenWidth * 0.9,
+    maxHeight: '90%',
     borderRadius: 20,
-    padding: 20,
     elevation: 10,
   },
+  // Padding lives on the scroll content, not the card, so the last row can
+  // scroll clear of the rounded bottom edge.
+  authPopupScrollBody: { padding: 20 },
   closeBtn: { alignSelf: 'flex-end' },
   popupTitle: {
     fontSize: 24,
@@ -1099,39 +1320,64 @@ const styles = StyleSheet.create({
   },
   popupSubtitle: {
     fontSize: 13,
+    fontFamily: 'PoppinsRegular',
     color: '#777',
     marginTop: 5,
     marginBottom: 20,
+  },
+  fieldGroup: { marginBottom: 14 },
+  fieldLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
   },
   inputLabel: {
     fontSize: 12,
     fontWeight: 'bold',
     fontFamily: 'PoppinsBold',
     color: '#555',
-    marginBottom: 5,
+  },
+  forgotText: {
+    fontSize: 12,
+    color: '#f97316',
+    fontFamily: 'PoppinsSemiBold',
+    fontWeight: '600',
+  },
+  // The box lives on the wrapper, not the TextInput, so the eye toggle can sit
+  // inside it on the same row instead of being pushed underneath the field.
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f4f8',
+    borderRadius: 10,
+    paddingHorizontal: 12,
   },
   textInput: {
-    backgroundColor: '#f0f4f8',
-    borderRadius: 10,
-    padding: 12,
+    flex: 1,
+    paddingVertical: 12,
     fontSize: 14,
+    // Both are explicit: without a fontFamily the input falls back to the OS
+    // font, and without letterSpacing: 0 some Android keyboards/fonts render
+    // the placeholder with visible gaps between every glyph.
+    fontFamily: 'PoppinsRegular',
+    letterSpacing: 0,
+    includeFontPadding: false,
     color: '#333',
-    marginBottom: 10,
   },
-  passInputWrapper: {
-    position: 'relative',
-    marginBottom: 10,
-    backgroundColor: '#f0f4f8',
-    borderRadius: 10,
-    paddingRight: 10,
-  },
-  eyeIcon: { position: 'absolute', right: 12, top: 12 },
+  eyeBtn: { paddingLeft: 10, paddingVertical: 8 },
+  nameRow: { flexDirection: 'row', gap: 12 },
+  nameField: { flex: 1 },
   orangeActionBtn: {
     backgroundColor: '#ff6600',
     padding: 15,
     borderRadius: 12,
     alignItems: 'center',
-    marginTop: 20,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    minHeight: 50,
+    // Fields already carry their own bottom margin; this only tops it up.
+    marginTop: 8,
   },
   disabledBtn: {
     backgroundColor: '#cccccc',
@@ -1169,7 +1415,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
-  footerGray: { color: '#888', fontSize: 13 },
+  footerGray: { color: '#888', fontSize: 13, fontFamily: 'PoppinsRegular' },
+  footerLink: {
+    color: '#f97316',
+    fontSize: 13,
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+  },
+  resetSuccessIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#fff3e0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  resetEmailHighlight: {
+    color: '#333',
+    fontFamily: 'PoppinsBold',
+    fontWeight: 'bold',
+  },
 
   // OTP MODAL STYLES
   otpModalCard: {
@@ -1203,12 +1469,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  otpField: { alignSelf: 'stretch' },
+  otpInputWrapper: { backgroundColor: '#f5f5f5' },
   otpInput: {
     letterSpacing: 5,
     fontSize: 18,
     fontWeight: '600',
     fontFamily: 'PoppinsSemiBold',
-    backgroundColor: '#f5f5f5',
   },
   otpFooter: {
     marginTop: 20,

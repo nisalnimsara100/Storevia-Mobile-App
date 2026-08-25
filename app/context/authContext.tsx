@@ -3,6 +3,7 @@ import {
   GoogleAuthProvider,
   OAuthProvider,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithCredential,
   signInWithEmailAndPassword,
   signOut,
@@ -43,6 +44,7 @@ interface AuthContextType {
   ) => Promise<AuthResult>;
   signInWithGoogle: (idToken: string) => Promise<AuthResult>;
   signInWithApple: (idToken: string, rawNonce: string) => Promise<AuthResult>;
+  resetPassword: (email: string) => Promise<AuthResult>;
   logout: () => Promise<void>;
 }
 
@@ -522,6 +524,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // 🔑 Send a Firebase password-reset email.
+  //
+  // Firebase returns `auth/user-not-found` for an unregistered address, which
+  // would let anyone probe which emails have accounts. We swallow that one code
+  // and report success, so the caller's message is the same either way.
+  const resetPassword = async (email: string): Promise<AuthResult> => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return { success: true };
+    } catch (error: any) {
+      if (error?.code === 'auth/user-not-found') {
+        return { success: true };
+      }
+      console.error('❌ Password reset error:', error.message);
+      return { success: false, error: error.message };
+    }
+  };
+
   // 🚪 Logout
   const logout = async () => {
     try {
@@ -540,6 +560,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signUp,
     signInWithGoogle,
     signInWithApple,
+    resetPassword,
     logout,
   };
 

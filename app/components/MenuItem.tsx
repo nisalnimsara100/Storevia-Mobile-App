@@ -23,7 +23,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
       {/* Show Flag if provided */}
       {flag && (
         <View className="mr-3">
-          <CountryFlag isoCode={flag} size={30} />
+          <CountryFlag isoCode={flag} size={20} />
         </View>
       )}
 
