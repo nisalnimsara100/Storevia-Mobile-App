@@ -49,7 +49,12 @@ export const AccountSecurity = () => {
         </View>
 
         <View className="relative">
-          <MenuItem title="Account Deletion" />
+          <MenuItem
+            title="Account Deletion"
+            onPress={() =>
+              router.push('/screens/settings_screen/AccountDeletion')
+            }
+          />
           <Ionicons
             name="chevron-forward"
             size={20}
